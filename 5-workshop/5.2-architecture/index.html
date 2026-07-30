@@ -1,0 +1,184 @@
+<!doctype html><html lang=en class="js csstransforms3d"><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=generator content="Hugo 0.134.3"><meta name=description content><meta name=author content="thienlh@thienlu.com"><link rel=icon href=/internship-report/images/favicon.png type=image/png><title>Architecture :: Internship Report</title>
+<link href=/internship-report/css/nucleus.css?1785395802 rel=stylesheet><link href=/internship-report/css/fontawesome-all.min.css?1785395802 rel=stylesheet><link href=/internship-report/css/hybrid.css?1785395802 rel=stylesheet><link href=/internship-report/css/featherlight.min.css?1785395802 rel=stylesheet><link href=/internship-report/css/perfect-scrollbar.min.css?1785395802 rel=stylesheet><link href=/internship-report/css/auto-complete.css?1785395802 rel=stylesheet><link href=/internship-report/css/atom-one-dark-reasonable.css?1785395802 rel=stylesheet><link href=/internship-report/css/theme.css?1785395802 rel=stylesheet><link href=/internship-report/css/hugo-theme.css?1785395802 rel=stylesheet><link href=/internship-report/css/theme-workshop.css?1785395802 rel=stylesheet><script src=/internship-report/js/jquery-3.3.1.min.js?1785395802></script><style>:root #header+#content>#left>#rlblock_left{display:none!important}</style></head><body data-url=/internship-report/5-workshop/5.2-architecture/><nav id=sidebar class=showVisitedLinks><div id=header-wrapper><div id=header><a id=logo href=/><svg id="Layer_1" data-name="Layer 1" viewBox="0 0 60 30" width="30%"><defs><style>.cls-1{fill:#fff}.cls-2{fill:#fff;fill-rule:evenodd}</style></defs><title>AWS-Logo_White-Color</title><path class="cls-1" d="M14.09 10.85a4.7 4.7.0 00.19 1.48 7.73 7.73.0 00.54 1.19.77.77.0 01.12.38.64.64.0 01-.32.49l-1 .7a.83.83.0 01-.44.15.69.69.0 01-.49-.23 3.8 3.8.0 01-.6-.77q-.25-.42-.51-1a6.14 6.14.0 01-4.89 2.3 4.54 4.54.0 01-3.32-1.19 4.27 4.27.0 01-1.22-3.2 4.28 4.28.0 011.46-3.4A6.06 6.06.0 017.69 6.46a12.47 12.47.0 011.76.13q.92.13 1.91.36V5.73a3.65 3.65.0 00-.79-2.66A3.81 3.81.0 007.86 2.3a7.71 7.71.0 00-1.79.22 12.78 12.78.0 00-1.79.57 4.55 4.55.0 01-.58.22h-.26q-.35.0-.35-.52V2a1.09 1.09.0 01.12-.58 1.2 1.2.0 01.47-.35A10.88 10.88.0 015.77.32 10.19 10.19.0 018.36.0a6 6 0 014.35 1.35 5.49 5.49.0 011.38 4.09zM7.34 13.38a5.36 5.36.0 001.72-.31A3.63 3.63.0 0010.63 12 2.62 2.62.0 0011.19 11a5.63 5.63.0 00.16-1.44v-.7a14.35 14.35.0 00-1.53-.28 12.37 12.37.0 00-1.56-.1 3.84 3.84.0 00-2.47.67A2.34 2.34.0 005 11a2.35 2.35.0 00.61 1.76A2.4 2.4.0 007.34 13.38zm13.35 1.8a1 1 0 01-.64-.16 1.3 1.3.0 01-.35-.65L15.81 1.51a3 3 0 01-.15-.67.36.36.0 01.41-.41H17.7a1 1 0 01.65.16 1.4 1.4.0 01.33.65l2.79 11 2.59-11A1.17 1.17.0 0124.39.6a1.1 1.1.0 01.67-.16H26.4a1.1 1.1.0 01.67.16 1.17 1.17.0 01.32.65L30 12.39 32.88 1.25A1.39 1.39.0 0133.22.6a1 1 0 01.65-.16h1.54a.36.36.0 01.41.41 1.36 1.36.0 010 .26 3.64 3.64.0 01-.12.41l-4 12.86a1.3 1.3.0 01-.35.65 1 1 0 01-.64.16H29.25a1 1 0 01-.67-.17 1.26 1.26.0 01-.32-.67L25.67 3.64l-2.56 10.7a1.26 1.26.0 01-.32.67 1 1 0 01-.67.17zm21.36.44a11.28 11.28.0 01-2.56-.29 7.44 7.44.0 01-1.92-.67 1 1 0 01-.61-.93v-.84q0-.52.38-.52a.9.9.0 01.31.06l.42.17a8.77 8.77.0 001.83.58 9.78 9.78.0 002 .2 4.48 4.48.0 002.43-.55 1.76 1.76.0 00.86-1.57 1.61 1.61.0 00-.45-1.16A4.29 4.29.0 0043 9.22l-2.41-.76A5.15 5.15.0 0138 6.78a3.94 3.94.0 01-.83-2.41 3.7 3.7.0 01.45-1.85 4.47 4.47.0 011.19-1.37 5.27 5.27.0 011.7-.86A7.4 7.4.0 0142.6.0a8.87 8.87.0 011.12.07q.57.07 1.08.19t.95.26a4.27 4.27.0 01.7.29 1.59 1.59.0 01.49.41.94.94.0 01.15.55v.79q0 .52-.38.52a1.76 1.76.0 01-.64-.2 7.74 7.74.0 00-3.2-.64 4.37 4.37.0 00-2.21.47 1.6 1.6.0 00-.79 1.48 1.58 1.58.0 00.49 1.18 4.94 4.94.0 001.83.92L44.55 7a5.08 5.08.0 012.57 1.6A3.76 3.76.0 0147.9 11a4.21 4.21.0 01-.44 1.93 4.4 4.4.0 01-1.21 1.47 5.43 5.43.0 01-1.85.93A8.25 8.25.0 0142.05 15.62z"/><path class="cls-2" d="M45.19 23.81C39.72 27.85 31.78 30 25 30A36.64 36.64.0 01.22 20.57c-.51-.46-.06-1.09.56-.74A49.78 49.78.0 0025.53 26.4 49.23 49.23.0 0044.4 22.53C45.32 22.14 46.1 23.14 45.19 23.81z"/><path class="cls-2" d="M47.47 21.21c-.7-.9-4.63-.42-6.39-.21-.53.06-.62-.4-.14-.74 3.13-2.2 8.27-1.57 8.86-.83s-.16 5.89-3.09 8.35c-.45.38-.88.18-.68-.32C46.69 25.8 48.17 22.11 47.47 21.21z"/></svg></a></div><div class=searchbox><label for=search-by><i class="fas fa-search"></i></label>
+<input data-search-input id=search-by type=search placeholder=Search...>
+<span data-search-clear><i class="fas fa-times"></i></span></div><script type=text/javascript src=/internship-report/js/lunr.min.js?1785395802></script><script type=text/javascript src=/internship-report/js/auto-complete.js?1785395802></script><script type=text/javascript>var baseurl="https://kyling815.github.io/internship-report/"</script><script type=text/javascript src=/internship-report/js/search.js?1785395802></script></div><div class=highlightable><ul class=topics><li data-nav-id=/internship-report/1-worklog/ title=Worklog class=dd-item><a href=/internship-report/1-worklog/><b>1. </b>Worklog
+<i class="fas fa-check read-icon"></i></a><ul><li data-nav-id=/internship-report/1-worklog/1.1-week1/ title="Week 1 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.1-week1/><b>1.1. </b>Week 1 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.2-week2/ title="Week 2 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.2-week2/><b>1.2. </b>Week 2 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.3-week3/ title="Week 3 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.3-week3/><b>1.3. </b>Week 3 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.4-week4/ title="Week 4 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.4-week4/><b>1.4. </b>Week 4 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.5-week5/ title="Week 5 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.5-week5/><b>1.5. </b>Week 5 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.6-week6/ title="Week 6 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.6-week6/><b>1.6. </b>Week 6 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.7-week7/ title="Week 7 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.7-week7/><b>1.7. </b>Week 7 Worklog
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/1-worklog/1.8-week8/ title="Week 8 Worklog" class=dd-item><a href=/internship-report/1-worklog/1.8-week8/><b>1.8. </b>Week 8 Worklog
+<i class="fas fa-check read-icon"></i></a></li></ul></li><li data-nav-id=/internship-report/2-proposal/ title=Proposal class=dd-item><a href=/internship-report/2-proposal/><b>2. </b>Proposal
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/3-blogsposted/ title="Blogs Posted" class=dd-item><a href=/internship-report/3-blogsposted/><b>3. </b>Blogs Posted
+<i class="fas fa-check read-icon"></i></a><ul><li data-nav-id=/internship-report/3-blogsposted/3.1-blog1/ title="Blog 1" class=dd-item><a href=/internship-report/3-blogsposted/3.1-blog1/><b>3.1. </b>Blog 1
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/3-blogsposted/3.2-blog2/ title="Blog 2" class=dd-item><a href=/internship-report/3-blogsposted/3.2-blog2/><b>3.2. </b>Blog 2
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/3-blogsposted/3.3-blog3/ title="Blog 3" class=dd-item><a href=/internship-report/3-blogsposted/3.3-blog3/><b>3.3. </b>Blog 3
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/3-blogsposted/3.4-blog4/ title="Blog 4" class=dd-item><a href=/internship-report/3-blogsposted/3.4-blog4/><b>3.4. </b>Blog 4
+<i class="fas fa-check read-icon"></i></a></li></ul></li><li data-nav-id=/internship-report/4-eventparticipated/ title="Events Participated" class=dd-item><a href=/internship-report/4-eventparticipated/><b>4. </b>Events Participated
+<i class="fas fa-check read-icon"></i></a><ul><li data-nav-id=/internship-report/4-eventparticipated/4.1-event1/ title="Event 1: FCAJ Community Day – June 2026" class=dd-item><a href=/internship-report/4-eventparticipated/4.1-event1/><b>4.1. </b>Event 1: FCAJ Community Day – June 2026
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/4-eventparticipated/4.2-event2/ title="Event 2: Enterprise Cloud Architectures and Industry Applications" class=dd-item><a href=/internship-report/4-eventparticipated/4.2-event2/><b>4.2. </b>Event 2: Enterprise Cloud Architectures and Industry Applications
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/4-eventparticipated/4.5-event5/ title="FCAJ x Agentic AI Build Week 2026" class=dd-item><a href=/internship-report/4-eventparticipated/4.5-event5/><b>4.3. </b>FCAJ x Agentic AI Build Week 2026
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/4-eventparticipated/4.3-event3/ title="Event 3: FCAJ Meetup: Career Lessons, AWS Community, and Scalable Cloud Architecture" class=dd-item><a href=/internship-report/4-eventparticipated/4.3-event3/><b>4.3. </b>Event 3: FCAJ Meetup: Career Lessons, AWS Community, and Scalable Cloud Architecture
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/4-eventparticipated/4.4-event4/ title="Event 4: AWS Knowledge Sharing Event: Certification, Security, and Monitoring" class=dd-item><a href=/internship-report/4-eventparticipated/4.4-event4/><b>4.4. </b>Event 4: AWS Knowledge Sharing Event: Certification, Security, and Monitoring
+<i class="fas fa-check read-icon"></i></a></li></ul></li><li data-nav-id=/internship-report/5-workshop/ title=Workshop class="dd-item
+parent"><a href=/internship-report/5-workshop/><b>5. </b>Workshop
+<i class="fas fa-check read-icon"></i></a><ul><li data-nav-id=/internship-report/5-workshop/5.1-workshop-overview/ title=Overview class=dd-item><a href=/internship-report/5-workshop/5.1-workshop-overview/><b>5.1. </b>Overview
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.2-architecture/ title=Architecture class="dd-item
+active"><a href=/internship-report/5-workshop/5.2-architecture/><b>5.2. </b>Architecture
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.3-prerequisites/ title=Prerequisites class=dd-item><a href=/internship-report/5-workshop/5.3-prerequisites/><b>5.3. </b>Prerequisites
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.4-source-code-preparation/ title="Source Code Preparation" class=dd-item><a href=/internship-report/5-workshop/5.4-source-code-preparation/><b>5.4. </b>Source Code Preparation
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.5-aws-infrastructure/ title="AWS Infrastructure" class=dd-item><a href=/internship-report/5-workshop/5.5-aws-infrastructure/><b>5.5. </b>AWS Infrastructure
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.6-database-deployment/ title="Database Deployment" class=dd-item><a href=/internship-report/5-workshop/5.6-database-deployment/><b>5.6. </b>Database Deployment
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.7-backend-deployment/ title="Backend Deployment" class=dd-item><a href=/internship-report/5-workshop/5.7-backend-deployment/><b>5.7. </b>Backend Deployment
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.8-frontend-deployment/ title="Frontend Deployment" class=dd-item><a href=/internship-report/5-workshop/5.8-frontend-deployment/><b>5.8. </b>Frontend Deployment
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.9-monitoring-and-logging/ title="Monitoring and Logging" class=dd-item><a href=/internship-report/5-workshop/5.9-monitoring-and-logging/><b>5.9. </b>Monitoring and Logging
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.10-end-to-end-testing/ title="End-to-End Testing" class=dd-item><a href=/internship-report/5-workshop/5.10-end-to-end-testing/><b>5.10. </b>End-to-End Testing
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.11-security-and-cost/ title="Security and Cost" class=dd-item><a href=/internship-report/5-workshop/5.11-security-and-cost/><b>5.11. </b>Security and Cost
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.12-troubleshooting/ title=Troubleshooting class=dd-item><a href=/internship-report/5-workshop/5.12-troubleshooting/><b>5.12. </b>Troubleshooting
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/5-workshop/5.13-clean-up/ title=Clean-up class=dd-item><a href=/internship-report/5-workshop/5.13-clean-up/><b>5.13. </b>Clean-up
+<i class="fas fa-check read-icon"></i></a></li></ul></li><li data-nav-id=/internship-report/6-self-evaluation/ title=Self-evaluation class=dd-item><a href=/internship-report/6-self-evaluation/><b>6. </b>Self-evaluation
+<i class="fas fa-check read-icon"></i></a></li><li data-nav-id=/internship-report/7-feedback/ title="Sharing and Feedback" class=dd-item><a href=/internship-report/7-feedback/><b>7. </b>Sharing and Feedback
+<i class="fas fa-check read-icon"></i></a></li></ul><section id=shortcuts><h3>More</h3><ul><li><a class=padding href=https://awsstudygroup.com><i class='fab fa-aws'></i> AWS Study Group - Blog</a></li><li><a class=padding href=https://www.facebook.com/groups/awsstudygroupfcj><i class='fab fa-facebook'></i> AWS Study Group - FB Group</a></li></ul></section><section id=prefooter><hr><ul><li><a class=padding><i class="fas fa-language fa-fw"></i><div class=select-style><select id=select-language onchange="location=this.value"><option id=en value=https://kyling815.github.io/internship-report/5-workshop/5.2-architecture/ selected>English</option><option id=vi value=https://kyling815.github.io/internship-report/vi/5-workshop/5.2-architecture/>Tiếng Việt</option></select><svg id="Capa_1" xmlns:xlink="http://www.w3.org/1999/xlink" width="255" height="255" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255"><g><g id="arrow-drop-down"><polygon points="0,63.75 127.5,191.25 255,63.75"/></g></g></svg></div></a></li><li><a class=padding href=# data-clear-history-toggle><i class="fas fa-history fa-fw"></i> Clear History</a></li></ul></section><section id=footer><left><br><br><b>Last Updated</b><br><i><font color=orange>30-07-2026</font>
+</i></left><left><br><br><b>Team</b><br><i><a href=https://www.facebook.com/groups/660548818043427 style=color:orange>First Cloud AI Journey</a>
+</i></left><script async defer src=https://buttons.github.io/buttons.js></script></section></div></nav><section id=body><div id=overlay></div><div class="padding highlightable"><div><div id=top-bar><div id=breadcrumbs itemscope itemtype=http://data-vocabulary.org/Breadcrumb><span id=sidebar-toggle-span><a href=# id=sidebar-toggle data-sidebar-toggle><i class="fas fa-bars"></i>
+</a></span><span id=toc-menu><i class="fas fa-list-alt"></i></span>
+<span class=links><a href=/internship-report/>Internship Report</a> > <a href=/internship-report/5-workshop/>Workshop</a> > Architecture</span></div><div class=progress><div class=wrapper><nav id=TableOfContents><ul><li><a href=#objective>Objective</a></li><li><a href=#scope>Scope</a></li><li><a href=#architecture-context>Architecture context</a></li><li><a href=#diagram-1-overall-aws-architecture>Diagram 1: Overall AWS architecture</a></li><li><a href=#diagram-2-cloudfront-request-routing-flow>Diagram 2: CloudFront request-routing flow</a></li><li><a href=#diagram-3-cv-upload-and-ai-processing-sequence>Diagram 3: CV upload and AI processing sequence</a></li><li><a href=#diagram-4-realtime-chat-sequence>Diagram 4: Realtime chat sequence</a></li><li><a href=#diagram-5-transactional-outbox-sqs-and-lambda-sequence>Diagram 5: Transactional outbox, SQS, and Lambda sequence</a></li><li><a href=#diagram-6-source-code-change-and-cicd-deployment-flow>Diagram 6: Source-code change and CI/CD deployment flow</a></li><li><a href=#component-descriptions>Component descriptions</a></li><li><a href=#public-and-private-resources>Public and private resources</a></li><li><a href=#security-boundaries>Security boundaries</a></li><li><a href=#expected-result>Expected result</a></li><li><a href=#common-errors>Common errors</a></li><li><a href=#outcome>Outcome</a></li></ul></nav></div></div></div></div><div id=head-tags></div><div id=body-inner><h1>Architecture</h1><h1 id=architecture>Architecture</h1><h2 id=objective>Objective</h2><p>This chapter explains the final AWS architecture and the main runtime flows of the Internship Application Tracker.</p><h2 id=scope>Scope</h2><p>This architecture is based on the final production evidence, the project documentation notes, and the current application repository. I treat runtime evidence as the source of truth when it differs from older manifests. The most important current correction is that the frontend is hosted by S3 and CloudFront, not by EKS.</p><h2 id=architecture-context>Architecture context</h2><table><thead><tr><th style=text-align:left>Layer</th><th style=text-align:left>Main components</th></tr></thead><tbody><tr><td style=text-align:left>Edge</td><td style=text-align:left>CloudFront distribution <code>EQIGYNECXDYL8</code></td></tr><tr><td style=text-align:left>Public routing</td><td style=text-align:left>Application Load Balancer <code>k8s-internshippublic-48101b50ad-85486086.ap-southeast-1.elb.amazonaws.com</code></td></tr><tr><td style=text-align:left>Kubernetes</td><td style=text-align:left>EKS cluster <code>internship-prod</code>, namespace <code>internship</code></td></tr><tr><td style=text-align:left>Workloads</td><td style=text-align:left><code>backend</code>, <code>chat-service</code>, <code>backend-outbox-dispatcher</code>, <code>backend-processing-worker</code>, <code>ai-service</code></td></tr><tr><td style=text-align:left>Data</td><td style=text-align:left>RDS PostgreSQL, DynamoDB, ElastiCache Redis, S3</td></tr><tr><td style=text-align:left>Async and event</td><td style=text-align:left>PostgreSQL processing jobs, PostgreSQL outbox, SQS, Lambda, SES</td></tr><tr><td style=text-align:left>AI</td><td style=text-align:left><code>ai-service</code> adapter and SageMaker endpoint <code>internship-qwen3-4b</code></td></tr><tr><td style=text-align:left>CI/CD</td><td style=text-align:left>GitHub Actions, AWS OIDC, ECR, kubectl, AWS CLI</td></tr></tbody></table><h2 id=diagram-1-overall-aws-architecture>Diagram 1: Overall AWS architecture</h2><div class=mermaid align=center>graph LR
+User["Candidate / HR browser"]
+CF["CloudFront (dhm2rz5nmsibj.cloudfront.net)"]
+S3Frontend["Private S3 frontend bucket (internship-prod-frontend-account-redacted)"]
+ALB["Application Load Balancer (internet-facing)"]
+EKS["EKS cluster (internship-prod)"]
+Backend["backend (FastAPI :8000)"]
+Chat["chat-service (Socket.IO :3000)"]
+Dispatcher["backend-outbox-dispatcher"]
+Worker["backend-processing-worker"]
+AI["ai-service (:8010)"]
+RDS["RDS PostgreSQL (internship-prod-postgres)"]
+DDB["DynamoDB chat tables (ChatUsers / ChatGroups / ChatMessages)"]
+Redis["ElastiCache Redis (internship-prod-redis)"]
+Uploads["S3 uploads and archive bucket (internship-prod-uploads-account-redacted)"]
+SQS["SQS queue (internship-prod-outbox)"]
+DLQ["SQS DLQ (internship-prod-outbox-dlq)"]
+Lambda["Lambda (internship-outbox-handler)"]
+Dedupe["DynamoDB dedupe table (InternshipLambdaEventDedupe)"]
+SES["Amazon SES"]
+SM["SageMaker endpoint (internship-qwen3-4b)"]
+User --> CF
+CF --> S3Frontend
+CF --> ALB
+ALB --> EKS
+EKS --> Backend
+EKS --> Chat
+EKS --> Dispatcher
+EKS --> Worker
+EKS --> AI
+Backend --> RDS
+Backend --> Uploads
+Chat --> DDB
+Chat --> Redis
+Worker --> AI
+AI --> SM
+Dispatcher --> SQS
+SQS --> Lambda
+SQS --> DLQ
+Lambda --> Dedupe
+Lambda --> Uploads
+Lambda --> SES</div><h2 id=diagram-2-cloudfront-request-routing-flow>Diagram 2: CloudFront request-routing flow</h2><div class=mermaid align=center>graph TD
+Request["HTTPS request to CloudFront"]
+Match{"Path pattern"}
+Frontend["Default behavior to S3 frontend origin"]
+API["/api/* behavior to ALB origin"]
+ChatRest["/chat/* behavior to ALB origin"]
+Socket["/socket.io/* behavior to ALB origin"]
+BackendSvc["Kubernetes Service: backend"]
+ChatSvc["Kubernetes Service: chat-service"]
+Request --> Match
+Match --> Frontend
+Match --> API
+Match --> ChatRest
+Match --> Socket
+API --> BackendSvc
+ChatRest --> ChatSvc
+Socket --> ChatSvc</div><p>The frontend bucket remains private. CloudFront handles HTTPS and SPA fallback. The ALB Ingress rewrites <code>/api</code> and <code>/chat</code> prefixes before forwarding to the backend and chat services.</p><h2 id=diagram-3-cv-upload-and-ai-processing-sequence>Diagram 3: CV upload and AI processing sequence</h2><div class=mermaid align=center>sequenceDiagram
+participant Candidate
+participant Frontend
+participant Backend
+participant S3 as S3 uploads bucket
+participant Postgres as RDS PostgreSQL
+participant Worker as Processing worker
+participant AI as ai-service
+participant SM as SageMaker
+Candidate->>Frontend: Submit application with CV
+Frontend->>Backend: POST /jobs/{id}/apply
+Backend->>S3: Store uploaded document or generate storage reference
+Backend->>Postgres: Commit application, idempotency record, outbox event, processing job
+Backend-->>Frontend: Application accepted with processing status
+Worker->>Postgres: Claim queued async_processing_jobs row
+Worker->>AI: POST /parse-cv or /match-applications
+AI->>SM: Invoke endpoint internship-qwen3-4b
+SM-->>AI: Model response
+AI-->>Worker: Normalized JSON response
+Worker->>Postgres: Save parsed profile or matching results
+Frontend->>Backend: Poll processing job status
+Backend-->>Frontend: Processing result</div><h2 id=diagram-4-realtime-chat-sequence>Diagram 4: Realtime chat sequence</h2><div class=mermaid align=center>sequenceDiagram
+participant UserA as User A browser
+participant CF as CloudFront
+participant ALB as ALB
+participant Chat1 as chat-service pod A
+participant Redis as ElastiCache Redis
+participant Chat2 as chat-service pod B
+participant DDB as DynamoDB chat tables
+participant UserB as User B browser
+UserA->>CF: Socket.IO connect /socket.io
+CF->>ALB: Forward websocket/polling traffic
+ALB->>Chat1: Route to chat-service
+UserA->>Chat1: message:send
+Chat1->>DDB: Persist message
+Chat1->>Redis: Publish room event
+Redis->>Chat2: Broadcast event to subscribed pod
+Chat2->>UserB: Emit message:new
+Chat1-->>UserA: ACK after persistence</div><p>DynamoDB is the permanent chat store. Redis is only the cross-pod pub/sub layer and does not replace persistent storage.</p><h2 id=diagram-5-transactional-outbox-sqs-and-lambda-sequence>Diagram 5: Transactional outbox, SQS, and Lambda sequence</h2><div class=mermaid align=center>sequenceDiagram
+participant API as FastAPI backend
+participant PG as RDS PostgreSQL
+participant Dispatcher as Outbox dispatcher
+participant SQS as SQS main queue
+participant Lambda as Lambda outbox handler
+participant DDB as DynamoDB dedupe
+participant S3 as S3 archive bucket
+participant SES as Amazon SES
+API->>PG: Commit business mutation and outbox_events row in one transaction
+Dispatcher->>PG: Claim pending outbox_events row with lease
+Dispatcher->>SQS: Send event envelope
+Dispatcher->>PG: Mark event PUBLISHED
+SQS->>Lambda: Invoke batch
+Lambda->>DDB: Conditional write eventId
+alt First time event
+Lambda->>S3: Put JSON archive
+Lambda->>SES: Send email notification
+else Duplicate event
+Lambda-->>SQS: Treat as already processed
+end</div><p>SQS delivery is at least once. Duplicate delivery is expected, so Lambda idempotency is required. The successful smoke-test event was <code>lambda-smoke-fixed-1785220478</code>, archived under <code>outbox-archive/2026/07/28/lambda-smoke-fixed-1785220478.json</code>.</p><h2 id=diagram-6-source-code-change-and-cicd-deployment-flow>Diagram 6: Source-code change and CI/CD deployment flow</h2><div class=mermaid align=center>graph LR
+Dev["Developer change"]
+GH["GitHub Actions (workflow_dispatch mode)"]
+Validate["validate (tests, lint, build, infra scan)"]
+Images["build-images (ECR SHA tags)"]
+Restore["restore-compute (EKS node group check)"]
+App["deploy-app (kubectl apply workloads)"]
+Public["deploy-public (ALB ingress)"]
+CF["ensure-cloudfront (S3 private + OAC + behaviors)"]
+Frontend["deploy-frontend (npm build + S3 sync + invalidation)"]
+Summary["Production summary"]
+Dev --> GH
+GH --> Validate
+GH --> Restore
+Validate --> Images
+Restore --> Images
+Images --> App
+App --> Public
+Public --> CF
+CF --> Frontend
+App --> Summary
+Frontend --> Summary</div><p>The workflow supports <code>validate</code>, <code>deploy</code>, <code>rollout</code>, <code>restore-compute</code>, <code>deploy-app</code>, <code>deploy-public</code>, <code>deploy-frontend</code>, and <code>full</code>. GitHub Actions assumes an AWS role through OIDC; long-lived AWS access keys are not part of the deployment design.</p><h2 id=component-descriptions>Component descriptions</h2><table><thead><tr><th style=text-align:left>Component</th><th style=text-align:left>Responsibility</th><th style=text-align:left>Verification command</th></tr></thead><tbody><tr><td style=text-align:left>CloudFront</td><td style=text-align:left>Public HTTPS entry point and routing</td><td style=text-align:left><code>aws cloudfront get-distribution --id EQIGYNECXDYL8</code></td></tr><tr><td style=text-align:left>S3 frontend bucket</td><td style=text-align:left>Static frontend assets</td><td style=text-align:left><code>aws s3 ls s3://internship-prod-frontend-&lt;AWS_ACCOUNT_ID>/</code></td></tr><tr><td style=text-align:left>ALB</td><td style=text-align:left>Routes API/chat/socket traffic to EKS services</td><td style=text-align:left><code>kubectl get ingress internship-public -n internship</code></td></tr><tr><td style=text-align:left>Backend</td><td style=text-align:left>FastAPI business API and health endpoints</td><td style=text-align:left><code>kubectl rollout status deployment/backend -n internship</code></td></tr><tr><td style=text-align:left>Chat service</td><td style=text-align:left>Socket.IO and chat REST API</td><td style=text-align:left><code>kubectl rollout status deployment/chat-service -n internship</code></td></tr><tr><td style=text-align:left>Processing worker</td><td style=text-align:left>Async AI/document jobs</td><td style=text-align:left><code>kubectl get deployment backend-processing-worker -n internship</code></td></tr><tr><td style=text-align:left>Outbox dispatcher</td><td style=text-align:left>Publishes PostgreSQL events to SQS</td><td style=text-align:left><code>kubectl logs deployment/backend-outbox-dispatcher -n internship</code></td></tr><tr><td style=text-align:left>AI service</td><td style=text-align:left>SageMaker adapter with stable worker routes</td><td style=text-align:left><code>kubectl port-forward service/ai-service 8010:8010 -n internship</code></td></tr><tr><td style=text-align:left>RDS PostgreSQL</td><td style=text-align:left>Transactional data and queues</td><td style=text-align:left><code>aws rds describe-db-instances --db-instance-identifier internship-prod-postgres --region ap-southeast-1</code></td></tr><tr><td style=text-align:left>DynamoDB</td><td style=text-align:left>Chat and Lambda dedupe tables</td><td style=text-align:left><code>aws dynamodb describe-table --table-name ChatMessages --region ap-southeast-1</code></td></tr><tr><td style=text-align:left>Redis</td><td style=text-align:left>Socket.IO pub/sub</td><td style=text-align:left><code>aws elasticache describe-replication-groups --replication-group-id internship-prod-redis --region ap-southeast-1</code></td></tr><tr><td style=text-align:left>SQS</td><td style=text-align:left>Outbox event transport</td><td style=text-align:left><code>aws sqs get-queue-attributes --queue-url &lt;OUTBOX_QUEUE_URL> --attribute-names All</code></td></tr></tbody></table><h2 id=public-and-private-resources>Public and private resources</h2><table><thead><tr><th style=text-align:left>Public-facing</th><th style=text-align:left>Private or internal</th></tr></thead><tbody><tr><td style=text-align:left>CloudFront domain</td><td style=text-align:left>RDS PostgreSQL</td></tr><tr><td style=text-align:left>ALB DNS origin</td><td style=text-align:left>ElastiCache Redis</td></tr><tr><td style=text-align:left>CloudFront HTTPS routes</td><td style=text-align:left>DynamoDB tables</td></tr><tr><td style=text-align:left>Browser-accessible static assets through CloudFront</td><td style=text-align:left>EKS pod-to-service traffic</td></tr><tr><td style=text-align:left>SES email delivery</td><td style=text-align:left>SQS queue and DLQ</td></tr><tr><td style=text-align:left></td><td style=text-align:left>S3 buckets without direct public bucket access</td></tr></tbody></table><h2 id=security-boundaries>Security boundaries</h2><ul><li>GitHub Actions uses OIDC to assume <code>internship-github-deploy</code>.</li><li>EKS workloads use <code>internship-app</code> ServiceAccount and IRSA role mapping.</li><li>Secrets are injected through GitHub environment secrets and Kubernetes <code>internship-secrets</code>.</li><li>S3 frontend bucket should remain private and readable through CloudFront only.</li><li>Backend and chat pods expose only service ports through the ALB path rules.</li><li>AI traffic stays inside the cluster from worker to <code>ai-service</code>; SageMaker is invoked by the adapter.</li><li>SQS/Lambda processing is idempotent through DynamoDB conditional writes.</li></ul><h2 id=expected-result>Expected result</h2><p>The final architecture separates static delivery, public request routing, long-running service execution, transactional storage, realtime synchronization, asynchronous event delivery, short event-driven notification, and AI inference. Each component has a clear responsibility and an independent verification path.</p><h2 id=common-errors>Common errors</h2><table><thead><tr><th style=text-align:left>Error</th><th style=text-align:left>Cause</th><th style=text-align:left>Resolution</th></tr></thead><tbody><tr><td style=text-align:left>Frontend shown as running in EKS</td><td style=text-align:left>Old architecture description</td><td style=text-align:left>Use current S3 and CloudFront architecture only</td></tr><tr><td style=text-align:left>S3 described behind ALB</td><td style=text-align:left>Incorrect CloudFront origin model</td><td style=text-align:left>Default CloudFront behavior must route directly to S3</td></tr><tr><td style=text-align:left>Redis described as chat database</td><td style=text-align:left>Misunderstood chat design</td><td style=text-align:left>DynamoDB stores chat records; Redis is pub/sub</td></tr><tr><td style=text-align:left>Outbox described as exactly-once</td><td style=text-align:left>SQS Standard semantics</td><td style=text-align:left>Document at-least-once plus idempotent consumer</td></tr><tr><td style=text-align:left>Worker enabled before AI readiness</td><td style=text-align:left>SageMaker dependency not ready</td><td style=text-align:left>Keep worker disabled until AI and endpoint are ready</td></tr></tbody></table><h2 id=outcome>Outcome</h2><p>This architecture chapter provides the reference model for the remaining workshop steps. All later deployment, testing, monitoring, security, cost, troubleshooting, and cleanup sections should match these diagrams.</p><footer class=footline></footer></div></div><div id=navigation><a class="nav nav-prev" href=/internship-report/5-workshop/5.1-workshop-overview/ title=Overview><i class="fa fa-chevron-left"></i></a>
+<a class="nav nav-next" href=/internship-report/5-workshop/5.3-prerequisites/ title=Prerequisites style=margin-right:0><i class="fa fa-chevron-right"></i></a></div></section><div style=left:-1000px;overflow:scroll;position:absolute;top:-1000px;border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px><div style=border:none;box-sizing:content-box;height:200px;margin:0;padding:0;width:200px></div></div><script src=/internship-report/js/clipboard.min.js?1785395802></script><script src=/internship-report/js/perfect-scrollbar.min.js?1785395802></script><script src=/internship-report/js/perfect-scrollbar.jquery.min.js?1785395802></script><script src=/internship-report/js/jquery.sticky.js?1785395802></script><script src=/internship-report/js/featherlight.min.js?1785395802></script><script src=/internship-report/js/highlight.pack.js?1785395802></script><script>hljs.initHighlightingOnLoad()</script><script src=/internship-report/js/modernizr.custom-3.6.0.js?1785395802></script><script src=/internship-report/js/learn.js?1785395802></script><script src=/internship-report/js/hugo-learn.js?1785395802></script><link href=/internship-report/mermaid/mermaid.css?1785395802 rel=stylesheet><script src=/internship-report/mermaid/mermaid.js?1785395802></script><script>mermaid.initialize({startOnLoad:!0})</script><script>(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,(e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date),(i=t.createElement(n),a=t.getElementsByTagName(n)[0]),i.async=1,i.src=s,a.parentNode.insertBefore(i,a)})(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-158079754-2","auto"),ga("send","pageview")</script></body></html>
