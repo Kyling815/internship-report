@@ -1,31 +1,31 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 8"
+title: "Nhật ký tuần 8"
 date: 2024-01-01
 weight: 8
 chapter: false
 pre: " <b> 1.8. </b> "
 ---
 
-# Week 8 - End-to-End Deployment and Operational Validation
+# Tuần 8 - Triển khai end-to-end và kiểm tra vận hành
 
-## Objectives
+## Mục tiêu
 
-During Week 8, I finalized the production deployment path for the Internship Application Tracker. I built and validated the deployment model for Amazon EKS workloads, Application Load Balancer routing, S3 and CloudFront frontend delivery, AWS-managed data services, event-driven processing, and cost tracking.
+Trong tuần 8, tôi hoàn thiện phần đóng góp Cloud/DevOps của mình trong project nhóm 5 thành viên. Tôi tích hợp và kiểm tra mô hình production cho các service của nhóm trên Amazon EKS, Application Load Balancer, S3/CloudFront, các dịch vụ dữ liệu AWS managed, event-driven processing và cost tracking.
 
-I used the Week 08 AWS evidence directory as the source of truth for this section. The cost figures come from the July 1-28, 2026 AWS cost summary, the Billing credits screenshot, and the Cost Explorer overview screenshot. The finalized monthly bill and the AWS Pricing Calculator estimate are still unavailable.
+Tôi sử dụng thư mục minh chứng AWS tuần 08 làm nguồn dữ liệu cho phần này. Số liệu chi phí lấy từ tổng hợp ngày 01-28/07/2026, screenshot Billing credits và Cost Explorer. Hóa đơn tháng đã chốt và AWS Pricing Calculator vẫn chưa có.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Added the SageMaker-oriented AI service integration and deployment path while preserving worker-facing routes. | Source references from the project implementation and `sagemaker-health.png`. |
-| Completed | Fixed deploy-app image propagation and deterministic ECR image selection. | Source references from the CI/CD workflow implementation. |
-| Completed | Removed frontend Kubernetes resources from the current runtime path so frontend delivery uses S3 and CloudFront instead of an EKS frontend pod. | Source references from the deployment scripts and architecture notes. |
-| Completed | Verified Amazon RDS PostgreSQL and Amazon ElastiCache Valkey runtime status from AWS CLI screenshots. | `RDS-health.png`, `REDIS-health.png`. |
-| Completed | Verified the SageMaker endpoint runtime status from AWS CLI screenshot evidence. | `sagemaker-health.png`. |
-| Partially completed | Verified EKS workloads and ALB runtime state from AWS CLI screenshots. | EKS workloads were running, but the ALB target health screenshot showed mixed unhealthy targets. |
-| Completed | Added CloudFront, S3, DynamoDB, and SQS runtime evidence. | Sanitized screenshots: `Cloudfront-evidence.png`, `S3-evidenc.png`, `DynamoDB-evidenc.png`, `SQS-evidence.png`. |
-| Partially completed | Added AWS cost evidence for July 1-28, 2026. | July cost summary, `total-cost-july.png`, and `Cost-evidence.png`; Pricing Calculator remains blocked. |
+| Hoàn thành | Tích hợp AI service theo hướng SageMaker do thành viên AI cung cấp vào deployment path. | Source implementation và `sagemaker-health.png`. |
+| Hoàn thành | Sửa image propagation của `deploy-app` và cách chọn ECR image xác định. | CI/CD workflow implementation. |
+| Hoàn thành | Loại frontend khỏi Kubernetes runtime để phân phối qua S3 và CloudFront. | Deployment script và architecture note. |
+| Hoàn thành | Kiểm tra trạng thái Amazon RDS PostgreSQL và ElastiCache Valkey từ screenshot AWS CLI. | `RDS-health.png`, `REDIS-health.png`. |
+| Hoàn thành | Kiểm tra trạng thái SageMaker endpoint. | `sagemaker-health.png`. |
+| Hoàn thành một phần | Kiểm tra EKS workload và ALB runtime. | EKS workload chạy nhưng screenshot ALB còn target không healthy. |
+| Hoàn thành | Bổ sung minh chứng runtime CloudFront, S3, DynamoDB và SQS. | Các screenshot đã được xử lý thông tin nhạy cảm. |
+| Hoàn thành một phần | Bổ sung minh chứng chi phí AWS ngày 01-28/07/2026. | Cost summary và screenshot; Pricing Calculator còn bị chặn. |
 
 ## Technical Implementation
 
@@ -361,7 +361,7 @@ Collect a separate invocation, trigger, or CloudWatch event-detail screenshot if
 
 ## Weekly Results
 
-Week 8 produced meaningful AWS runtime evidence for the core compute and data path:
+Phần đóng góp cá nhân tuần 8 tạo được bộ minh chứng AWS runtime cho compute và data path chính:
 
 - EKS workloads were running and deployments had rolled out.
 - I verified RDS PostgreSQL as available.
@@ -371,7 +371,7 @@ Week 8 produced meaningful AWS runtime evidence for the core compute and data pa
 - SageMaker endpoint evidence showed `InService`.
 - Sanitized Lambda evidence confirms the function, source view, and CloudWatch log group, while invocation proof remains pending.
 
-I also keep the remaining gaps explicit: ALB target health was not fully healthy, CloudFront behavior/origin export and browser smoke proof are still pending, and cost evidence still needs a finalized bill and Pricing Calculator estimate.
+Ứng dụng end-to-end vẫn là kết quả chung của nhóm. Trong phạm vi của tôi, các khoảng trống còn lại được ghi rõ: ALB target chưa hoàn toàn healthy, còn thiếu CloudFront behavior/origin export và browser smoke test, đồng thời số liệu chi phí cần hóa đơn đã chốt và Pricing Calculator.
 
 ## Remaining Work
 

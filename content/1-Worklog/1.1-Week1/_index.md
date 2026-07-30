@@ -10,17 +10,17 @@ pre: " <b> 1.1. </b> "
 
 ## Objectives
 
-The first week focused on understanding the Internship Application Tracker source code, identifying the main service boundaries, and documenting the initial architecture before cloud deployment work began.
+Within the five-member team, my first-week objective was to understand the parts of the source code that affected deployment, identify service boundaries and dependencies, and document an architecture baseline for the later Cloud/DevOps work.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Reviewed the monorepo structure and identified the main runtime services. | Source tree, `README.md`, `docker-compose.yml`, and commit `4e939cf`. |
 | Completed | Mapped the frontend, FastAPI backend, chat service, AI service, PostgreSQL, Redis, and DynamoDB dependencies. | `backend/`, `frontend/`, `chat-service/`, `ai_service/`, Compose files, and service configuration. |
 | Completed | Reviewed the initial request flow between browser, API, chat, and storage layers. | Frontend API clients, backend routers, chat Socket.IO server, and backend storage services. |
 | Completed | Checked the local startup model and documented separate service startup commands. | Commits `d3c1168` and `e43cc04`. |
-| Partially completed | Collected screenshots for the first local architecture baseline. | Evidence pending: screenshots are not present in the Hugo image directory yet. |
+| Partially completed | Prepared the evidence plan for the local architecture baseline. | Evidence pending: screenshots are not present in the Hugo image directory yet. |
 
 ## Technical Implementation
 
@@ -101,7 +101,7 @@ Not applicable for Week 1. Deployment planning started in this phase, but cloud 
 
 ## Weekly Results
 
-By the end of Week 1, the project had a clear service map, a baseline monorepo structure, a PostgreSQL-backed FastAPI backend, a React/Vite frontend, and an initial plan for containerization and AWS deployment.
+By the end of Week 1, I had produced the service and dependency map needed for my deployment scope and an initial containerization/AWS deployment direction. The application code and feature baseline remained the shared output of the five-member team.
 
 ## Lessons Learned
 

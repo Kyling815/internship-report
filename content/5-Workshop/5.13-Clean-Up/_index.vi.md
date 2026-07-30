@@ -5,7 +5,6 @@ weight: 13
 chapter: false
 pre: " <b> 5.13. </b> "
 ---
-# Dọn dẹp tài nguyên
 
 ## Mục tiêu
 

@@ -5,7 +5,6 @@ weight: 10
 chapter: false
 pre: " <b> 5.10. </b> "
 ---
-# End-to-End Testing
 
 ## Objective
 

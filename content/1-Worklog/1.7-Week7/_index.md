@@ -10,11 +10,11 @@ pre: " <b> 1.7. </b> "
 
 ## Objectives
 
-Week 7 focused on the production AWS runtime: EKS, managed databases, runtime IAM, SQS outbox transport, public ALB routing, and deployment scripts that apply the Kubernetes workloads safely.
+Within the five-member team, my Week 7 objective was to integrate the production AWS runtime: EKS, managed databases, runtime IAM, SQS transport, public ALB routing, and safe deployment automation. Teammates supported service-level configuration and functional checks for the components they owned.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Added production deployment pipeline logic for EKS, ALB, and CloudFront support. | Commit `899ff3b`. |
 | Completed | Added no-domain ALB ingress path for `/api`, `/chat`, and `/socket.io`. | `k8s/eks/ingress-alb-no-domain.yaml`. |
@@ -107,7 +107,7 @@ Evidence pending: attach `kubectl rollout status`, `kubectl get pods -n internsh
 
 ## Weekly Results
 
-The AWS deployment path became concrete: EKS hosts backend/chat/workers, ALB exposes API and chat routes, and managed AWS services provide relational data, chat storage, realtime pub/sub, queue transport, object storage, and edge delivery.
+My Week 7 result was an integrated AWS deployment path for the team's services: EKS workload rollout, ALB routing, managed-service configuration, and operational deployment controls. This does not imply individual ownership of the application features running on that infrastructure.
 
 ## Lessons Learned
 

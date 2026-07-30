@@ -5,7 +5,6 @@ weight: 8
 chapter: false
 pre: " <b> 5.8. </b> "
 ---
-# Triển khai frontend
 
 ## Mục tiêu
 

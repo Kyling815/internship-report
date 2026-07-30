@@ -1,26 +1,26 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 1"
+title: "Nhật ký tuần 1"
 date: 2024-01-01
 weight: 1
 chapter: false
 pre: " <b> 1.1. </b> "
 ---
 
-# Week 1 - Project Analysis and Architecture Baseline
+# Tuần 1 - Phân tích project và kiến trúc cơ sở
 
-## Objectives
+## Mục tiêu
 
-The first week focused on understanding the Internship Application Tracker source code, identifying the main service boundaries, and documenting the initial architecture before cloud deployment work began.
+Trong nhóm 5 thành viên, mục tiêu cá nhân của tôi trong tuần đầu là tìm hiểu các phần mã nguồn liên quan đến triển khai, xác định ranh giới và phụ thuộc giữa các service, đồng thời lập tài liệu kiến trúc cơ sở cho công việc Cloud/DevOps ở các tuần sau.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Reviewed the monorepo structure and identified the main runtime services. | Source tree, `README.md`, `docker-compose.yml`, and commit `4e939cf`. |
-| Completed | Mapped the frontend, FastAPI backend, chat service, AI service, PostgreSQL, Redis, and DynamoDB dependencies. | `backend/`, `frontend/`, `chat-service/`, `ai_service/`, Compose files, and service configuration. |
-| Completed | Reviewed the initial request flow between browser, API, chat, and storage layers. | Frontend API clients, backend routers, chat Socket.IO server, and backend storage services. |
-| Completed | Checked the local startup model and documented separate service startup commands. | Commits `d3c1168` and `e43cc04`. |
-| Partially completed | Collected screenshots for the first local architecture baseline. | Evidence pending: screenshots are not present in the Hugo image directory yet. |
+| Hoàn thành | Khảo sát cấu trúc monorepo và xác định các service chạy chính. | Cây mã nguồn, `README.md`, `docker-compose.yml` và commit `4e939cf`. |
+| Hoàn thành | Lập bản đồ phụ thuộc giữa frontend, FastAPI backend, chat service, AI service, PostgreSQL, Redis và DynamoDB. | Các thư mục service, Compose và cấu hình hệ thống. |
+| Hoàn thành | Review luồng request ban đầu giữa browser, API, chat và các lớp lưu trữ. | API client, backend router, Socket.IO server và storage service. |
+| Hoàn thành | Kiểm tra mô hình khởi chạy local và tài liệu hóa cách chạy riêng từng service. | Commit `d3c1168` và `e43cc04`. |
+| Hoàn thành một phần | Chuẩn bị kế hoạch minh chứng cho kiến trúc local ban đầu. | Cần bổ sung minh chứng: chưa có screenshot trong thư mục ảnh Hugo. |
 
 ## Technical Implementation
 
@@ -101,7 +101,7 @@ Not applicable for Week 1. Deployment planning started in this phase, but cloud 
 
 ## Weekly Results
 
-By the end of Week 1, the project had a clear service map, a baseline monorepo structure, a PostgreSQL-backed FastAPI backend, a React/Vite frontend, and an initial plan for containerization and AWS deployment.
+Cuối tuần 1, tôi đã hoàn thành bản đồ service/phụ thuộc phục vụ phạm vi triển khai và xác định hướng container hóa, triển khai AWS ban đầu. Mã nguồn ứng dụng và các chức năng nền tảng là kết quả chung của nhóm 5 thành viên.
 
 ## Lessons Learned
 

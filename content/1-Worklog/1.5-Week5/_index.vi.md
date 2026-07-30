@@ -1,27 +1,27 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 5"
+title: "Nhật ký tuần 5"
 date: 2024-01-01
 weight: 5
 chapter: false
 pre: " <b> 1.5. </b> "
 ---
 
-# Week 5 - Local Kubernetes Deployment
+# Tuần 5 - Triển khai Kubernetes local
 
-## Objectives
+## Mục tiêu
 
-Week 5 focused on running the application in local Kubernetes using kind. The goal was to move from Compose-only development to Kubernetes Deployments, Services, Jobs, ConfigMaps, Secrets, ingress, autoscaling, and observability resources.
+Trong nhóm 5 thành viên, mục tiêu tuần 5 của tôi là chuyển ứng dụng đã tích hợp từ Compose sang Kubernetes local bằng kind. Tôi phụ trách manifest và automation; các thành viên còn lại cung cấp và kiểm tra cấu hình runtime cho component của mình.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Added kind cluster configuration. | `k8s/cluster/kind-config.yaml` and commit `8dae02c`. |
-| Completed | Added Kubernetes resources for backend, chat, PostgreSQL, Redis, DynamoDB Local, migration job, and chat initialization job. | `k8s/app/*.yaml`. |
-| Completed | Added local deployment automation for PowerShell and shell users. | `scripts/k8s/deploy-local.ps1` and `scripts/k8s/deploy-local.sh`. |
-| Completed | Added HPA and PDB definitions for app services. | `k8s/app/autoscaling.yaml`. |
-| Completed | Added observability resources for Prometheus, Grafana, Loki, Tempo, Alloy, OTel collector, ServiceMonitors, and PrometheusRules. | `k8s/observability/*` and `observability/grafana/*`. |
-| Partially completed | Captured live `kubectl` screenshots and command logs where available. | Evidence pending: I did not have the full screenshot/log artifact set in the local evidence archive. |
+| Hoàn thành | Bổ sung cấu hình kind cluster. | `k8s/cluster/kind-config.yaml` và commit `8dae02c`. |
+| Hoàn thành | Tạo Kubernetes resource cho service, dependency, migration job và chat initialization job. | `k8s/app/*.yaml`. |
+| Hoàn thành | Tự động hóa triển khai local cho PowerShell và shell. | Hai script `deploy-local`. |
+| Hoàn thành | Bổ sung HPA và PDB cho application service. | `k8s/app/autoscaling.yaml`. |
+| Hoàn thành | Bổ sung tài nguyên observability cho Prometheus, Grafana, Loki, Tempo, Alloy và OTel. | `k8s/observability/*` và `observability/grafana/*`. |
+| Hoàn thành một phần | Thu thập screenshot và command log `kubectl` hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ bộ screenshot/log trong kho local. |
 
 ## Technical Implementation
 
@@ -123,7 +123,7 @@ Evidence pending: attach output from `scripts/k8s/deploy-local.ps1` or `scripts/
 
 ## Weekly Results
 
-The project moved from local Compose toward a Kubernetes-shaped runtime. Backend, chat, dependencies, jobs, workers, ingress, autoscaling, and observability resources were represented in manifests and deployment scripts.
+Kết quả cá nhân tuần 5 là quy trình Kubernetes local gồm manifest, automation, scaling control và observability. Kiểm thử chức năng backend, frontend, chat và AI được phối hợp với bốn thành viên phụ trách các component tương ứng.
 
 ## Lessons Learned
 

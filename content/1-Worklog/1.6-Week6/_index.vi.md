@@ -1,27 +1,27 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 6"
+title: "Nhật ký tuần 6"
 date: 2024-01-01
 weight: 6
 chapter: false
 pre: " <b> 1.6. </b> "
 ---
 
-# Week 6 - AWS Foundation, IAM, OIDC and ECR
+# Tuần 6 - Nền tảng AWS, IAM, OIDC và ECR
 
-## Objectives
+## Mục tiêu
 
-Week 6 focused on preparing the AWS deployment foundation: AWS region, GitHub OIDC authentication, IAM deployment permissions, ECR image repositories, and CI jobs that build and push backend/chat images without long-lived AWS credentials.
+Trong nhóm 5 thành viên, mục tiêu tuần 6 của tôi là chuẩn bị nền tảng triển khai AWS dùng chung: region, xác thực GitHub OIDC, quyền IAM, ECR repository và CI job đẩy image của các service mà không sử dụng access key dài hạn.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Standardized production region as `ap-southeast-1`. | `PROJECT_CONTEXT.md`, `.github/workflows/cicd.yml`, and deployment scripts. |
-| Completed | Added GitHub OIDC smoke workflow. | Commit `2777b56`. |
-| Completed | Added ECR build and push workflow for application images. | Commit `9f9fcf3`. |
-| Completed | Aligned AWS deployment workflow with production architecture. | Commit `7eb1a76`. |
-| Completed | Added EKS access smoke test workflow. | Commit `bfacd3a`. |
-| Partially completed | Captured IAM policy simulation, ECR digest, and GitHub Actions screenshots where available. | Evidence pending: I did not have the full runtime screenshot/log set in the local evidence archive. |
+| Hoàn thành | Chuẩn hóa production region là `ap-southeast-1`. | Project context, CI/CD workflow và deployment script. |
+| Hoàn thành | Bổ sung GitHub OIDC smoke workflow. | Commit `2777b56`. |
+| Hoàn thành | Bổ sung workflow build và push application image lên ECR. | Commit `9f9fcf3`. |
+| Hoàn thành | Đồng bộ AWS deployment workflow với production architecture. | Commit `7eb1a76`. |
+| Hoàn thành | Bổ sung EKS access smoke-test workflow. | Commit `bfacd3a`. |
+| Hoàn thành một phần | Thu thập IAM policy simulation, ECR digest và screenshot GitHub Actions hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ runtime screenshot/log trong kho local. |
 
 ## Technical Implementation
 
@@ -100,7 +100,7 @@ Evidence pending: attach OIDC, ECR, or EKS smoke workflow logs. Do not include s
 
 ## Weekly Results
 
-The project gained a cloud deployment identity model and image delivery foundation. GitHub Actions can be used as the deployment controller, ECR stores immutable image tags, and deployment scripts were prepared for EKS rollout.
+Kết quả cá nhân tuần 6 là nền tảng định danh triển khai cloud và phân phối image dùng chung. Các thành viên chịu trách nhiệm về source code và tính đúng đắn của image; tôi phụ trách tích hợp OIDC, IAM, ECR và deployment workflow.
 
 ## Lessons Learned
 

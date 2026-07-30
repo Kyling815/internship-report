@@ -10,11 +10,11 @@ pre: " <b> 1.4. </b> "
 
 ## Objectives
 
-Week 4 focused on making the project repeatable: Dockerfiles, Docker Compose, GitHub Actions quality gates, local validation scripts, smoke tests, and security checks.
+Week 4 was the first week centered on my primary Cloud/DevOps assignment in the five-member team. My objective was to make the teammates' backend, frontend, chat, and AI components repeatable through containers, Docker Compose, CI quality gates, smoke tests, and security checks.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Standardized Docker build paths for backend, chat, frontend, and AI service. | `backend/Dockerfile`, `chat-service/Dockerfile`, `frontend/Dockerfile`, and `Dockerfile.ai-service`. |
 | Completed | Kept local Compose as the parity environment for dependencies and smoke tests. | `docker-compose.yml`, `docker-compose.ai-service.yml`, and `scripts/ci/smoke-test.sh`. |
@@ -99,7 +99,7 @@ Not applicable for Week 4. This phase prepared deployable artifacts and gates, w
 
 ## Weekly Results
 
-The project gained a single CI/CD backbone, repeatable quality gates, Docker build paths, smoke-test handling, and security/infrastructure validation scripts.
+My Week 4 result was a shared CI/CD backbone and repeatable container validation path that all five members could use. Feature code remained with the corresponding component owners; my responsibility was packaging, automation, and integration validation.
 
 ## Lessons Learned
 

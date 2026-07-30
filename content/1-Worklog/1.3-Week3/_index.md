@@ -10,19 +10,19 @@ pre: " <b> 1.3. </b> "
 
 ## Objectives
 
-Week 3 focused on separating committed business changes from downstream side effects. The goal was to add a transactional outbox, define an event-consumer contract, and move long-running document and AI work into retryable background processing.
+Within the five-member team, my Week 3 objective was to define the deployment and integration requirements for the transactional outbox and asynchronous workers. I focused on production transport, worker lifecycle, retries, configuration, and observability while the backend member owned the business implementation.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
-| Completed | Designed and implemented the `outbox_events` table. | `backend/alembic/versions/0007_outbox_events.py`. |
-| Completed | Added outbox statuses `PENDING`, `PROCESSING`, `PUBLISHED`, and `DEAD`. | Migration check constraint and `backend/app/services/outbox.py`. |
-| Completed | Added `deduplication_key` and claim/retry indexes. | Migration `0007_outbox_events.py`. |
-| Completed | Implemented the backend outbox dispatcher and admin operations. | `backend/app/workers/outbox_dispatcher.py` and `backend/app/workers/outbox_admin.py`. |
-| Completed | Documented SQS Standard as the production event transport. | `docs/architecture/adr/ADR-001-production-event-transport.md`. |
-| Completed | Added `async_processing_jobs` and a processing worker for document/AI tasks. | Migration `0008_async_processing_jobs.py`, `processing_jobs.py`, and `processing_worker.py`. |
-| Partially completed | Added real downstream consumers beyond the contract. | Source docs state downstream notification/search/analytics consumers were not implemented in this phase. |
+| Completed | Reviewed the `outbox_events` schema from a deployment and recovery perspective. | `backend/alembic/versions/0007_outbox_events.py`. |
+| Completed | Validated the lifecycle states and retry model needed for operations. | Migration check constraint and `backend/app/services/outbox.py`. |
+| Completed | Reviewed `deduplication_key` and claim/retry indexes for multi-worker execution. | Migration `0007_outbox_events.py`. |
+| Completed | Defined runtime requirements for the outbox dispatcher and admin operations. | `backend/app/workers/outbox_dispatcher.py` and `backend/app/workers/outbox_admin.py`. |
+| Completed | Documented SQS Standard as the production event transport for the team. | `docs/architecture/adr/ADR-001-production-event-transport.md`. |
+| Completed | Coordinated integration requirements for `async_processing_jobs` and the document/AI worker. | Migration `0008_async_processing_jobs.py`, `processing_jobs.py`, and `processing_worker.py`. |
+| Partially completed | Assessed downstream consumer readiness beyond the contract. | Source docs state downstream notification/search/analytics consumers were not implemented in this phase. |
 
 ## Technical Implementation
 
@@ -109,7 +109,7 @@ Evidence pending: add dispatcher or worker rollout logs after deployment, for ex
 
 ## Weekly Results
 
-The project gained a reliable event-publishing foundation and a separate queue for user-visible background work. The API can commit business state first, while dispatchers and workers handle retryable side effects after the transaction.
+My Week 3 result was the SQS transport decision and a documented set of deployment requirements for the outbox dispatcher and processing worker. The outbox schema, backend services, and document/AI business logic remained team deliverables.
 
 ## Lessons Learned
 

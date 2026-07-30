@@ -5,7 +5,6 @@ weight: 13
 chapter: false
 pre: " <b> 5.13. </b> "
 ---
-# Clean-up
 
 ## Objective
 

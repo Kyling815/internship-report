@@ -1,27 +1,27 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 7"
+title: "Nhật ký tuần 7"
 date: 2024-01-01
 weight: 7
 chapter: false
 pre: " <b> 1.7. </b> "
 ---
 
-# Week 7 - Amazon EKS and Managed AWS Services
+# Tuần 7 - Amazon EKS và các dịch vụ AWS managed
 
-## Objectives
+## Mục tiêu
 
-Week 7 focused on the production AWS runtime: EKS, managed databases, runtime IAM, SQS outbox transport, public ALB routing, and deployment scripts that apply the Kubernetes workloads safely.
+Trong nhóm 5 thành viên, mục tiêu tuần 7 của tôi là tích hợp production runtime trên AWS: EKS, managed database, runtime IAM, SQS transport, public ALB routing và automation triển khai an toàn. Các thành viên khác hỗ trợ cấu hình, kiểm tra chức năng cho service mình phụ trách.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Added production deployment pipeline logic for EKS, ALB, and CloudFront support. | Commit `899ff3b`. |
-| Completed | Added no-domain ALB ingress path for `/api`, `/chat`, and `/socket.io`. | `k8s/eks/ingress-alb-no-domain.yaml`. |
-| Completed | Added EKS deployment script behavior for secrets, config, migration/init jobs, rollouts, health checks, and optional AI service. | `scripts/k8s/deploy-eks.sh`. |
-| Completed | Added rollout-only workflow mode for existing workloads. | Commits `51bceee` and `f81e086`. |
-| Completed | Hardened public ingress deployment around AWS Load Balancer Controller readiness and ALB health checks. | Commits `036a516` and `8272c4a`. |
-| Partially completed | Attached AWS console and CLI evidence for RDS, Redis, SQS, EKS, and service account status where available. | Evidence pending: I did not have the full live AWS screenshot/log set in the local evidence archive. |
+| Hoàn thành | Bổ sung logic production pipeline cho EKS, ALB và CloudFront. | Commit `899ff3b`. |
+| Hoàn thành | Bổ sung ALB ingress không cần domain cho `/api`, `/chat` và `/socket.io`. | `k8s/eks/ingress-alb-no-domain.yaml`. |
+| Hoàn thành | Hoàn thiện EKS deployment script cho secret, config, job, rollout, health check và AI service tùy chọn. | `scripts/k8s/deploy-eks.sh`. |
+| Hoàn thành | Bổ sung chế độ workflow chỉ rollout workload hiện có. | Commit `51bceee` và `f81e086`. |
+| Hoàn thành | Củng cố public ingress deployment dựa trên controller readiness và ALB health check. | Commit `036a516` và `8272c4a`. |
+| Hoàn thành một phần | Thu thập AWS console/CLI evidence cho RDS, Redis, SQS, EKS và service account. | Cần bổ sung minh chứng: chưa có đầy đủ live AWS screenshot/log trong kho local. |
 
 ## Technical Implementation
 
@@ -107,7 +107,7 @@ Evidence pending: attach `kubectl rollout status`, `kubectl get pods -n internsh
 
 ## Weekly Results
 
-The AWS deployment path became concrete: EKS hosts backend/chat/workers, ALB exposes API and chat routes, and managed AWS services provide relational data, chat storage, realtime pub/sub, queue transport, object storage, and edge delivery.
+Kết quả cá nhân tuần 7 là quy trình AWS tích hợp cho các service của nhóm: rollout EKS workload, ALB routing, cấu hình managed service và kiểm soát vận hành. Điều này không đồng nghĩa với việc cá nhân sở hữu các chức năng ứng dụng chạy trên hạ tầng đó.
 
 ## Lessons Learned
 

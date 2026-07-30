@@ -1,28 +1,28 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 3"
+title: "Nhật ký tuần 3"
 date: 2024-01-01
 weight: 3
 chapter: false
 pre: " <b> 1.3. </b> "
 ---
 
-# Week 3 - Transactional Outbox and Asynchronous Processing
+# Tuần 3 - Transactional outbox và xử lý bất đồng bộ
 
-## Objectives
+## Mục tiêu
 
-Week 3 focused on separating committed business changes from downstream side effects. The goal was to add a transactional outbox, define an event-consumer contract, and move long-running document and AI work into retryable background processing.
+Trong nhóm 5 thành viên, mục tiêu tuần 3 của tôi là xác định yêu cầu triển khai và tích hợp cho transactional outbox cùng các worker xử lý bất đồng bộ. Tôi tập trung vào production transport, vòng đời worker, retry, cấu hình và observability; thành viên backend phụ trách business implementation.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Designed and implemented the `outbox_events` table. | `backend/alembic/versions/0007_outbox_events.py`. |
-| Completed | Added outbox statuses `PENDING`, `PROCESSING`, `PUBLISHED`, and `DEAD`. | Migration check constraint and `backend/app/services/outbox.py`. |
-| Completed | Added `deduplication_key` and claim/retry indexes. | Migration `0007_outbox_events.py`. |
-| Completed | Implemented the backend outbox dispatcher and admin operations. | `backend/app/workers/outbox_dispatcher.py` and `backend/app/workers/outbox_admin.py`. |
-| Completed | Documented SQS Standard as the production event transport. | `docs/architecture/adr/ADR-001-production-event-transport.md`. |
-| Completed | Added `async_processing_jobs` and a processing worker for document/AI tasks. | Migration `0008_async_processing_jobs.py`, `processing_jobs.py`, and `processing_worker.py`. |
-| Partially completed | Added real downstream consumers beyond the contract. | Source docs state downstream notification/search/analytics consumers were not implemented in this phase. |
+| Hoàn thành | Review schema `outbox_events` theo góc nhìn triển khai và phục hồi. | `backend/alembic/versions/0007_outbox_events.py`. |
+| Hoàn thành | Kiểm tra các trạng thái vòng đời và retry model phục vụ vận hành. | Migration constraint và `backend/app/services/outbox.py`. |
+| Hoàn thành | Review `deduplication_key` cùng các index claim/retry cho nhiều worker. | Migration `0007_outbox_events.py`. |
+| Hoàn thành | Xác định yêu cầu runtime cho outbox dispatcher và admin operation. | Các worker `outbox_dispatcher.py` và `outbox_admin.py`. |
+| Hoàn thành | Tài liệu hóa SQS Standard làm production event transport cho nhóm. | ADR về production event transport. |
+| Hoàn thành | Phối hợp xác định yêu cầu tích hợp cho `async_processing_jobs` và worker document/AI. | Migration, processing job service và processing worker. |
+| Hoàn thành một phần | Đánh giá mức sẵn sàng của downstream consumer ngoài contract. | Tài liệu nguồn cho biết notification/search/analytics consumer chưa được triển khai ở giai đoạn này. |
 
 ## Technical Implementation
 
@@ -109,7 +109,7 @@ Evidence pending: add dispatcher or worker rollout logs after deployment, for ex
 
 ## Weekly Results
 
-The project gained a reliable event-publishing foundation and a separate queue for user-visible background work. The API can commit business state first, while dispatchers and workers handle retryable side effects after the transaction.
+Kết quả cá nhân tuần 3 là quyết định dùng SQS và bộ yêu cầu triển khai cho outbox dispatcher, processing worker. Schema outbox, backend service và business logic document/AI vẫn là sản phẩm chung của nhóm.
 
 ## Lessons Learned
 

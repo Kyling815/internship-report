@@ -5,7 +5,6 @@ weight: 10
 chapter: false
 pre: " <b> 5.10. </b> "
 ---
-# Kiểm thử đầu - cuối (E2E Testing)
 
 ## Mục tiêu
 

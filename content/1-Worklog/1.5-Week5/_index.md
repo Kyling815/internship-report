@@ -10,11 +10,11 @@ pre: " <b> 1.5. </b> "
 
 ## Objectives
 
-Week 5 focused on running the application in local Kubernetes using kind. The goal was to move from Compose-only development to Kubernetes Deployments, Services, Jobs, ConfigMaps, Secrets, ingress, autoscaling, and observability resources.
+Within the five-member team, my Week 5 objective was to move the integrated application from Compose-only development to a local Kubernetes environment using kind. I owned the deployment manifests and automation, while teammates supplied and checked their component-specific runtime configuration.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Added kind cluster configuration. | `k8s/cluster/kind-config.yaml` and commit `8dae02c`. |
 | Completed | Added Kubernetes resources for backend, chat, PostgreSQL, Redis, DynamoDB Local, migration job, and chat initialization job. | `k8s/app/*.yaml`. |
@@ -123,7 +123,7 @@ Evidence pending: attach output from `scripts/k8s/deploy-local.ps1` or `scripts/
 
 ## Weekly Results
 
-The project moved from local Compose toward a Kubernetes-shaped runtime. Backend, chat, dependencies, jobs, workers, ingress, autoscaling, and observability resources were represented in manifests and deployment scripts.
+My Week 5 result was the local Kubernetes deployment path, including manifests, automation, scaling controls, and observability resources. Functional verification of backend, frontend, chat, and AI behavior was coordinated with the four component owners.
 
 ## Lessons Learned
 

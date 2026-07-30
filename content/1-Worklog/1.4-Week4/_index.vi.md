@@ -1,27 +1,27 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 4"
+title: "Nhật ký tuần 4"
 date: 2024-01-01
 weight: 4
 chapter: false
 pre: " <b> 1.4. </b> "
 ---
 
-# Week 4 - Containerization and CI Quality Gates
+# Tuần 4 - Container hóa và CI Quality Gates
 
-## Objectives
+## Mục tiêu
 
-Week 4 focused on making the project repeatable: Dockerfiles, Docker Compose, GitHub Actions quality gates, local validation scripts, smoke tests, and security checks.
+Tuần 4 là giai đoạn bắt đầu tập trung vào nhiệm vụ Cloud/DevOps chính của tôi trong nhóm 5 thành viên. Mục tiêu là đóng gói các component backend, frontend, chat và AI của các thành viên khác bằng container, Docker Compose, CI quality gates, smoke test và security check.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Standardized Docker build paths for backend, chat, frontend, and AI service. | `backend/Dockerfile`, `chat-service/Dockerfile`, `frontend/Dockerfile`, and `Dockerfile.ai-service`. |
-| Completed | Kept local Compose as the parity environment for dependencies and smoke tests. | `docker-compose.yml`, `docker-compose.ai-service.yml`, and `scripts/ci/smoke-test.sh`. |
-| Completed | Consolidated GitHub Actions into the main CI/CD workflow. | `.github/workflows/cicd.yml` and commit `e09e84e`. |
-| Completed | Added required quality/security gates. | `scripts/ci/repository_quality.py`, `scripts/ci/infrastructure.py`, `scripts/ci/security_scan.py`, `.gitleaks.toml`, and `.pre-commit-config.yaml`. |
-| Completed | Fixed ShellCheck SC2155 in the smoke test script. | Commit `98f3420`. |
-| Partially completed | Attached GitHub Actions screenshots and full before/after logs where available. | Evidence pending: I did not have the full CI screenshot/log artifact set in the local evidence archive. |
+| Hoàn thành | Chuẩn hóa đường dẫn Docker build cho backend, chat, frontend và AI service. | Các Dockerfile của bốn component. |
+| Hoàn thành | Duy trì Compose làm môi trường parity cho dependency và smoke test local. | Compose files và `scripts/ci/smoke-test.sh`. |
+| Hoàn thành | Hợp nhất GitHub Actions vào workflow CI/CD chính. | `.github/workflows/cicd.yml` và commit `e09e84e`. |
+| Hoàn thành | Bổ sung các quality/security gate cần thiết. | Các script kiểm tra repository, infrastructure, security và cấu hình liên quan. |
+| Hoàn thành | Sửa lỗi ShellCheck SC2155 trong smoke-test script. | Commit `98f3420`. |
+| Hoàn thành một phần | Thu thập screenshot GitHub Actions và log trước/sau hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ bộ CI screenshot/log trong kho local. |
 
 ## Technical Implementation
 
@@ -99,7 +99,7 @@ Not applicable for Week 4. This phase prepared deployable artifacts and gates, w
 
 ## Weekly Results
 
-The project gained a single CI/CD backbone, repeatable quality gates, Docker build paths, smoke-test handling, and security/infrastructure validation scripts.
+Kết quả cá nhân tuần 4 là CI/CD backbone và quy trình kiểm tra container dùng chung cho cả 5 thành viên. Feature code vẫn thuộc thành viên phụ trách từng component; phạm vi của tôi là đóng gói, tự động hóa và kiểm tra tích hợp.
 
 ## Lessons Learned
 

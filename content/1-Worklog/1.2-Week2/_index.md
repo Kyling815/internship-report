@@ -10,17 +10,17 @@ pre: " <b> 1.2. </b> "
 
 ## Objectives
 
-Week 2 focused on making write operations safe when several backend or chat pods handle requests at the same time. The target was to prevent duplicate registrations, duplicate applications, stale workflow updates, and duplicate chat messages without using global application-level locks.
+Within the five-member team, my Week 2 objective was to review the concurrency and data-integrity requirements that would affect multi-replica deployment. I supported the responsible backend and chat members by checking that idempotency, version checks, and database constraints were suitable for later Kubernetes scaling.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Analyzed concurrent writes across multiple backend pods. | `docs/architecture/concurrency-policy.md`. |
-| Completed | Documented optimistic and pessimistic UI policies. | `docs/architecture/concurrency-policy.md` and `docs/frontend/COMMAND_MUTATION_POLICY.md`. |
-| Completed | Added database-backed idempotency for candidate apply requests. | `backend/app/services/idempotency_service.py`, `backend/app/routers/jobs.py`, and migration `0004_idempotency_records.py`. |
-| Completed | Added version-gated workflow commands using `expectedVersion`. | `backend/app/services/optimistic_concurrency.py`, `backend/app/services/workflow_commands.py`, and HR/Candidate routers. |
-| Completed | Hardened chat writes against duplicate retry behavior. | `chat-service/repositories/chatRepository.js` and `chat-service/tests/chatRepository.concurrency.test.js`. |
+| Completed | Contributed deployment-oriented review notes to the optimistic and pessimistic UI policies. | `docs/architecture/concurrency-policy.md` and `docs/frontend/COMMAND_MUTATION_POLICY.md`. |
+| Completed | Reviewed the backend member's database-backed idempotency path for candidate apply requests. | `backend/app/services/idempotency_service.py`, `backend/app/routers/jobs.py`, and migration `0004_idempotency_records.py`. |
+| Completed | Reviewed version-gated workflow commands using `expectedVersion` for multi-pod behavior. | `backend/app/services/optimistic_concurrency.py`, `backend/app/services/workflow_commands.py`, and HR/Candidate routers. |
+| Completed | Coordinated integration validation for chat retry and duplicate-write behavior with the chat member. | `chat-service/repositories/chatRepository.js` and `chat-service/tests/chatRepository.concurrency.test.js`. |
 | Partially completed | Attached visible API screenshots and CI logs where available. | Evidence pending: I did not have a screenshot or GitHub Actions log artifact in the local evidence archive. |
 
 ## Technical Implementation
@@ -114,7 +114,7 @@ Not applicable for Week 2. The feature was designed to be safe before scaling th
 
 ## Weekly Results
 
-The application gained stronger data-integrity guarantees: duplicate writes are constrained by PostgreSQL or DynamoDB, client retries are handled through idempotency records, stale updates produce `409 Conflict`, and chat replay behavior avoids duplicate broadcasts.
+My Week 2 result was a deployment-focused review of the team's database-backed concurrency policy and its behavior with multiple replicas. The backend and chat implementations themselves were owned by the teammates responsible for those components.
 
 ## Lessons Learned
 

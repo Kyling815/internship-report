@@ -1,27 +1,27 @@
 ﻿---
-title: "Nháº­t kÃ½ tuáº§n 2"
+title: "Nhật ký tuần 2"
 date: 2024-01-01
 weight: 2
 chapter: false
 pre: " <b> 1.2. </b> "
 ---
 
-# Week 2 - Concurrency Control and Data Integrity
+# Tuần 2 - Kiểm soát concurrency và data integrity
 
-## Objectives
+## Mục tiêu
 
-Week 2 focused on making write operations safe when several backend or chat pods handle requests at the same time. The target was to prevent duplicate registrations, duplicate applications, stale workflow updates, and duplicate chat messages without using global application-level locks.
+Trong nhóm 5 thành viên, mục tiêu tuần 2 của tôi là review các yêu cầu concurrency và data integrity ảnh hưởng đến môi trường nhiều replica. Tôi hỗ trợ thành viên backend và chat kiểm tra idempotency, version check và database constraint trước khi đưa hệ thống lên Kubernetes.
 
-## Tasks Completed
+## Phần việc cá nhân
 
-| Status | Task | Evidence basis |
+| Trạng thái | Phần việc được phân công | Cơ sở minh chứng |
 |---|---|---|
-| Completed | Analyzed concurrent writes across multiple backend pods. | `docs/architecture/concurrency-policy.md`. |
-| Completed | Documented optimistic and pessimistic UI policies. | `docs/architecture/concurrency-policy.md` and `docs/frontend/COMMAND_MUTATION_POLICY.md`. |
-| Completed | Added database-backed idempotency for candidate apply requests. | `backend/app/services/idempotency_service.py`, `backend/app/routers/jobs.py`, and migration `0004_idempotency_records.py`. |
-| Completed | Added version-gated workflow commands using `expectedVersion`. | `backend/app/services/optimistic_concurrency.py`, `backend/app/services/workflow_commands.py`, and HR/Candidate routers. |
-| Completed | Hardened chat writes against duplicate retry behavior. | `chat-service/repositories/chatRepository.js` and `chat-service/tests/chatRepository.concurrency.test.js`. |
-| Partially completed | Attached visible API screenshots and CI logs where available. | Evidence pending: I did not have a screenshot or GitHub Actions log artifact in the local evidence archive. |
+| Hoàn thành | Phân tích concurrent write khi nhiều backend pod xử lý đồng thời. | `docs/architecture/concurrency-policy.md`. |
+| Hoàn thành | Đóng góp góc nhìn triển khai vào chính sách optimistic/pessimistic UI. | `docs/architecture/concurrency-policy.md` và `docs/frontend/COMMAND_MUTATION_POLICY.md`. |
+| Hoàn thành | Review cơ chế idempotency do thành viên backend triển khai cho thao tác ứng tuyển. | Service, router và migration `0004_idempotency_records.py`. |
+| Hoàn thành | Review workflow command dùng `expectedVersion` trong môi trường nhiều pod. | Optimistic concurrency service, workflow command và các router liên quan. |
+| Hoàn thành | Phối hợp với thành viên chat kiểm tra hành vi retry và chống ghi trùng. | Chat repository và concurrency test. |
+| Hoàn thành một phần | Thu thập screenshot API và CI log hiện có. | Cần bổ sung minh chứng: chưa có artifact screenshot hoặc GitHub Actions log trong kho local. |
 
 ## Technical Implementation
 
@@ -114,7 +114,7 @@ Not applicable for Week 2. The feature was designed to be safe before scaling th
 
 ## Weekly Results
 
-The application gained stronger data-integrity guarantees: duplicate writes are constrained by PostgreSQL or DynamoDB, client retries are handled through idempotency records, stale updates produce `409 Conflict`, and chat replay behavior avoids duplicate broadcasts.
+Kết quả cá nhân tuần 2 là bản review theo góc nhìn triển khai đối với chính sách concurrency của nhóm và hành vi khi chạy nhiều replica. Phần triển khai backend và chat thuộc trách nhiệm của các thành viên phụ trách hai component này.
 
 ## Lessons Learned
 

@@ -10,15 +10,15 @@ pre: " <b> 1.8. </b> "
 
 ## Objectives
 
-During Week 8, I finalized the production deployment path for the Internship Application Tracker. I built and validated the deployment model for Amazon EKS workloads, Application Load Balancer routing, S3 and CloudFront frontend delivery, AWS-managed data services, event-driven processing, and cost tracking.
+During Week 8, I finalized my Cloud/DevOps contribution to the five-member project. I integrated and validated the production deployment model for the teammates' services across Amazon EKS, Application Load Balancer routing, S3 and CloudFront frontend delivery, AWS-managed data services, event-driven processing, and cost tracking.
 
 I used the Week 08 AWS evidence directory as the source of truth for this section. The cost figures come from the July 1-28, 2026 AWS cost summary, the Billing credits screenshot, and the Cost Explorer overview screenshot. The finalized monthly bill and the AWS Pricing Calculator estimate are still unavailable.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
-| Completed | Added the SageMaker-oriented AI service integration and deployment path while preserving worker-facing routes. | Source references from the project implementation and `sagemaker-health.png`. |
+| Completed | Integrated the AI member's SageMaker-oriented service into the deployment path while preserving worker-facing routes. | Source references from the project implementation and `sagemaker-health.png`. |
 | Completed | Fixed deploy-app image propagation and deterministic ECR image selection. | Source references from the CI/CD workflow implementation. |
 | Completed | Removed frontend Kubernetes resources from the current runtime path so frontend delivery uses S3 and CloudFront instead of an EKS frontend pod. | Source references from the deployment scripts and architecture notes. |
 | Completed | Verified Amazon RDS PostgreSQL and Amazon ElastiCache Valkey runtime status from AWS CLI screenshots. | `RDS-health.png`, `REDIS-health.png`. |
@@ -361,7 +361,7 @@ Collect a separate invocation, trigger, or CloudWatch event-detail screenshot if
 
 ## Weekly Results
 
-Week 8 produced meaningful AWS runtime evidence for the core compute and data path:
+My Week 8 contribution produced meaningful AWS runtime evidence for the core compute and data path:
 
 - EKS workloads were running and deployments had rolled out.
 - I verified RDS PostgreSQL as available.
@@ -371,7 +371,7 @@ Week 8 produced meaningful AWS runtime evidence for the core compute and data pa
 - SageMaker endpoint evidence showed `InService`.
 - Sanitized Lambda evidence confirms the function, source view, and CloudWatch log group, while invocation proof remains pending.
 
-I also keep the remaining gaps explicit: ALB target health was not fully healthy, CloudFront behavior/origin export and browser smoke proof are still pending, and cost evidence still needs a finalized bill and Pricing Calculator estimate.
+The broader end-to-end application remained a team result. In my scope, I also kept the remaining gaps explicit: ALB target health was not fully healthy, CloudFront behavior/origin export and browser smoke proof were still pending, and cost evidence still needed a finalized bill and Pricing Calculator estimate.
 
 ## Remaining Work
 

@@ -5,7 +5,6 @@ weight: 11
 chapter: false
 pre: " <b> 5.11. </b> "
 ---
-# Security and Cost
 
 ## Objective
 

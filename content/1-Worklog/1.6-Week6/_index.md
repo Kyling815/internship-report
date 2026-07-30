@@ -10,11 +10,11 @@ pre: " <b> 1.6. </b> "
 
 ## Objectives
 
-Week 6 focused on preparing the AWS deployment foundation: AWS region, GitHub OIDC authentication, IAM deployment permissions, ECR image repositories, and CI jobs that build and push backend/chat images without long-lived AWS credentials.
+Within the five-member team, my Week 6 objective was to prepare the shared AWS deployment foundation: region configuration, GitHub OIDC authentication, IAM deployment permissions, ECR image repositories, and CI jobs that publish the team's service images without long-lived AWS credentials.
 
-## Tasks Completed
+## My Contributions
 
-| Status | Task | Evidence basis |
+| Status | My assigned contribution | Evidence basis |
 |---|---|---|
 | Completed | Standardized production region as `ap-southeast-1`. | `PROJECT_CONTEXT.md`, `.github/workflows/cicd.yml`, and deployment scripts. |
 | Completed | Added GitHub OIDC smoke workflow. | Commit `2777b56`. |
@@ -100,7 +100,7 @@ Evidence pending: attach OIDC, ECR, or EKS smoke workflow logs. Do not include s
 
 ## Weekly Results
 
-The project gained a cloud deployment identity model and image delivery foundation. GitHub Actions can be used as the deployment controller, ECR stores immutable image tags, and deployment scripts were prepared for EKS rollout.
+My Week 6 result was the cloud deployment identity and image-delivery foundation used by the whole team. The teammates remained responsible for their service code and image correctness; I owned the OIDC, IAM, ECR, and deployment-workflow integration.
 
 ## Lessons Learned
 

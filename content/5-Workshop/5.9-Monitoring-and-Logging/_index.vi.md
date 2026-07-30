@@ -5,7 +5,6 @@ weight: 9
 chapter: false
 pre: " <b> 5.9. </b> "
 ---
-# Giám sát và nhật ký
 
 ## Mục tiêu
 
