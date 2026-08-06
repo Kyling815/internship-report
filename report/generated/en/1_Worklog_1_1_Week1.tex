@@ -3,11 +3,12 @@ Baseline}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-The first week focused on understanding the Internship Application
-Tracker source code, identifying the main service boundaries, and
-documenting the initial architecture before cloud deployment work began.
+Within the five-member team, my first-week objective was to understand
+the parts of the source code that affected deployment, identify service
+boundaries and dependencies, and document an architecture baseline for
+the later Cloud/DevOps work.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -22,7 +23,7 @@ documenting the initial architecture before cloud deployment work began.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -43,9 +44,6 @@ Socket.IO server, and backend storage services. \\
 Completed & Checked the local startup model and documented separate
 service startup commands. & Commits \texttt{d3c1168} and
 \texttt{e43cc04}. \\
-Partially completed & Collected screenshots for the first local
-architecture baseline. & Evidence pending: screenshots are not present
-in the Hugo image directory yet. \\
 \end{longtable}
 \endgroup
 }
@@ -77,15 +75,11 @@ responsibilities:
 
 Initial architecture baseline:
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR User{[}``Candidate /
-HR browser''{]} --\textgreater{} Frontend{[}``React / Vite frontend''{]}
-Frontend --\textgreater{} Backend{[}``FastAPI backend''{]} Frontend
---\textgreater{} Chat{[}``Node.js Socket.IO chat service''{]} Backend
---\textgreater{} Postgres{[}``PostgreSQL''{]} Backend --\textgreater{}
-Storage{[}``S3-compatible document storage''{]} Backend --\textgreater{}
-AI{[}``AI service''{]} Chat --\textgreater{} Redis{[}``Redis
-pub/sub''{]} Chat --\textgreater{} DynamoDB{[}``DynamoDB chat
-tables''{]} \{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} The browser uses the React/Vite frontend, which
+calls the FastAPI backend for application functions and the Socket.IO
+service for realtime chat. The backend relies on PostgreSQL, document
+storage, and the AI service, while chat uses Redis pub/sub and DynamoDB
+tables.
 
 The baseline also identified the first cloud migration direction: keep
 long-running backend and chat services containerized, move durable
@@ -132,10 +126,6 @@ Local startup needed to support more than one developer workflow. & A
 single startup command was useful for demos, but separate terminal
 commands were easier for debugging. & Commits \texttt{d3c1168} and
 \texttt{e43cc04} documented both startup approaches. & Completed \\
-I did not have architecture screenshots in the local evidence archive. &
-I did not have the original screenshot artifacts in the source repo. & I
-kept screenshot evidence pending instead of creating fake screenshots. &
-Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -180,21 +170,6 @@ AWS deployment was expected yet. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add architecture or local application screenshots
-under \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}repository-\allowbreak{}structure.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}local-\allowbreak{}backend-\allowbreak{}health.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}architecture-\allowbreak{}baseline.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -261,9 +236,10 @@ but cloud deployment was planned for later weeks.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-By the end of Week 1, the project had a clear service map, a baseline
-monorepo structure, a PostgreSQL-backed FastAPI backend, a React/Vite
-frontend, and an initial plan for containerization and AWS deployment.
+By the end of Week 1, I had produced the service and dependency map
+needed for my deployment scope and an initial containerization/AWS
+deployment direction. The application code and feature baseline remained
+the shared output of the five-member team.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

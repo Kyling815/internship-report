@@ -1,5 +1,5 @@
 ﻿---
-title: "Kiểm tra Interface Endpoint"
+title: "Kiểm tra điểm cuối giao diện"
 date: 2024-01-01
 weight: 3
 chapter: false

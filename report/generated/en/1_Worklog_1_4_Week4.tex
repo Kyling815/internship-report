@@ -3,11 +3,13 @@ Gates}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 4 focused on making the project repeatable: Dockerfiles, Docker
-Compose, GitHub Actions quality gates, local validation scripts, smoke
-tests, and security checks.
+Week 4 was the first week centered on my primary Cloud/DevOps assignment
+in the five-member team. My objective was to make the teammates'
+backend, frontend, chat, and AI components repeatable through
+containers, Docker Compose, CI quality gates, smoke tests, and security
+checks.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -22,7 +24,7 @@ tests, and security checks.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -47,10 +49,6 @@ Completed & Added required quality/security gates. &
 \texttt{.\allowbreak{}pre-\allowbreak{}commit-\allowbreak{}config.\allowbreak{}yaml}. \\
 Completed & Fixed ShellCheck SC2155 in the smoke test script. & Commit
 \texttt{98f3420}. \\
-Partially completed & Attached GitHub Actions screenshots and full
-before/after logs where available. & Evidence pending: I did not have
-the full CI screenshot/log artifact set in the local evidence
-archive. \\
 \end{longtable}
 \endgroup
 }
@@ -125,9 +123,6 @@ Docker-based infra validation may hang or fail when Docker is
 unavailable. & Local Windows/Docker setups vary by machine. &
 Infrastructure scripts support local CLI binaries and bounded Docker
 fallback behavior. & Completed \\
-Full CI result screenshots are missing from the Hugo report. & GitHub
-Actions artifacts were not attached locally. & I kept CI log screenshots
-pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -176,21 +171,6 @@ Current-run output is pending. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}github-\allowbreak{}actions-\allowbreak{}validate.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}shellcheck-\allowbreak{}before-\allowbreak{}after.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}docker-\allowbreak{}builds.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -259,9 +239,10 @@ gates, while AWS/EKS deployment continued in later weeks.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The project gained a single CI/CD backbone, repeatable quality gates,
-Docker build paths, smoke-test handling, and security/infrastructure
-validation scripts.
+My Week 4 result was a shared CI/CD backbone and repeatable container
+validation path that all five members could use. Feature code remained
+with the corresponding component owners; my responsibility was
+packaging, automation, and integration validation.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

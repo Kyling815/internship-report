@@ -1,0 +1,586 @@
+\vspace{0.5em}\noindent\textbf{AWS Networking Advanced: 3 Techniques for Building an
+Enterprise-Grade
+VPC}\par
+
+\vspace{0.5em}\noindent\textbf{Introduction}\par
+
+A basic Amazon VPC architecture consisting of public subnets, private
+subnets, and a NAT Gateway is a suitable foundation for deploying
+applications on AWS. This architecture separates resources that require
+direct Internet access from internal components such as application
+servers, databases, and caches.
+
+However, when a system expands to include Development, Staging, and
+Production environments or is divided across multiple microservices and
+VPCs, the basic architecture may begin to present three major
+limitations:
+
+\begin{itemize}
+\tightlist
+\item
+  Increasing NAT Gateway costs caused by frequent access from private
+  subnets to Amazon S3, Amazon DynamoDB, and other AWS services.
+\item
+  A potential single point of failure when all outbound traffic depends
+  on one NAT Gateway in one Availability Zone.
+\item
+  Complex network management when many VPCs are connected through a
+  full-mesh VPC Peering model.
+\end{itemize}
+
+This article presents three techniques for upgrading a VPC architecture
+for enterprise environments: VPC Endpoints, Multi-AZ networking, and AWS
+Transit Gateway.
+
+\vspace{0.5em}\noindent\textbf{1. Reducing Costs and Improving Security with VPC
+Endpoints}\par
+
+\vspace{0.5em}\noindent\textbf{The NAT Gateway Traffic
+Problem}\par
+
+EC2 instances, containers, and application servers running in private
+subnets usually do not have public IP addresses. When these resources
+need to access Amazon S3, DynamoDB, or other AWS services, their traffic
+may pass through a NAT Gateway.
+
+A basic traffic flow may look like this:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{NAT Gateway}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{AWS Public Service Endpoint}
+\end{Highlighting}
+\end{Shaded}
+
+This design may introduce hourly NAT Gateway charges and data-processing
+costs. Traffic may also pass through a public service endpoint even
+though both the application and destination service operate within AWS
+infrastructure.
+
+\vspace{0.5em}\noindent\textbf{Gateway Endpoints}\par
+
+Gateway Endpoints are available for two primary services:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon S3.
+\item
+  Amazon DynamoDB.
+\end{itemize}
+
+After a Gateway Endpoint is created and associated with the route tables
+of private subnets, traffic to S3 or DynamoDB can travel directly
+through the AWS network without using a NAT Gateway.
+
+The updated traffic flow can be represented as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{VPC Gateway Endpoint}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{Amazon S3 or Amazon DynamoDB}
+\end{Highlighting}
+\end{Shaded}
+
+Gateway Endpoints provide several benefits:
+
+\begin{itemize}
+\tightlist
+\item
+  A NAT Gateway is no longer required for S3 and DynamoDB traffic.
+\item
+  Traffic remains within the AWS network.
+\item
+  NAT Gateway data-processing costs can be reduced.
+\item
+  Access can be controlled through endpoint policies.
+\item
+  Workloads become less dependent on outbound Internet connectivity.
+\end{itemize}
+
+Gateway Endpoints for S3 and DynamoDB do not have hourly endpoint
+charges, which makes them one of the first options to consider when
+optimizing network costs.
+
+\vspace{0.5em}\noindent\textbf{Interface Endpoints and AWS
+PrivateLink}\par
+
+For AWS services that do not support Gateway Endpoints, an Interface
+Endpoint can be used.
+
+An Interface Endpoint creates Elastic Network Interfaces inside selected
+subnets and assigns private IP addresses to them. Applications can then
+access the target AWS service through private IP addresses or private
+DNS without using the public Internet.
+
+Services commonly accessed through Interface Endpoints include:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon CloudWatch.
+\item
+  AWS Secrets Manager.
+\item
+  Amazon ECR.
+\item
+  AWS Systems Manager.
+\item
+  AWS Key Management Service.
+\item
+  Amazon Kinesis.
+\end{itemize}
+
+Interface Endpoints use AWS PrivateLink to keep service traffic inside
+the AWS network.
+
+Compared with NAT Gateway access, this design can:
+
+\begin{itemize}
+\tightlist
+\item
+  Reduce outbound Internet traffic.
+\item
+  Control access through Security Groups.
+\item
+  Reduce the attack surface.
+\item
+  Support a clearer private-networking model.
+\item
+  Allow private workloads to access AWS services through private IP
+  addresses.
+\end{itemize}
+
+Interface Endpoints still have hourly and data-processing charges. Their
+cost should therefore be compared with NAT Gateway costs based on the
+actual traffic patterns of the system.
+
+\vspace{0.5em}\noindent\textbf{2. Deploying Across Multiple Availability Zones and Avoiding
+Unnecessary Cross-AZ
+Costs}\par
+
+\vspace{0.5em}\noindent\textbf{Why Multiple Availability Zones
+Matter}\par
+
+An Availability Zone can experience an independent failure. If all
+application servers, databases, and outbound networking resources are
+placed in one AZ, the entire system may become unavailable when that AZ
+is affected.
+
+For higher availability, production architectures are commonly deployed
+across at least two Availability Zones.
+
+For example:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Availability Zone A}
+\NormalTok{{-} Public Subnet A}
+\NormalTok{{-} Private Subnet A}
+\NormalTok{{-} NAT Gateway A}
+\NormalTok{{-} Application instances A}
+
+\NormalTok{Availability Zone B}
+\NormalTok{{-} Public Subnet B}
+\NormalTok{{-} Private Subnet B}
+\NormalTok{{-} NAT Gateway B}
+\NormalTok{{-} Application instances B}
+\end{Highlighting}
+\end{Shaded}
+
+In this model, each Availability Zone has an independent outbound path.
+If one AZ becomes unavailable, workloads in the remaining AZ can
+continue using the NAT Gateway and resources available in that AZ.
+
+\vspace{0.5em}\noindent\textbf{Avoiding a Single Point of
+Failure}\par
+
+If the system uses only one NAT Gateway in AZ-A, workloads in AZ-B must
+send their outbound traffic across Availability Zone boundaries before
+reaching the gateway.
+
+This creates two issues:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The NAT Gateway in AZ-A becomes a shared point of dependency.
+\item
+  Traffic from AZ-B to AZ-A may generate Cross-AZ data-transfer charges.
+\end{enumerate}
+
+A more resilient architecture deploys one NAT Gateway in every active
+Availability Zone. Each private subnet route table is configured to use
+the NAT Gateway located in the same AZ.
+
+For example:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet A {-}\textgreater{} NAT Gateway A}
+\NormalTok{Private Subnet B {-}\textgreater{} NAT Gateway B}
+\end{Highlighting}
+\end{Shaded}
+
+If AZ-A becomes unavailable, resources in AZ-B still have an independent
+outbound path and do not depend on NAT Gateway A.
+
+\vspace{0.5em}\noindent\textbf{AZ-Aware Routing}\par
+
+AZ-aware routing prioritizes communication between workloads and
+dependencies located in the same Availability Zone.
+
+Examples include:
+
+\begin{itemize}
+\tightlist
+\item
+  An application instance in AZ-A using NAT Gateway A.
+\item
+  A workload in AZ-B connecting to a cache node in AZ-B.
+\item
+  A load balancer distributing requests to suitable targets.
+\item
+  Database replicas or cache nodes being distributed across multiple
+  AZs.
+\item
+  Service discovery preferring endpoints located closer to the workload
+  when supported.
+\end{itemize}
+
+This design can:
+
+\begin{itemize}
+\tightlist
+\item
+  Reduce unnecessary Cross-AZ traffic.
+\item
+  Reduce network latency.
+\item
+  Limit inter-AZ data-transfer costs.
+\item
+  Allow each AZ to operate more independently.
+\end{itemize}
+
+However, AZ locality must still be balanced with High Availability
+requirements. An application should not depend entirely on one local
+resource if that dependency does not provide a failover mechanism.
+
+\vspace{0.5em}\noindent\textbf{3. Managing Multi-VPC Connectivity with AWS Transit
+Gateway}\par
+
+\vspace{0.5em}\noindent\textbf{Limitations of VPC
+Peering}\par
+
+VPC Peering works well when only a small number of VPCs need to
+communicate. Two VPCs can be connected directly and exchange traffic
+through private IP addresses.
+
+However, VPC Peering does not support transitive routing.
+
+For example:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{VPC{-}A \textless{}{-}\textgreater{} VPC{-}B}
+\NormalTok{VPC{-}B \textless{}{-}\textgreater{} VPC{-}C}
+\end{Highlighting}
+\end{Shaded}
+
+The fact that VPC-A connects to VPC-B and VPC-B connects to VPC-C does
+not automatically allow VPC-A to communicate with VPC-C.
+
+When many VPCs require direct connections, the number of VPC Peering
+connections can grow according to the following formula:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{N(N {-} 1) / 2}
+\end{Highlighting}
+\end{Shaded}
+
+With 10 VPCs, a full-mesh design may require up to 45 peering
+connections.
+
+At this scale, managing route tables, CIDR ranges, Security Groups, and
+network policies becomes increasingly difficult. Adding one new VPC may
+also require multiple new connections and route-table updates.
+
+\vspace{0.5em}\noindent\textbf{Transit Gateway as a Cloud
+Router}\par
+
+AWS Transit Gateway acts as a centralized router for multiple VPCs and
+external networks.
+
+Resources that can connect to a Transit Gateway include:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon VPCs.
+\item
+  Site-to-Site VPN connections.
+\item
+  AWS Direct Connect through a Direct Connect Gateway.
+\item
+  VPCs from multiple AWS accounts.
+\item
+  Development, Staging, and Production environments.
+\item
+  Shared Services VPCs.
+\item
+  On-Premises data center networks.
+\end{itemize}
+
+Instead of creating direct connections between every pair of VPCs, each
+VPC creates a single attachment to the Transit Gateway.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{             Development VPC}
+\NormalTok{                    |}
+\NormalTok{                    |}
+\NormalTok{Shared VPC {-}{-}{-}{-} Transit Gateway {-}{-}{-}{-} Production VPC}
+\NormalTok{                    |}
+\NormalTok{                    |}
+\NormalTok{             On{-}Premises Network}
+\end{Highlighting}
+\end{Shaded}
+
+This hub-and-spoke model simplifies the network topology and centralizes
+routing management.
+
+\vspace{0.5em}\noindent\textbf{Network Segmentation with Transit Gateway Route
+Tables}\par
+
+Transit Gateway can use multiple route tables to control which VPCs and
+networks are allowed to communicate.
+
+For example:
+
+\begin{itemize}
+\tightlist
+\item
+  The Development VPC can access the Shared Services VPC.
+\item
+  The Production VPC can access the Shared Services VPC.
+\item
+  The Development VPC cannot directly access the Production VPC.
+\item
+  The On-Premises Network can access only selected subnets.
+\item
+  A Security VPC can inspect traffic before forwarding it to other VPCs.
+\end{itemize}
+
+This segmentation can:
+
+\begin{itemize}
+\tightlist
+\item
+  Reduce lateral movement between environments.
+\item
+  Separate Development, Staging, and Production more clearly.
+\item
+  Centralize network-policy management.
+\item
+  Simplify the addition of new VPCs.
+\item
+  Support multi-account architectures with AWS Organizations.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Comparing Basic and Enterprise VPC
+Architectures}\par
+
+{
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Category
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Basic Architecture
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Enterprise Architecture
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Access to S3 and DynamoDB & Through a NAT Gateway or public endpoint &
+Through a Gateway Endpoint \\
+Access to other AWS services & Commonly through a NAT Gateway & Through
+Interface Endpoints and AWS PrivateLink when appropriate \\
+High Availability & May depend on one NAT Gateway & Independent NAT
+Gateway in each Availability Zone \\
+Cross-AZ traffic & May increase because of inefficient routing & Reduced
+through AZ-aware routing \\
+Multi-VPC connectivity & VPC Peering configured manually between pairs &
+Centrally managed through Transit Gateway \\
+Development and Production separation & Depends on multiple routes and
+peering connections & Controlled through Transit Gateway route tables \\
+Scalability & Suitable for smaller systems & More suitable for multi-VPC
+and multi-account systems \\
+Management & Simple initially but difficult to control at scale & More
+complex initially but easier to manage centrally \\
+\end{longtable}
+\endgroup
+}
+
+\vspace{0.5em}\noindent\textbf{When Should Each Technique Be
+Used?}\par
+
+\vspace{0.5em}\noindent\textbf{Use VPC Endpoints when:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  Workloads in private subnets frequently access Amazon S3 or DynamoDB.
+\item
+  Applications need to access AWS services without using the public
+  Internet.
+\item
+  NAT Gateway traffic and processing costs need to be reduced.
+\item
+  The system has stronger data-security requirements.
+\item
+  Access needs to be limited through endpoint policies.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Use Multi-AZ NAT Gateways
+when:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  The system requires High Availability.
+\item
+  Workloads operate across multiple Availability Zones.
+\item
+  A single NAT Gateway should not become a single point of failure.
+\item
+  Unnecessary Cross-AZ traffic should be reduced.
+\item
+  Outbound connectivity must remain available when one AZ fails.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Use AWS Transit Gateway
+when:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  The organization operates many VPCs or AWS accounts.
+\item
+  On-Premises networks must connect to AWS.
+\item
+  VPC Peering has become difficult to manage.
+\item
+  Development, Staging, and Production require clear separation.
+\item
+  Routing needs to be controlled from a central location.
+\item
+  Shared Services or centralized Security Inspection architectures are
+  required.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Cost Considerations}\par
+
+An advanced network architecture does not mean that every component
+becomes less expensive.
+
+Gateway Endpoints for S3 and DynamoDB can reduce traffic through NAT
+Gateways. However, Interface Endpoints, NAT Gateways, and Transit
+Gateway each have their own pricing models.
+
+Before implementation, the architecture should consider:
+
+\begin{itemize}
+\tightlist
+\item
+  Total monthly data-transfer volume.
+\item
+  AWS services frequently accessed by private workloads.
+\item
+  Number of Availability Zones.
+\item
+  Number of VPCs and Transit Gateway attachments.
+\item
+  Frequency of Cross-AZ communication.
+\item
+  Internet outbound traffic.
+\item
+  Security and availability requirements.
+\item
+  Operational cost and management complexity.
+\end{itemize}
+
+The objective is not simply to minimize cost. It is to find an
+appropriate balance between cost, security, performance, scalability,
+and High Availability.
+
+\vspace{0.5em}\noindent\textbf{Conclusion}\par
+
+The combination of public subnets, private subnets, and a NAT Gateway
+provides a strong starting point for building applications on AWS. As
+the system grows across multiple environments, VPCs, or AWS accounts,
+the network architecture must also evolve.
+
+Three important techniques are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Use VPC Endpoints to keep AWS service traffic inside the AWS network
+  and reduce dependence on NAT Gateways.
+\item
+  Deploy independent NAT Gateways across multiple Availability Zones to
+  improve availability and reduce unnecessary Cross-AZ traffic.
+\item
+  Use AWS Transit Gateway to manage connectivity between multiple VPCs
+  through a centralized model.
+\end{enumerate}
+
+VPC optimization is not only a routing problem. It also involves
+balancing security, scalability, availability, performance, and cost.
+
+A strong Enterprise VPC Architecture should be based on the actual
+requirements of the system. Additional services should not be introduced
+only to make the architecture appear more complex without providing
+clear value.
+
+\vspace{0.5em}\noindent\textbf{Publication Information}\par
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Topic:} Upgrading Amazon VPC architecture for enterprise
+  systems.
+\item
+  \textbf{Published date:} July 29, 2026.
+\item
+  \textbf{Platform:} AWS Study Groups.
+\item
+  \textbf{Status:} Published.
+\item
+  \textbf{Public link:}
+  \href{https://www.facebook.com/groups/awsstudygroupfcj/permalink/2225997548165205/\#}{Blog
+  4 on AWS Study Groups}
+\end{itemize}

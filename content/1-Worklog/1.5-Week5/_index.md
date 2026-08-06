@@ -21,7 +21,6 @@ Within the five-member team, my Week 5 objective was to move the integrated appl
 | Completed | Added local deployment automation for PowerShell and shell users. | `scripts/k8s/deploy-local.ps1` and `scripts/k8s/deploy-local.sh`. |
 | Completed | Added HPA and PDB definitions for app services. | `k8s/app/autoscaling.yaml`. |
 | Completed | Added observability resources for Prometheus, Grafana, Loki, Tempo, Alloy, OTel collector, ServiceMonitors, and PrometheusRules. | `k8s/observability/*` and `observability/grafana/*`. |
-| Partially completed | Captured live `kubectl` screenshots and command logs where available. | Evidence pending: I did not have the full screenshot/log artifact set in the local evidence archive. |
 
 ## Technical Implementation
 
@@ -29,25 +28,26 @@ The local Kubernetes path uses kind for the cluster, in-cluster PostgreSQL/Redis
 
 {{< mermaid >}}
 graph TB
-  subgraph Kind["kind-internship-local"]
-    subgraph Internship["namespace: internship"]
-      Backend["Deployment/backend"]
-      Chat["Deployment/chat-service"]
-      Dispatcher["Deployment/backend-outbox-dispatcher"]
-      Worker["Deployment/backend-processing-worker"]
-      Postgres["Deployment/postgres"]
-      Redis["Deployment/redis"]
-      DDB["Deployment/dynamodb-local"]
-      Migrate["Job/backend-migrate"]
-      Init["Job/chat-init"]
-    end
-    subgraph Monitoring["namespace: monitoring"]
-      Prom["Prometheus"]
-      Grafana["Grafana"]
-      Loki["Loki"]
-      Tempo["Tempo"]
-    end
+  Cluster["kind-internship-local cluster"]
+  subgraph Internship namespace
+    Backend["Deployment/backend"]
+    Chat["Deployment/chat-service"]
+    Dispatcher["Deployment/backend-outbox-dispatcher"]
+    Worker["Deployment/backend-processing-worker"]
+    Postgres["Deployment/postgres"]
+    Redis["Deployment/redis"]
+    DDB["Deployment/dynamodb-local"]
+    Migrate["Job/backend-migrate"]
+    Init["Job/chat-init"]
   end
+  subgraph Monitoring namespace
+    Prom["Prometheus"]
+    Grafana["Grafana"]
+    Loki["Loki"]
+    Tempo["Tempo"]
+  end
+  Cluster --> Backend
+  Cluster --> Prom
   Backend --> Postgres
   Backend --> DDB
   Backend --> Dispatcher
@@ -69,7 +69,6 @@ The deployment scripts build local images, load them into kind, apply app manife
 | Fresh local images might not be used by kind. | Building an image is not enough; kind nodes need the image loaded. | Scripts run `kind load docker-image` and restart deployments. | Completed |
 | Migrations and chat table creation need ordered startup. | API/chat pods should not assume databases are initialized. | Added `backend-migrate` and `chat-init` Jobs. | Completed |
 | Local observability required multiple supporting components. | Metrics, logs, and traces need separate platform services. | Added Helm-backed Prometheus/Grafana/Loki/Tempo/Alloy resources and local runbook guidance. | Completed |
-| Live cluster screenshots are missing. | Runtime screenshots were not attached to the local evidence archive. | I kept Kubernetes evidence pending. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -81,14 +80,6 @@ The deployment scripts build local images, load them into kind, apply app manife
 | Runtime validation logs | Partially completed | Commands are scripted, but current report does not include saved `kubectl` output. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-05/`, for example:
-
-- `/images/worklog/week-05/kubectl-get-nodes.png`
-- `/images/worklog/week-05/kubectl-get-pods.png`
-- `/images/worklog/week-05/grafana-dashboard.png`
 
 ### Commits and Pull Requests
 

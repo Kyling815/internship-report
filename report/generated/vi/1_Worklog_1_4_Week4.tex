@@ -1,13 +1,14 @@
-\vspace{0.5em}\noindent\textbf{Week 4 - Containerization and CI Quality
+\vspace{0.5em}\noindent\textbf{Tuần 4 - Container hóa và CI Quality
 Gates}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Week 4 focused on making the project repeatable: Dockerfiles, Docker
-Compose, GitHub Actions quality gates, local validation scripts, smoke
-tests, and security checks.
+Tuần 4 là giai đoạn bắt đầu tập trung vào nhiệm vụ Cloud/DevOps chính
+của tôi trong nhóm 5 thành viên. Mục tiêu là đóng gói các component
+backend, frontend, chat và AI của các thành viên khác bằng container,
+Docker Compose, CI quality gates, smoke test và security check.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -20,42 +21,33 @@ tests, and security checks.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Standardized Docker build paths for backend, chat, frontend,
-and AI service. & \texttt{backend/\allowbreak{}Dockerfile},
-\texttt{chat-\allowbreak{}service/\allowbreak{}Dockerfile}, \texttt{frontend/\allowbreak{}Dockerfile}, and
-\texttt{Dockerfile.\allowbreak{}ai-\allowbreak{}service}. \\
-Completed & Kept local Compose as the parity environment for
-dependencies and smoke tests. & \texttt{docker-\allowbreak{}compose.\allowbreak{}yml},
-\texttt{docker-\allowbreak{}compose.\allowbreak{}ai-\allowbreak{}service.\allowbreak{}yml}, and
+Hoàn thành & Chuẩn hóa đường dẫn Docker build cho backend, chat,
+frontend và AI service. & Các Dockerfile của bốn component. \\
+Hoàn thành & Duy trì Compose làm môi trường parity cho dependency và
+smoke test local. & Compose files và
 \texttt{scripts/\allowbreak{}ci/\allowbreak{}smoke-\allowbreak{}test.\allowbreak{}sh}. \\
-Completed & Consolidated GitHub Actions into the main CI/CD workflow. &
-\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml} and commit \texttt{e09e84e}. \\
-Completed & Added required quality/security gates. &
-\texttt{scripts/\allowbreak{}ci/\allowbreak{}repository\_\allowbreak{}quality.\allowbreak{}py},
-\texttt{scripts/\allowbreak{}ci/\allowbreak{}infrastructure.\allowbreak{}py},
-\texttt{scripts/\allowbreak{}ci/\allowbreak{}security\_\allowbreak{}scan.\allowbreak{}py}, \texttt{.\allowbreak{}gitleaks.\allowbreak{}toml}, and
-\texttt{.\allowbreak{}pre-\allowbreak{}commit-\allowbreak{}config.\allowbreak{}yaml}. \\
-Completed & Fixed ShellCheck SC2155 in the smoke test script. & Commit
+Hoàn thành & Hợp nhất GitHub Actions vào workflow CI/CD chính. &
+\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml} và commit \texttt{e09e84e}. \\
+Hoàn thành & Bổ sung các quality/security gate cần thiết. & Các script
+kiểm tra repository, infrastructure, security và cấu hình liên quan. \\
+Hoàn thành & Sửa lỗi ShellCheck SC2155 trong smoke-test script. & Commit
 \texttt{98f3420}. \\
-Partially completed & Attached GitHub Actions screenshots and full
-before/after logs where available. & Evidence pending: I did not have
-the full CI screenshot/log artifact set in the local evidence
-archive. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
 The final CI workflow defines validation jobs for backend, chat service,
 frontend, Docker images, infrastructure, smoke checks, and security
@@ -83,7 +75,8 @@ Relevant workflow checks include:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -125,15 +118,12 @@ Docker-based infra validation may hang or fail when Docker is
 unavailable. & Local Windows/Docker setups vary by machine. &
 Infrastructure scripts support local CLI binaries and bounded Docker
 fallback behavior. & Completed \\
-Full CI result screenshots are missing from the Hugo report. & GitHub
-Actions artifacts were not attached locally. & I kept CI log screenshots
-pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -175,25 +165,10 @@ Current-run output is pending. \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}github-\allowbreak{}actions-\allowbreak{}validate.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}shellcheck-\allowbreak{}before-\allowbreak{}after.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}04/\allowbreak{}docker-\allowbreak{}builds.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -242,35 +217,39 @@ commit} & Evidence pending \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
 Evidence pending: attach CI or local output for backend, chat, frontend,
 and smoke-test jobs.
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
 Evidence pending: attach Docker build and Vite build output from GitHub
 Actions or a local run.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
 Not applicable for Week 4. This phase prepared deployable artifacts and
 gates, while AWS/EKS deployment continued in later weeks.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-The project gained a single CI/CD backbone, repeatable quality gates,
-Docker build paths, smoke-test handling, and security/infrastructure
-validation scripts.
+Kết quả cá nhân tuần 4 là CI/CD backbone và quy trình kiểm tra container
+dùng chung cho cả 5 thành viên. Feature code vẫn thuộc thành viên phụ
+trách từng component; phạm vi của tôi là đóng gói, tự động hóa và kiểm
+tra tích hợp.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
 CI should fail early on repeatable checks: formatting, typing, tests,
 build, security, shell syntax, Dockerfile quality, and infrastructure
 manifest validation. Making these checks explicit reduced the amount of
 manual inspection needed before deployment.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
 Move from Docker Compose to local Kubernetes with kind, Kubernetes
 manifests, migration/init jobs, probes, HPA/PDB configuration, and

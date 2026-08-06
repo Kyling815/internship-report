@@ -1,18 +1,24 @@
-\vspace{0.5em}\noindent\textbf{Source Code Preparation}\par
+\vspace{0.5em}\noindent\textbf{Chuẩn bị mã nguồn}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Prepare the application repository for repeatable validation and
-deployment without exposing secrets or modifying production resources
-accidentally.
+Chuẩn bị kho lưu trữ mã nguồn (repository) của ứng dụng ở trạng thái sẵn
+sàng để phục vụ công tác rà soát kiểm định và thực hiện quy trình triển
+khai lặp lại suôn sẻ mà không vô ý sơ sẩy để lọt lộ các thông số bí mật
+hay thi ẩu ảnh hưởng lầm sang tài nguyên sản xuất production.
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-The repository is a multi-service application. CI/CD builds separate
-backend, chat, and optional AI images, deploys Kubernetes manifests, and
-builds the frontend separately for S3 and CloudFront.
+Kho chứa repository gánh trọn vây kiến trúc cho một mô hình ứng dụng đa
+dịch vụ (multi-service application). Hệ thống liên lạc CI/CD sẽ tự chủ
+chia nhỏ và gõ lệnh tiến hành cất dựng riêng biệt từng tệp image cho
+backend, dịch vụ chat, và (khấu nối nếu bật) dịch vụ AI, tiến ra tung
+tản ban bố các bản mô tả kịch bản (Kubernetes manifests), đồng thời cho
+thi hành build tĩnh phân chia phần việc cho frontend ra một nhánh ranh
+giới độc lập chuyển tản cho kho bộ đôi S3 kết hợp CloudFront.
 
-\vspace{0.5em}\noindent\textbf{Repository structure}\par
+\vspace{0.5em}\noindent\textbf{Cấu trúc repository}\par
 
 {
 \begingroup
@@ -24,46 +30,59 @@ builds the frontend separately for S3 and CloudFront.
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Path
+Đường dẫn (Path)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{backend/\allowbreak{}} & FastAPI application, SQLAlchemy models, Alembic
-migrations, worker code, tests \\
-\texttt{frontend/\allowbreak{}} & React/Vite application, API clients, route
-components, frontend tests \\
-\texttt{chat-\allowbreak{}service/\allowbreak{}} & Node.js, Express, Socket.IO, DynamoDB
-repositories, Redis adapter \\
-\texttt{ai\_\allowbreak{}service/\allowbreak{}} & FastAPI SageMaker adapter and AI parsing/scoring
-code \\
-\texttt{k8s/\allowbreak{}app/\allowbreak{}} & Base Kubernetes namespace, services, deployments,
-jobs, HPA, PDB \\
-\texttt{k8s/\allowbreak{}eks/\allowbreak{}} & EKS-specific ConfigMap, ServiceAccount, Ingress,
-secret example \\
-\texttt{k8s/\allowbreak{}observability/\allowbreak{}} & ServiceMonitor and PrometheusRule
-manifests \\
-\texttt{scripts/\allowbreak{}k8s/\allowbreak{}} & Local and EKS deployment scripts \\
-\texttt{scripts/\allowbreak{}ci/\allowbreak{}} & GitHub Actions helper scripts \\
-\texttt{scripts/\allowbreak{}aws/\allowbreak{}} & AWS resource helper scripts for CloudFront, ALB,
-SQS, rollout, node group \\
-\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml} & Validation and production
-deployment workflow \\
-\texttt{docs/\allowbreak{}architecture/\allowbreak{}} & ADRs, concurrency policy, event consumer
-contract \\
-\texttt{Dockerfile.\allowbreak{}ai-\allowbreak{}service} & AI adapter image build file \\
-\texttt{docker-\allowbreak{}compose.\allowbreak{}yml} & Local dependency stack \\
+\texttt{backend/\allowbreak{}} & Nơi ngụ của dịch vụ FastAPI, cấu hình dữ liệu
+SQLAlchemy models, tệp di cư cơ sở dữ liệu Alembic migrations, mã lệnh
+cho cụm worker cùng tập test nghiệm thu \\
+\texttt{frontend/\allowbreak{}} & Không gian trang ứng dụng React/Vite, các bộ kết
+nối API client, khối thành phần route con cùng dải code test của
+frontend \\
+\texttt{chat-\allowbreak{}service/\allowbreak{}} & Dịch vụ đàm thoả vận hanh qua Node.js, Express,
+Socket.IO, các lớp tiếp giao cơ sở dữ liệu DynamoDB repositories cùng
+tệp trung gian Redis adapter \\
+\texttt{ai\_\allowbreak{}service/\allowbreak{}} & Cụm dịch vụ đệm adapter chạy trên FastAPI chuyên
+phụ trách gọi qua SageMaker cùng luồng mã đọc hiểu và chấm điểm AI \\
+\texttt{k8s/\allowbreak{}app/\allowbreak{}} & Hệ bản vẽ manifest gốc tạo lập Kubernetes namespace,
+các thông số service, deployments, jobs, dãn dẻo HPA và ngân sách bồi
+thăng PDB \\
+\texttt{k8s/\allowbreak{}eks/\allowbreak{}} & Hệ manifest đặc thù chuyên gài cất cho môi trường
+EKS bao gồm ConfigMap, ServiceAccount, ALB Ingress cùng minh họa mẫu cho
+secret \\
+\texttt{k8s/\allowbreak{}observability/\allowbreak{}} & Hồ sơ khai báo quy cho luồng giám sát qua
+hai tệp kịch bản ServiceMonitor và PrometheusRule \\
+\texttt{scripts/\allowbreak{}k8s/\allowbreak{}} & Tập kịch bản tự động hỗ trợ cho thao tác triển
+khai cụm tại chỗ hoặc bủa giăng ra EKS \\
+\texttt{scripts/\allowbreak{}ci/\allowbreak{}} & Thư viện tệp phụ giúp dây chuyền tác nghiệp trên
+GitHub Actions \\
+\texttt{scripts/\allowbreak{}aws/\allowbreak{}} & Dải script thao tác trợ lực tài nguyên
+CloudFront, ALB, hàng đợi SQS, quản trị cuộn bản phát hành (rollout)
+cùng chăm node group \\
+\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml} & Linh hồn định danh điều hành trọn
+dây chuyền thanh tra rà soát và phát triển tiến thẳng cho môi trường
+production \\
+\texttt{docs/\allowbreak{}architecture/\allowbreak{}} & Thư mục tài liệu quyết định kiến trúc
+(ADRs), luật kiểm soát cạnh tranh song song cùng cam đoan hợp đồng thi
+hành người tiêu dùng sự kiện \\
+\texttt{Dockerfile.\allowbreak{}ai-\allowbreak{}service} & Bản phác vẽ đóng gói container image
+cho dịch vụ trung gian AI adapter \\
+\texttt{docker-\allowbreak{}compose.\allowbreak{}yml} & Cột mác khởi tung lập trình bủa quanh các
+tài nguyên phụ thuộc khi chạy thử tại chỗ \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Obtain authorized project
-source}\par
+\vspace{0.5em}\noindent\textbf{Nhận mã nguồn dự án được cấp
+quyền}\par
 
-Use authorized repository access only:
+Thao tác thực hiện truy nạp vào kho repository chỉ được phép diễn ra
+trên cơ quan tài khoản đã sắm sửa ủy quyền hợp pháp:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -73,11 +92,12 @@ Use authorized repository access only:
 \end{Highlighting}
 \end{Shaded}
 
-I do not publish private tokens, clone credentials, or secret-bearing
-remote URLs in the documentation.
+Tôi nghiêm cấm việc rò rỉ bủa lan mọi token bảo mật, chứng chỉ đăng nhập
+nhân chứng hoặc những địa chỉ URL từ xa mang gài theo khóa xác thực bên
+trong hồ sơ cẩm nang báo cáo này.
 
-\vspace{0.5em}\noindent\textbf{Review branch and workflow
-state}\par
+\vspace{0.5em}\noindent\textbf{Kiểm tra nhánh và trạng thái
+workflow}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -87,20 +107,23 @@ state}\par
 \end{Highlighting}
 \end{Shaded}
 
-Expected result:
+Kết quả mong đợi:
 
 \begin{itemize}
 \tightlist
 \item
-  The remote points to the authorized project repository.
+  Cọc địa chỉ mạng remote kết trói chuẩn xác về kho mã nguồn có bản
+  quyền đích xác thuộc dự án.
 \item
-  The working tree is understood before any deployment action.
+  Tình trạng cây mã nguồn làm việc (working tree) được thấu đáo 100\%
+  ranh giới ngay trước chuỗi búng ra lệnh triển khai.
 \item
-  No unrelated local edits are overwritten.
+  Cân mẫn cẩn khôn giữ vẹn toàn, ngăn cản trót lọt việc sửa đè nhầm lên
+  các thay đổi nội bồi địa phương không mang dính líu đến dự án.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Identify service
-dependencies}\par
+\vspace{0.5em}\noindent\textbf{Xác định các thư viện phụ thuộc của dịch
+vụ}\par
 
 \vspace{0.5em}\noindent\textbf{Backend}\par
 
@@ -115,11 +138,12 @@ dependencies}\par
 \end{Highlighting}
 \end{Shaded}
 
-The backend uses Python 3.12 in CI, FastAPI, SQLAlchemy, Alembic,
-Pydantic settings, boto3, Prometheus client, and OpenTelemetry
-libraries.
+Dịch vụ backend tích hợp ranh giới chạy nền Python 3.12 trong dây chuyền
+CI, vận dụng bộ khung FastAPI, thư viện SQLAlchemy, trình di cư Alembic,
+bộ kiểm tra thuộc tính Pydantic settings, kho móc AWS boto3, cỗ quan
+trắc Prometheus client cùng thư viện truy vết OpenTelemetry.
 
-\vspace{0.5em}\noindent\textbf{Chat service}\par
+\vspace{0.5em}\noindent\textbf{Dịch vụ chat}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -132,8 +156,9 @@ libraries.
 \end{Highlighting}
 \end{Shaded}
 
-The chat service uses Node.js, Express, Socket.IO, DynamoDB, Redis
-adapter, OpenTelemetry, and Prometheus metrics.
+Dịch vụ chat thiết dựng xoay xung quanh Node.js, framework Express, giao
+thức thời gian thực Socket.IO, kho lưu DynamoDB, cầu nối Redis adapter,
+cùng nhịp tim số liệu giám sát OpenTelemetry và Prometheus metrics.
 
 \vspace{0.5em}\noindent\textbf{Frontend}\par
 
@@ -146,10 +171,12 @@ adapter, OpenTelemetry, and Prometheus metrics.
 \end{Highlighting}
 \end{Shaded}
 
-The frontend uses React 18, Vite, Tailwind CSS, Socket.IO client, Axios,
-and route-level API clients.
+Frontend được dệt nên từ quy chuẩn React 18, trình tăng tốc Vite, thư
+viện CSS Tailwind CSS, bộ tiếp thu liên lạc Socket.IO client, công cụ
+gọi mạng Axios cùng tầng tầng các trạm giao tiếp API client cho từng
+tuyến đường riêng.
 
-\vspace{0.5em}\noindent\textbf{AI service}\par
+\vspace{0.5em}\noindent\textbf{Dịch vụ AI}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -157,15 +184,19 @@ and route-level API clients.
 \end{Highlighting}
 \end{Shaded}
 
-The AI adapter exposes \texttt{/\allowbreak{}health/\allowbreak{}ready}, \texttt{/\allowbreak{}parse-\allowbreak{}job},
-\texttt{/\allowbreak{}parse-\allowbreak{}cv}, \texttt{/\allowbreak{}match-\allowbreak{}applications}, \texttt{/\allowbreak{}rerank},
-\texttt{/\allowbreak{}cv-\allowbreak{}job/\allowbreak{}group-\allowbreak{}score}, and related scoring routes. In production,
-it calls SageMaker Runtime instead of loading a local model inside the
-worker.
+Bộ trung gian AI adapter tiến hành phơi mở ra bên ngoài các con đường
+dẫn \texttt{/\allowbreak{}health/\allowbreak{}ready}, \texttt{/\allowbreak{}parse-\allowbreak{}job}, \texttt{/\allowbreak{}parse-\allowbreak{}cv},
+\texttt{/\allowbreak{}match-\allowbreak{}applications}, \texttt{/\allowbreak{}rerank},
+\texttt{/\allowbreak{}cv-\allowbreak{}job/\allowbreak{}group-\allowbreak{}score}, kết hợp cùng một chuỗi các luồng chấm điểm
+tương đương. Tại môi trường thực tiễn production, nó sẽ gọi sang bộ máy
+SageMaker Runtime thực thụ thay vì nặng nề lôi vác nạp trọn cỗ máy model
+khổng lồ về ngự ở trong các worker.
 
-\vspace{0.5em}\noindent\textbf{Environment templates}\par
+\vspace{0.5em}\noindent\textbf{Mẫu tập tin cấu hình môi
+trường}\par
 
-Use example files as references only:
+Tận dụng những tệp thông tin ví dụ có sẵn để coi như là nguồn tra khảo
+tham chiếu chuẩn mực:
 
 {
 \begingroup
@@ -177,33 +208,40 @@ Use example files as references only:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-File
+Tập tin
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{k8s/\allowbreak{}app/\allowbreak{}secret.\allowbreak{}local.\allowbreak{}example.\allowbreak{}yaml} & Local Kubernetes secret
-example \\
-\texttt{k8s/\allowbreak{}app/\allowbreak{}secret.\allowbreak{}local.\allowbreak{}yaml.\allowbreak{}example} & Local secret template \\
-\texttt{k8s/\allowbreak{}eks/\allowbreak{}secret.\allowbreak{}example.\allowbreak{}yaml} & EKS secret key shape without real
-values \\
-\texttt{backend/\allowbreak{}requirements.\allowbreak{}txt} & Backend runtime dependencies \\
-\texttt{frontend/\allowbreak{}package.\allowbreak{}json} & Frontend scripts and dependencies \\
-\texttt{chat-\allowbreak{}service/\allowbreak{}package.\allowbreak{}json} & Chat scripts and dependencies \\
+\texttt{k8s/\allowbreak{}app/\allowbreak{}secret.\allowbreak{}local.\allowbreak{}example.\allowbreak{}yaml} & Tệp ví dụ minh họa thông số
+secret cho cụm Kubernetes tại chỗ \\
+\texttt{k8s/\allowbreak{}app/\allowbreak{}secret.\allowbreak{}local.\allowbreak{}yaml.\allowbreak{}example} & Mẫu bản vẽ secret tại chỗ
+cho nhà phát triển \\
+\texttt{k8s/\allowbreak{}eks/\allowbreak{}secret.\allowbreak{}example.\allowbreak{}yaml} & Hình hài cấu trúc cho các khóa
+secret bên trong EKS mà không để lộ nội dung giá trị thật \\
+\texttt{backend/\allowbreak{}requirements.\allowbreak{}txt} & Thư viện mã nguồn phụ thuộc phục vụ
+runtime backend \\
+\texttt{frontend/\allowbreak{}package.\allowbreak{}json} & Hệ script tự động hóa cùng thư viện cho
+frontend \\
+\texttt{chat-\allowbreak{}service/\allowbreak{}package.\allowbreak{}json} & Cụm script vận hanh và thư viện đi
+kèm của dịch vụ chat \\
 \end{longtable}
 \endgroup
 }
 
-Do not commit real \texttt{.\allowbreak{}env}, \texttt{.\allowbreak{}env.\allowbreak{}production}, kubeconfig,
-database URL, JWT secret, AWS key, GitHub token, private key, or SES
-credential.
+Tuyệt đối cấm đưa lên (commit) các tệp biến thực thể \texttt{.\allowbreak{}env},
+\texttt{.\allowbreak{}env.\allowbreak{}production}, file cấu hình kubeconfig, chuỗi url kết nối
+database, khóa mã bảo an JWT secret, khóa truy nhập AWS, mã thông báo
+token GitHub, private key riêng hay các mật mã dịch vụ phát mail SES.
 
-\vspace{0.5em}\noindent\textbf{Local validation commands}\par
+\vspace{0.5em}\noindent\textbf{Lệnh rà soát kiểm định tại
+chỗ}\par
 
-The CI workflow performs these major checks:
+Luồng dây chuyền tự động CI trên mạng có thói quen cho thi triển các
+chốt trạm tra rà quan trọng như sau:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -223,39 +261,48 @@ The CI workflow performs these major checks:
 \end{Highlighting}
 \end{Shaded}
 
-If Docker is unavailable locally, report Docker build validation as not
-run instead of claiming success.
+Trong những kỳ máy trạm lập trình địa phương của bạn thiếu khuyết trình
+quản trị Docker, hãy thật thà ghi nhận việc thử nghiệm build đóng ảnh
+Docker là chưa chạy rà kiểm định thay vì ngoan cố tự tung tự mác đánh
+dấu là đã hoàn thành công xuất sắc.
 
-\vspace{0.5em}\noindent\textbf{Deployment preparation}\par
+\vspace{0.5em}\noindent\textbf{Chuẩn bị cho triển
+khai}\par
 
-Before running production workflows:
+Trước thời khắc khởi búng kích hoạt dây chuyền sản xuất production:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Confirm GitHub production variables and secrets are configured.
+  Thẩm tra an tâm các biến môi trường và bí mật (secrets) production của
+  GitHub đã thọ vị nằm ngắn gũi đầy đủ theo yêu cầu.
 \item
-  Confirm OIDC role \texttt{internship-\allowbreak{}github-\allowbreak{}deploy} can assume the
-  intended AWS account.
+  Xác minh vai trò IAM Role của OIDC là
+  \texttt{internship-\allowbreak{}github-\allowbreak{}deploy} sẵn lòng cho khoắc nhãn hoán quyền
+  thâu vãng bên trong đúng số tài khoản AWS dự án.
 \item
-  Confirm ECR repositories exist for backend, chat, and AI if AI
-  deployment is enabled.
+  Kịp thời đảm bảo các kho lưu container ECR hiện hữu sẵn, giăng trọn
+  chỗ nạp cho backend, chat và cho AI (trong tình huống công tắc triển
+  khai AI service thêu bật).
 \item
-  Confirm RDS, Redis, DynamoDB, SQS, S3, CloudFront, ALB, Lambda, SES,
-  and SageMaker readiness.
+  Xác minh tinh thần trỗi múa trọn vẻ của một hệ sinh thái gồm RDS,
+  Redis, DynamoDB, SQS, S3, CloudFront, ALB, Lambda, SES cùng SageMaker.
 \item
-  Confirm \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED} is false unless AI
-  dependencies are ready.
+  Nghiêm rào kiên định giam ngục tham số
+  \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED} ngả ở mức false cho tận mốc ngày
+  cỗ máy suy luận AI bám kèm rúng còi thông quan.
 \item
-  Use \texttt{deploy-\allowbreak{}app} for EKS application deployment and
-  \texttt{deploy-\allowbreak{}frontend} for frontend deployment.
+  Chọn bấu nấc \texttt{deploy-\allowbreak{}app} để thao diễn đưa mã app lót vào EKS
+  và ấn trượt chế độ \texttt{deploy-\allowbreak{}frontend} cho công tác thiêu tung
+  giao diện lên cao.
 \end{enumerate}
 
-\vspace{0.5em}\noindent\textbf{GitHub Actions workflow
-modes}\par
+\vspace{0.5em}\noindent\textbf{Các chế độ của quy trình GitHub
+Actions}\par
 
-The inspected workflow supports:
+Cấu hình bộ thi kịch bản (workflow) được khảo soát ra lệnh hậu thuẫn cho
+chuỗi các cơ cấu tác nghiệp linh động như:
 
 {
 \begingroup
@@ -267,52 +314,63 @@ The inspected workflow supports:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Mode
+Chế độ
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{validate} & Run validation without production deployment \\
-\texttt{deploy} & Legacy application deploy path still accepted by the
-workflow \\
-\texttt{rollout} & Restart existing EKS workloads without building
-images \\
-\texttt{restore-\allowbreak{}compute} & Ensure EKS managed node group capacity \\
-\texttt{deploy-\allowbreak{}app} & Build/push images and deploy EKS workloads \\
-\texttt{deploy-\allowbreak{}public} & Apply public ALB Ingress \\
-\texttt{deploy-\allowbreak{}frontend} & Build frontend, sync to S3, invalidate
-CloudFront \\
-\texttt{full} & Run the full production sequence \\
+\texttt{validate} & Thực thi kiểm định an nộ không để xô bồ trát dội
+sang cụm production \\
+\texttt{deploy} & Con đường đưa bản thử ra thực tiễn theo lối mòn truyền
+thống nay vẫn được workflow khoan nhượng chấp thuận \\
+\texttt{rollout} & Gõ chuông tái khởi động (restart) trọn bộ các
+workload trên EKS mà chẳng nhọc sức re-build các ảnh \\
+\texttt{restore-\allowbreak{}compute} & Cám ơn gọi đánh đòn chấn hưng dãn sắm lại
+trọn dung nấc năng lực cụm máy managed node group \\
+\texttt{deploy-\allowbreak{}app} & Dựng nạp ảnh mới đẩy sang kho ECR đồng thời khai
+phá tiến vào EKS thuyên chuyển các workload \\
+\texttt{deploy-\allowbreak{}public} & Bung trượt bản ghi manifest cắm neo ALB Ingress
+ra thế giới bên ngoài \\
+\texttt{deploy-\allowbreak{}frontend} & Build kho mã frontend, đồng bộ thư viện lên
+kho S3, kêu gọi lệnh xóa bộ đệm (invalidates cache) trên CloudFront \\
+\texttt{full} & Tự động thi khát khao nối liền chu trình sản xuất khép
+kín một hơi ráo rã trọn bộ từ A sang Z \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
-The source tree is ready when:
+Kho tàng mã nguồn tựu chung đạt tiêu chí chốt duyệt thành quả khi mà:
 
 \begin{itemize}
 \tightlist
 \item
-  service dependencies install successfully
+  chuỗi tài liệu thư viện bấu vây các dịch vụ thảy đều hoan hỷ tải nạp
+  mượt trôi
 \item
-  backend, frontend, and chat tests pass in the target validation
-  environment
+  trọn các bài kiểm định của backend, frontend cùng dịch vụ chat rềnvang
+  đắc thắng băng đọ qua khỏi không gian test quy đúc
 \item
-  Docker images can be built
+  các container image Docker sẵn lòng chịu gõ trúng cấu hình bạt xếp
+  thành quả
 \item
-  Kubernetes manifests pass repository infrastructure checks
+  những trang manifest mô tả cho Kubernetes xuất xưởng không trầy móng
+  xô xát lọt rào châm trích từ cỗ máy kiểm toán script repository
 \item
-  required GitHub environment variables and secrets exist
+  thông số biến môi trường cùng chuỗi khóa mật secret bên phía GitHub
+  ngạo nghễ điểm tên thọ sinh đầy đủ
 \item
-  deployment is split correctly between EKS app workloads and
-  S3/CloudFront frontend
+  luồng ra mắt hệ thống được rành rẽ phân thân rõ mạn: workload nghiệp
+  vụ thẳng đường thâm ngục EKS, còn giao diện web lả buông phi thăng ngụ
+  kho S3 bấu trói CloudFront
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -325,37 +383,48 @@ The source tree is ready when:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Nguyên nhân
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{Cannot\ find\ build-\allowbreak{}and-\allowbreak{}push-\allowbreak{}image.\allowbreak{}sh} & Helper script path not
-found & Use repository \texttt{scripts/\allowbreak{}build-\allowbreak{}and-\allowbreak{}push-\allowbreak{}image.\allowbreak{}sh} or set
-\texttt{BUILD\_\allowbreak{}IMAGE\_\allowbreak{}SCRIPT} \\
-Node header download failure during chat CI & Native dependency build
-needs local headers & CI sets \texttt{npm\_\allowbreak{}config\_\allowbreak{}nodedir} to verified
-toolcache headers \\
-Frontend build points at localhost & Missing
-\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL=/\allowbreak{}api} for production & Set Vite variables
-during production build \\
-Docker build unavailable & Docker daemon not running & Start Docker or
-report build validation as not run \\
-Secrets appear in diff & \texttt{.\allowbreak{}env} or generated secret file
-accidentally staged & Remove secret-bearing files from the commit and
-rotate exposed values \\
+Lên tiếng ca than \texttt{Cannot\ find\ build-\allowbreak{}and-\allowbreak{}push-\allowbreak{}image.\allowbreak{}sh} & Chẳng
+thể dò tìm ra phương mạn cho tập script trợ giúp & Cho lệnh trỏ múa bám
+chuẩn đường dẫn \texttt{scripts/\allowbreak{}build-\allowbreak{}and-\allowbreak{}push-\allowbreak{}image.\allowbreak{}sh} hoặc ra quyết
+gán cấu hình biến \texttt{BUILD\_\allowbreak{}IMAGE\_\allowbreak{}SCRIPT} \\
+Hỏng gục bước tải file tiêu đề Node (Node header) trong tiến trình CI
+cho dịch vụ chat & Khâu dịch mã tệp phụ thuộc bản địa (native
+dependency) rền nài thèm muốn chuỗi header cài ngay sở tại & Cần mẫn nạp
+dải cấu hình biến \texttt{npm\_\allowbreak{}config\_\allowbreak{}nodedir} nhắm trúng vào mạn thư
+viện headers mà hệ thống ci toolcache lưu cẩn kiệt \\
+Trang frontend build ra bốc sa mù chạy sai về mạn localhost & Mang tiếng
+thất đức bỏ quên tham số biến cố định \texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL=/\allowbreak{}api}
+cho luồng production & Nhờng kính nạp trang trọng các thông số biến Vite
+ở ngay thời khắc nháy còi chu trình build tĩnh phục vụ production \\
+Đóng cửa cự tuyệt lệnh gõ docker build & Tiến trình điều hành Docker
+daemon thiêm đố ốm chết im lì giữa máy & Kích ngục hâm ấm gọi còi giục
+Docker daemon đứng dậy múa kiếm, hoặc trang nghiêm chốt từ ngữ khai báo
+khâu test build chưa qua thực thi \\
+Các bí mật (secrets) kinh hãi hiện diện vọt nhảy giữa trang báo rách git
+diff & Sơ sót ngập bùn bỏ vây đưa file \texttt{.\allowbreak{}env} hoặc tệp bí mật
+sinh ra tạm bở trượt vọt lên mạn staged & Tháo dọn và đá phăng các tệp
+bùi bám khóa bảo an xa khỏi mác commit ra lệnh tiễn còi tráo xoay mới
+các thông số khóa đã phơi bãi ra xa \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-The repository is prepared for validated deployment. Static frontend
-build and Kubernetes workloads are treated as separate delivery paths,
-while GitHub Actions and OIDC provide the controlled production
-deployment surface.
+Thư mục chứa đựng mã nguồn ứng dụng qua chặng kiểm nghiệm gay gắt nay
+chính thức cán đích sẵn sàng để ra lệnh xuất phát triển khai theo khuôn
+nấc quy an nộ bảo mật cao cấp nhất. Mạch phân phối giao diện web buông
+rẽ thành chặng bay tiễn tĩnh riêng cho S3 và CloudFront, trong khi khối
+workload EKS an nhiên duy trì lộ trình của mình, đồng loạt vây hãm bảo
+an cẩn khôn nhờ sức khỏe dây chuyền quản trị thông lượng xác thực GitHub
+Actions phối hợp cùng tấm khiên OIDC.

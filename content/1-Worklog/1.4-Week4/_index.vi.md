@@ -21,9 +21,8 @@ Tuần 4 là giai đoạn bắt đầu tập trung vào nhiệm vụ Cloud/DevOp
 | Hoàn thành | Hợp nhất GitHub Actions vào workflow CI/CD chính. | `.github/workflows/cicd.yml` và commit `e09e84e`. |
 | Hoàn thành | Bổ sung các quality/security gate cần thiết. | Các script kiểm tra repository, infrastructure, security và cấu hình liên quan. |
 | Hoàn thành | Sửa lỗi ShellCheck SC2155 trong smoke-test script. | Commit `98f3420`. |
-| Hoàn thành một phần | Thu thập screenshot GitHub Actions và log trước/sau hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ bộ CI screenshot/log trong kho local. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The final CI workflow defines validation jobs for backend, chat service, frontend, Docker images, infrastructure, smoke checks, and security scanning. The workflow uses Python 3.12, Node.js 22, shell validation, Docker image builds, Trivy/Gitleaks images, and actionlint/kubeconform support through the infrastructure script.
 
@@ -45,7 +44,7 @@ docker build -t internship-chat:ci ./chat-service
 docker build -f Dockerfile.ai-service -t internship-ai:ci .
 ```
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
 | Problem | Root cause | Resolution | Status |
 |---|---|---|---|
@@ -53,9 +52,8 @@ docker build -f Dockerfile.ai-service -t internship-ai:ci .
 | ShellCheck flagged SC2155 in the smoke test script. | Assignment and command substitution were combined in a way ShellCheck warns about. | Commit `98f3420` split the logic to satisfy ShellCheck. | Completed |
 | `.env` files can contain UTF-8 BOM and break shell parsing. | Windows editors may add BOM at the beginning of files. | `scripts/ci/smoke-test.sh` strips the BOM when preparing smoke-test env input. | Completed |
 | Docker-based infra validation may hang or fail when Docker is unavailable. | Local Windows/Docker setups vary by machine. | Infrastructure scripts support local CLI binaries and bounded Docker fallback behavior. | Completed |
-| Full CI result screenshots are missing from the Hugo report. | GitHub Actions artifacts were not attached locally. | I kept CI log screenshots pending. | Blocked |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -65,17 +63,9 @@ docker build -f Dockerfile.ai-service -t internship-ai:ci .
 | Infrastructure/security checks | Implemented | `scripts/ci/infrastructure.py`, `scripts/check-infra.ps1`, `scripts/check-infra.sh`, and `scripts/ci/security_scan.py` exist. |
 | Compose smoke test | Implemented | `scripts/ci/smoke-test.sh` exists and ends with `Compose smoke test passed` on success. Current-run output is pending. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-04/`, for example:
-
-- `/images/worklog/week-04/github-actions-validate.png`
-- `/images/worklog/week-04/shellcheck-before-after.png`
-- `/images/worklog/week-04/docker-builds.png`
-
-### Commits and Pull Requests
+### Commit và yêu cầu kéo mã
 
 | Commit | Description | Evidence | Pull Request |
 |---|---|---|---|
@@ -85,26 +75,26 @@ Evidence pending: add screenshots under `/images/worklog/week-04/`, for example:
 | `98f3420` | Fixed ShellCheck SC2155 in the smoke test script. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/98f34200147423960604f23a7f960a853c59cd0a) | Evidence pending |
 | `c2ad7cc` | Consolidated and optimized the GitHub Actions workflow. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/c2ad7cc72ed18a9f90441696675939f7b94154b6) | Evidence pending |
 
-### Test Logs
+### Nhật ký kiểm thử
 
 Evidence pending: attach CI or local output for backend, chat, frontend, and smoke-test jobs.
 
-### Build Logs
+### Nhật ký build
 
 Evidence pending: attach Docker build and Vite build output from GitHub Actions or a local run.
 
-### Deployment Logs
+### Nhật ký triển khai
 
 Not applicable for Week 4. This phase prepared deployable artifacts and gates, while AWS/EKS deployment continued in later weeks.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Kết quả cá nhân tuần 4 là CI/CD backbone và quy trình kiểm tra container dùng chung cho cả 5 thành viên. Feature code vẫn thuộc thành viên phụ trách từng component; phạm vi của tôi là đóng gói, tự động hóa và kiểm tra tích hợp.
 
-## Lessons Learned
+## Bài học rút ra
 
 CI should fail early on repeatable checks: formatting, typing, tests, build, security, shell syntax, Dockerfile quality, and infrastructure manifest validation. Making these checks explicit reduced the amount of manual inspection needed before deployment.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
 Move from Docker Compose to local Kubernetes with kind, Kubernetes manifests, migration/init jobs, probes, HPA/PDB configuration, and observability resources.

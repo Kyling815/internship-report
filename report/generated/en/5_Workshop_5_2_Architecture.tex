@@ -54,75 +54,19 @@ CI/CD & GitHub Actions, AWS OIDC, ECR, kubectl, AWS CLI \\
 \vspace{0.5em}\noindent\textbf{Diagram 1: Overall AWS
 architecture}\par
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR User{[}``Candidate /
-HR browser''{]} CF{[}``CloudFront (dhm2rz5nmsibj.cloudfront.net)''{]}
-S3Frontend{[}``Private S3 frontend bucket
-(internship-prod-frontend-account-redacted)''{]} ALB{[}``Application
-Load Balancer (internet-facing)''{]} EKS{[}``EKS cluster
-(internship-prod)''{]} Backend{[}``backend (FastAPI :8000)''{]}
-Chat{[}``chat-service (Socket.IO :3000)''{]}
-Dispatcher{[}``backend-outbox-dispatcher''{]}
-Worker{[}``backend-processing-worker''{]} AI{[}``ai-service (:8010)''{]}
-RDS{[}``RDS PostgreSQL (internship-prod-postgres)''{]} DDB{[}``DynamoDB
-chat tables (ChatUsers / ChatGroups / ChatMessages)''{]}
-Redis{[}``ElastiCache Redis (internship-prod-redis)''{]} Uploads{[}``S3
-uploads and archive bucket
-(internship-prod-uploads-account-redacted)''{]} SQS{[}``SQS queue
-(internship-prod-outbox)''{]} DLQ{[}``SQS DLQ
-(internship-prod-outbox-dlq)''{]} Lambda{[}``Lambda
-(internship-outbox-handler)''{]} Dedupe{[}``DynamoDB dedupe table
-(InternshipLambdaEventDedupe)''{]} SES{[}``Amazon SES''{]}
-SM{[}``SageMaker endpoint (internship-qwen3-4b)''{]}
-
-\begin{verbatim}
-User --> CF
-CF --> S3Frontend
-CF --> ALB
-ALB --> EKS
-EKS --> Backend
-EKS --> Chat
-EKS --> Dispatcher
-EKS --> Worker
-EKS --> AI
-Backend --> RDS
-Backend --> Uploads
-Chat --> DDB
-Chat --> Redis
-Worker --> AI
-AI --> SM
-Dispatcher --> SQS
-SQS --> Lambda
-SQS --> DLQ
-Lambda --> Dedupe
-Lambda --> Uploads
-Lambda --> SES
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} Users enter through CloudFront, which serves the
+private S3 frontend or forwards dynamic requests to the ALB and EKS. EKS
+workloads connect to RDS, DynamoDB, Redis, S3, SageMaker, and the
+SQS/Lambda notification path, with a DLQ and DynamoDB deduplication
+table for resilient event handling.
 
 \vspace{0.5em}\noindent\textbf{Diagram 2: CloudFront request-routing
 flow}\par
 
-\{\{\textless{} mermaid \textgreater\}\} graph TD Request{[}``HTTPS
-request to CloudFront''{]} Match\{``Path pattern''\}
-Frontend{[}``Default behavior to S3 frontend origin''{]} API{[}``/api/*
-behavior to ALB origin''{]} ChatRest{[}``/chat/* behavior to ALB
-origin''{]} Socket{[}``/socket.io/* behavior to ALB origin''{]}
-BackendSvc{[}``Kubernetes Service: backend''{]} ChatSvc{[}``Kubernetes
-Service: chat-service''{]}
-
-\begin{verbatim}
-Request --> Match
-Match --> Frontend
-Match --> API
-Match --> ChatRest
-Match --> Socket
-API --> BackendSvc
-ChatRest --> ChatSvc
-Socket --> ChatSvc
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} CloudFront evaluates each HTTPS path. The default
+behavior serves the S3 frontend; \texttt{/\allowbreak{}api/\allowbreak{}*} is forwarded to the
+backend service; \texttt{/\allowbreak{}chat/\allowbreak{}*} and \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} are
+forwarded to the chat service through the ALB.
 
 The frontend bucket remains private. CloudFront handles HTTPS and SPA
 fallback. The ALB Ingress rewrites \texttt{/\allowbreak{}api} and \texttt{/\allowbreak{}chat}
@@ -131,52 +75,20 @@ prefixes before forwarding to the backend and chat services.
 \vspace{0.5em}\noindent\textbf{Diagram 3: CV upload and AI processing
 sequence}\par
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant
-Candidate participant Frontend participant Backend participant S3 as S3
-uploads bucket participant Postgres as RDS PostgreSQL participant Worker
-as Processing worker participant AI as ai-service participant SM as
-SageMaker
-
-\begin{verbatim}
-Candidate->>Frontend: Submit application with CV
-Frontend->>Backend: POST /jobs/{id}/apply
-Backend->>S3: Store uploaded document or generate storage reference
-Backend->>Postgres: Commit application, idempotency record, outbox event, processing job
-Backend-->>Frontend: Application accepted with processing status
-Worker->>Postgres: Claim queued async_processing_jobs row
-Worker->>AI: POST /parse-cv or /match-applications
-AI->>SM: Invoke endpoint internship-qwen3-4b
-SM-->>AI: Model response
-AI-->>Worker: Normalized JSON response
-Worker->>Postgres: Save parsed profile or matching results
-Frontend->>Backend: Poll processing job status
-Backend-->>Frontend: Processing result
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} A candidate submits a CV through the frontend,
+and the backend stores the document reference plus application,
+idempotency, outbox, and processing records. The worker claims the
+queued job, calls the AI adapter and SageMaker, saves the normalized
+result in PostgreSQL, and exposes the result for frontend polling.
 
 \vspace{0.5em}\noindent\textbf{Diagram 4: Realtime chat
 sequence}\par
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant
-UserA as User A browser participant CF as CloudFront participant ALB as
-ALB participant Chat1 as chat-service pod A participant Redis as
-ElastiCache Redis participant Chat2 as chat-service pod B participant
-DDB as DynamoDB chat tables participant UserB as User B browser
-
-\begin{verbatim}
-UserA->>CF: Socket.IO connect /socket.io
-CF->>ALB: Forward websocket/polling traffic
-ALB->>Chat1: Route to chat-service
-UserA->>Chat1: message:send
-Chat1->>DDB: Persist message
-Chat1->>Redis: Publish room event
-Redis->>Chat2: Broadcast event to subscribed pod
-Chat2->>UserB: Emit message:new
-Chat1-->>UserA: ACK after persistence
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} Socket.IO traffic passes from CloudFront and the
+ALB to a chat-service pod. The receiving pod persists the message in
+DynamoDB, publishes the room event through Redis so other pods can
+notify subscribed users, and acknowledges the sender only after
+persistence.
 
 DynamoDB is the permanent chat store. Redis is only the cross-pod
 pub/sub layer and does not replace persistent storage.
@@ -184,28 +96,11 @@ pub/sub layer and does not replace persistent storage.
 \vspace{0.5em}\noindent\textbf{Diagram 5: Transactional outbox, SQS, and Lambda
 sequence}\par
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant API
-as FastAPI backend participant PG as RDS PostgreSQL participant
-Dispatcher as Outbox dispatcher participant SQS as SQS main queue
-participant Lambda as Lambda outbox handler participant DDB as DynamoDB
-dedupe participant S3 as S3 archive bucket participant SES as Amazon SES
-
-\begin{verbatim}
-API->>PG: Commit business mutation and outbox_events row in one transaction
-Dispatcher->>PG: Claim pending outbox_events row with lease
-Dispatcher->>SQS: Send event envelope
-Dispatcher->>PG: Mark event PUBLISHED
-SQS->>Lambda: Invoke batch
-Lambda->>DDB: Conditional write eventId
-alt First time event
-    Lambda->>S3: Put JSON archive
-    Lambda->>SES: Send email notification
-else Duplicate event
-    Lambda-->>SQS: Treat as already processed
-end
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} The backend writes the business mutation and
+outbox event in one PostgreSQL transaction. The dispatcher publishes the
+event to SQS, after which Lambda uses a conditional DynamoDB write for
+deduplication; first-time events are archived in S3 and may trigger SES,
+while duplicates are treated as already processed.
 
 SQS delivery is at least once. Duplicate delivery is expected, so Lambda
 idempotency is required. The successful smoke-test event was
@@ -215,31 +110,11 @@ idempotency is required. The successful smoke-test event was
 \vspace{0.5em}\noindent\textbf{Diagram 6: Source-code change and CI/CD deployment
 flow}\par
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR Dev{[}``Developer
-change''{]} GH{[}``GitHub Actions (workflow\_dispatch mode)''{]}
-Validate{[}``validate (tests, lint, build, infra scan)''{]}
-Images{[}``build-images (ECR SHA tags)''{]} Restore{[}``restore-compute
-(EKS node group check)''{]} App{[}``deploy-app (kubectl apply
-workloads)''{]} Public{[}``deploy-public (ALB ingress)''{]}
-CF{[}``ensure-cloudfront (S3 private + OAC + behaviors)''{]}
-Frontend{[}``deploy-frontend (npm build + S3 sync + invalidation)''{]}
-Summary{[}``Production summary''{]}
-
-\begin{verbatim}
-Dev --> GH
-GH --> Validate
-GH --> Restore
-Validate --> Images
-Restore --> Images
-Images --> App
-App --> Public
-Public --> CF
-CF --> Frontend
-App --> Summary
-Frontend --> Summary
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} A manually triggered GitHub Actions workflow
+validates the repository and restores compute when required, then builds
+SHA-tagged ECR images. It deploys the EKS application and public ALB,
+ensures the private S3/CloudFront configuration, publishes the frontend,
+invalidates CloudFront, and produces a deployment summary.
 
 The workflow supports \texttt{validate}, \texttt{deploy},
 \texttt{rollout}, \texttt{restore-\allowbreak{}compute}, \texttt{deploy-\allowbreak{}app},
@@ -273,7 +148,7 @@ Verification command
 CloudFront & Public HTTPS entry point and routing &
 \texttt{aws\ cloudfront\ get-\allowbreak{}distribution\ -\/\allowbreak{}-id\ EQIGYNECXDYL8} \\
 S3 frontend bucket & Static frontend assets &
-\texttt{aws\ s3\ ls\ s3://internship-prod-frontend-\textless{}AWS\_ACCOUNT\_ID\textgreater{}/} \\
+\texttt{aws\ s3\ ls\ s3:/\allowbreak{}/\allowbreak{}internship-\allowbreak{}prod-\allowbreak{}frontend-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}/\allowbreak{}} \\
 ALB & Routes API/chat/socket traffic to EKS services &
 \texttt{kubectl\ get\ ingress\ internship-\allowbreak{}public\ -n\ internship} \\
 Backend & FastAPI business API and health endpoints &
@@ -293,7 +168,7 @@ DynamoDB & Chat and Lambda dedupe tables &
 Redis & Socket.IO pub/sub &
 \texttt{aws\ elasticache\ describe-\allowbreak{}replication-\allowbreak{}groups\ -\/\allowbreak{}-replication-\allowbreak{}group-\allowbreak{}id\ internship-\allowbreak{}prod-\allowbreak{}redis\ -\/\allowbreak{}-region\ ap-\allowbreak{}southeast-\allowbreak{}1} \\
 SQS & Outbox event transport &
-\texttt{aws\ sqs\ get-queue-attributes\ -\/-queue-url\ \textless{}OUTBOX\_QUEUE\_URL\textgreater{}\ -\/-attribute-names\ All} \\
+\texttt{aws\ sqs\ get-\allowbreak{}queue-\allowbreak{}attributes\ -\/\allowbreak{}-queue-\allowbreak{}url\ \textless{}OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL\textgreater{}\ -\/\allowbreak{}-attribute-\allowbreak{}names\ All} \\
 \end{longtable}
 \endgroup
 }

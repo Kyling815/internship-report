@@ -20,7 +20,6 @@ Tuy nhiên, khi hệ thống mở rộng thành nhiều môi trường như Deve
 
 Bài viết này trình bày ba kỹ thuật nâng cấp kiến trúc VPC theo hướng phù hợp hơn với hệ thống doanh nghiệp, bao gồm VPC Endpoints, Multi-AZ networking và AWS Transit Gateway.
 
-![Enterprise VPC Architecture](/images/blogs/blog-4/enterprise-vpc-architecture.png)
 
 ## 1. Giảm chi phí và tăng bảo mật với VPC Endpoints
 

@@ -211,57 +211,12 @@ after completing the deployment work:
 \vspace{0.5em}\noindent\textbf{Final implemented
 architecture}\par
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR User{[}``Candidate /
-HR browser''{]} CF{[}``Amazon
-CloudFrontdhm2rz5nmsibj.cloudfront.net''{]} S3Frontend{[}``Private S3
-frontend bucketinternship-prod-frontend-account-redacted''{]}
-ALB{[}``Application Load Balancerinternet-facing''{]} EKS{[}``Amazon
-EKSinternship-prod / namespace internship''{]} Backend{[}``FastAPI
-backendDeployment/backend :8000''{]} Chat{[}``Node.js Socket.IO
-chatDeployment/chat-service :3000''{]} Dispatcher{[}``Outbox
-dispatcherDeployment/backend-outbox-dispatcher''{]}
-Worker{[}``Processing workerDeployment/backend-processing-worker''{]}
-AI{[}``AI service adapterDeployment/ai-service :8010''{]} RDS{[}``Amazon
-RDS PostgreSQLinternship-prod-postgres''{]} Redis{[}``Amazon ElastiCache
-Redisinternship-prod-redis''{]} DDBChat{[}``DynamoDB chat
-tablesChatUsers / ChatGroups / ChatMessages''{]} S3Uploads{[}``S3
-uploads and archive bucketinternship-prod-uploads-account-redacted''{]}
-SQS{[}``Amazon SQSinternship-prod-outbox''{]} DLQ{[}``SQS
-DLQinternship-prod-outbox-dlq''{]} Lambda{[}``AWS
-Lambdainternship-outbox-handler''{]} Dedupe{[}``DynamoDB dedupe
-tableInternshipLambdaEventDedupe''{]} SES{[}``Amazon SES''{]}
-SageMaker{[}``SageMaker endpointinternship-qwen3-4b''{]}
-GitHub{[}``GitHub Actions OIDC''{]} ECR{[}``Amazon ECR images''{]}
-
-\begin{verbatim}
-User --> CF
-CF -->|"Default *"| S3Frontend
-CF -->|"/api/*"| ALB
-CF -->|"/chat/*"| ALB
-CF -->|"/socket.io/*"| ALB
-ALB --> Backend
-ALB --> Chat
-Backend --> RDS
-Backend --> S3Uploads
-Backend --> Dispatcher
-Backend --> Worker
-Chat --> Redis
-Chat --> DDBChat
-Worker --> AI
-AI --> SageMaker
-Dispatcher --> SQS
-SQS --> Lambda
-SQS --> DLQ
-Lambda --> Dedupe
-Lambda --> S3Uploads
-Lambda --> SES
-GitHub --> ECR
-GitHub --> EKS
-GitHub --> S3Frontend
-GitHub --> CF
-\end{verbatim}
-
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} CloudFront serves the private S3 frontend and
+routes API, chat, and Socket.IO traffic to the ALB. EKS hosts the
+backend, chat, dispatcher, worker, and AI services, which use RDS,
+Redis, DynamoDB, S3, SQS, Lambda, SES, and SageMaker. GitHub Actions
+deploys images, workloads, frontend assets, and CloudFront changes
+through OIDC-based AWS access.
 
 \vspace{0.5em}\noindent\textbf{Architecture explanation}\par
 

@@ -1,19 +1,24 @@
-\vspace{0.5em}\noindent\textbf{Backend Deployment}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Triển khai và kiểm chứng hoạt động của toàn bộ các workload ứng dụng
+trên cụm EKS bao gồm: dịch vụ FastAPI backend, dịch vụ chat, tiến trình
+outbox dispatcher, processing worker và vi dịch vụ trung gian AI service
+adapter.
 
-Deploy and verify the EKS application workloads: FastAPI backend, chat
-service, outbox dispatcher, processing worker, and AI service adapter.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+Frontend không được vác thiêu thọ ngụ bên trong cụm EKS. Cụm EKS sắm vai
+chuyên nuôi ngọ cho các dịch vụ và các cụm worker chạy dài kỳ, ẩn cẩn
+khôn sát phía sau một cổng xuất phát ALB origin do cống mạng CloudFront
+vinh quy kêu xướng.
 
-The frontend is not deployed to EKS. EKS hosts the long-running services
-and workers behind an ALB origin used by CloudFront.
+\vspace{0.5em}\noindent\textbf{Các thông số đầu vào cho triển
+khai}\par
 
-\vspace{0.5em}\noindent\textbf{Deployment inputs}\par
-
-The production workflow computes image URIs from the AWS account,
-region, ECR repository, and \texttt{github.\allowbreak{}sha}:
+Dây chuyền sản xuất production tính toán tự túc ra địa chỉ định tuyến
+image URIs dựa từ chuỗi tham mác tài khoản AWS, mã khu vực region, kho
+ECR cùng mã chốt Commit \texttt{github.\allowbreak{}sha}:
 
 {
 \begingroup
@@ -22,20 +27,20 @@ region, ECR repository, and \texttt{github.\allowbreak{}sha}:
 \renewcommand{\arraystretch}{1.15}
 \begin{longtable}{@{}lll@{}}
 \toprule\noalign{}
-Workload & Image variable & Default ECR repository \\
+Workload & Biến image & Kho ECR mặc định \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Backend and workers & \texttt{BACKEND\_\allowbreak{}IMAGE} &
+Backend và các worker & \texttt{BACKEND\_\allowbreak{}IMAGE} &
 \texttt{internship-\allowbreak{}backend} \\
-Chat service & \texttt{CHAT\_\allowbreak{}IMAGE} & \texttt{internship-\allowbreak{}chat} \\
-AI adapter & \texttt{AI\_\allowbreak{}IMAGE} & \texttt{internship-\allowbreak{}ai} \\
+Dịch vụ chat & \texttt{CHAT\_\allowbreak{}IMAGE} & \texttt{internship-\allowbreak{}chat} \\
+Bộ đệm AI adapter & \texttt{AI\_\allowbreak{}IMAGE} & \texttt{internship-\allowbreak{}ai} \\
 \end{longtable}
 \endgroup
 }
 
-The deployment script requires:
+Tập lệnh kịch bản triển khai đòi hỏi các khóa:
 
 \begin{itemize}
 \tightlist
@@ -55,7 +60,7 @@ The deployment script requires:
   \texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL}
 \end{itemize}
 
-Optional but important:
+Nhóm thông số mang tính tự nguyện nhưng hàm trọ trọng lượng lớn:
 
 \begin{itemize}
 \tightlist
@@ -77,10 +82,12 @@ Optional but important:
   \texttt{AI\_\allowbreak{}SERVICE\_\allowbreak{}API\_\allowbreak{}KEY}
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Image build and ECR push}\par
+\vspace{0.5em}\noindent\textbf{Đóng gói image và đẩy lên
+ECR}\par
 
-The CI helper \texttt{scripts/\allowbreak{}ci/\allowbreak{}deploy-\allowbreak{}eks-\allowbreak{}pipeline.\allowbreak{}sh} builds and
-pushes images:
+Tập lệnh phụ thủ cho luồng CI là
+\texttt{scripts/\allowbreak{}ci/\allowbreak{}deploy-\allowbreak{}eks-\allowbreak{}pipeline.\allowbreak{}sh} gánh vác sứ mạng dịch biên
+nặn image và hất đẩy trót lọt lên bãi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -88,7 +95,8 @@ pushes images:
 \end{Highlighting}
 \end{Shaded}
 
-The workflow verifies pushed backend and chat tags:
+Dây chuyền ngay tức khắc thẩm soát dấu ấn nhãn SHA vừa gán cho hai image
+của backend và chat:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -104,8 +112,9 @@ The workflow verifies pushed backend and chat tags:
 \end{Highlighting}
 \end{Shaded}
 
-If \texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED=true}, the AI adapter image is built
-with:
+Bất giác nhịp còi khóa \texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED=true} vang khởi, tệp
+image cho bộ trung gian AI adapter lập tức được thiếc nặn với chuỗi
+lệnh:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -114,10 +123,10 @@ with:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Kubernetes namespace and
+\vspace{0.5em}\noindent\textbf{Namespace Kubernetes và
 ServiceAccount}\par
 
-The deployment applies:
+Quy trình thọ tác ban khải cho ban bố:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -126,11 +135,12 @@ The deployment applies:
 \end{Highlighting}
 \end{Shaded}
 
-When \texttt{IRSA\_\allowbreak{}ROLE\_\allowbreak{}ARN} is set, the EKS-specific ServiceAccount
-manifest is rendered and applied from
-\texttt{k8s/\allowbreak{}eks/\allowbreak{}serviceaccount.\allowbreak{}yaml}.
+Mỗi khoảnh khắc biến cọc tham số \texttt{IRSA\_\allowbreak{}ROLE\_\allowbreak{}ARN} mang giá trị
+truyền qua, hồ sơ bản vẽ ServiceAccount trứ danh thuyên dành riêng cho
+EKS lập tức trải qua luồng compile render rồi được ra áp trúng theo văn
+kiện từ \texttt{k8s/\allowbreak{}eks/\allowbreak{}serviceaccount.\allowbreak{}yaml}.
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -139,11 +149,12 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{ConfigMap and Secret
-usage}\par
+\vspace{0.5em}\noindent\textbf{Sử dụng ConfigMap và
+Secret}\par
 
-The production ConfigMap comes from \texttt{k8s/\allowbreak{}eks/\allowbreak{}configmap.\allowbreak{}yaml}.
-Important values include:
+Hồ sơ ConfigMap thi triển ra production bắt nguồn xuất nạp từ văn kiện
+\texttt{k8s/\allowbreak{}eks/\allowbreak{}configmap.\allowbreak{}yaml}. Các trường định nghĩa mạn trọng cốt yếu
+gồm có:
 
 {
 \begingroup
@@ -152,7 +163,7 @@ Important values include:
 \renewcommand{\arraystretch}{1.15}
 \begin{longtable}{@{}ll@{}}
 \toprule\noalign{}
-Key & Value or purpose \\
+Khóa & Giá trị hoặc mục đích \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -171,11 +182,12 @@ Key & Value or purpose \\
 \endgroup
 }
 
-The deployment creates or updates Kubernetes Secret
-\texttt{internship-\allowbreak{}secrets} from GitHub secrets. Do not print secret
-values.
+Tiến trình triển khai kiến dựng hoặc cập nhật thẳng cho Kubernetes
+Secret mang danh nhãn \texttt{internship-\allowbreak{}secrets} vặt nạp thông số tự
+trong cối lưu bí mật của GitHub. Nghiêm cấm hão huyền in tuế ngã sa ra
+mạn minh văn đối với mọi giá trị mật mã bí ẩn.
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -184,11 +196,12 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Migration and chat initialization
-jobs}\par
+\vspace{0.5em}\noindent\textbf{Các job migration và khởi tạo dữ liệu
+chat}\par
 
-The deployment deletes old jobs, applies fresh jobs, and waits for
-completion:
+Học theo tôn chỉ gọn gàng, hệ triển khai sẽ dẹp cạn sạch mọi xác tàn job
+cũ rách, rồi tự do tạc phác đẩy lên các job mới tinh sành, kiêm mẫn chìm
+an đợi còi ra lệnh thành khơi trót lọt:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -200,10 +213,12 @@ completion:
 \end{Highlighting}
 \end{Shaded}
 
-\texttt{backend-\allowbreak{}migrate} runs \texttt{alembic\ upgrade\ head}.
-\texttt{chat-\allowbreak{}init} initializes the DynamoDB chat tables.
+Job \texttt{backend-\allowbreak{}migrate} ra rã thọ thi lệnh
+\texttt{alembic\ upgrade\ head}. Còn \texttt{chat-\allowbreak{}init} hoan hỷ khai mở
+cất cọc cho chuỗi cơ quan bảng chat tại DynamoDB.
 
-\vspace{0.5em}\noindent\textbf{Workload deployments}\par
+\vspace{0.5em}\noindent\textbf{Triển khai các
+workload}\par
 
 {
 \begingroup
@@ -220,13 +235,13 @@ completion:
 \begin{minipage}[b]{\linewidth}\raggedright
 Deployment
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Container command
+Lệnh container (Container command)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Port
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 Replicas
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
@@ -234,21 +249,24 @@ Purpose
 \endlastfoot
 \texttt{backend} &
 \texttt{uvicorn\ app.\allowbreak{}main:app\ -\/\allowbreak{}-host\ 0.\allowbreak{}0.\allowbreak{}0.\allowbreak{}0\ -\/\allowbreak{}-port\ 8000\ -\/\allowbreak{}-proxy-\allowbreak{}headers}
-& 8000 & 2 & FastAPI REST API \\
-\texttt{chat-\allowbreak{}service} & \texttt{node\ server.\allowbreak{}js} through image start
-command & 3000 & 2 & Chat REST and Socket.IO \\
+& 8000 & 2 & Phục vụ dịch vụ REST API trên FastAPI \\
+\texttt{chat-\allowbreak{}service} & \texttt{node\ server.\allowbreak{}js} thông qua chuỗi lệnh
+khởi xướng tự bản thể image & 3000 & 2 & Dịch vụ Chat REST kết hợp
+Socket.IO \\
 \texttt{backend-\allowbreak{}outbox-\allowbreak{}dispatcher} &
-\texttt{python\ -m\ app.\allowbreak{}workers.\allowbreak{}outbox\_\allowbreak{}dispatcher} & 9101 metrics & 1 &
-Publishes outbox events to SQS \\
+\texttt{python\ -m\ app.\allowbreak{}workers.\allowbreak{}outbox\_\allowbreak{}dispatcher} & 9101 cho metrics &
+1 & Trích xuất và phát thông tin sự kiện từ outbox qua SQS \\
 \texttt{backend-\allowbreak{}processing-\allowbreak{}worker} &
-\texttt{python\ -m\ app.\allowbreak{}workers.\allowbreak{}processing\_\allowbreak{}worker} & 9102 metrics & 2
-in manifest, can be rendered to 0 & Async AI/document jobs \\
-\texttt{ai-\allowbreak{}service} & AI image command & 8010 & 1 & SageMaker adapter \\
+\texttt{python\ -m\ app.\allowbreak{}workers.\allowbreak{}processing\_\allowbreak{}worker} & 9102 cho metrics &
+2 trong manifest, tự chủ ngả dãn xuống 0 & Gánh tải xử lý tài liệu cùng
+thao tác AI bất đồng bộ \\
+\texttt{ai-\allowbreak{}service} & Lệnh mặc định gắn trong image AI & 8010 & 1 & Bộ
+đệm trung gian cho SageMaker \\
 \end{longtable}
 \endgroup
 }
 
-Apply and verify:
+Khải chạy ban bố và rà kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -261,27 +279,31 @@ Apply and verify:
 \end{Highlighting}
 \end{Shaded}
 
-Only run the \texttt{ai-\allowbreak{}service} rollout command when AI deployment is
-enabled.
+Lưu tâm khẩn thiết thọ thi dòng lệnh rà cuộn bản phát hành (rollout
+status) cho \texttt{ai-\allowbreak{}service} duy chỉ các dịp cơ chế cho phép triển
+khai cống AI vỗ tay gạt bật.
 
-\vspace{0.5em}\noindent\textbf{AI and processing worker
-gate}\par
+\vspace{0.5em}\noindent\textbf{Chốt kiểm soát cho dịch vụ AI và processing
+worker}\par
 
-The deployment script blocks unsafe worker enablement:
+Tập lệnh kịch bản cản rào ngăn kiêng mọi ý định gạt rẽ cho worker ngạo
+mạn bật vùng bãi khuyết thiếu an nộ:
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} requires
-  \texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED=true}.
+  Biến cấu hình \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} khẩn khoản
+  kham thấu đòi hỏi \texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED=true}.
 \item
-  \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} requires \texttt{AI\_\allowbreak{}IMAGE}.
+  Tham số \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} kiên kỵ rêu đòi nạp
+  biến \texttt{AI\_\allowbreak{}IMAGE}.
 \item
-  SageMaker endpoint \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b} must be
-  \texttt{InService}.
+  Trạng thái cất vây cho SageMaker endpoint \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b}
+  bắt bấu ngã về mác \texttt{InService}.
 \end{itemize}
 
-Check the endpoint before enabling the worker:
+Thăm viếng tình thế cọ endpoint trước phút ban trát cấp visa cho worker
+hoạt động:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -293,7 +315,7 @@ Check the endpoint before enabling the worker:
 \end{Highlighting}
 \end{Shaded}
 
-Expected result:
+Kết quả mong đợi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -301,7 +323,8 @@ Expected result:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Health probes}\par
+\vspace{0.5em}\noindent\textbf{Các điểm kiểm tra sức khỏe (Health
+probes)}\par
 
 {
 \begingroup
@@ -331,8 +354,8 @@ Liveness probe
 \texttt{/\allowbreak{}health/\allowbreak{}live} \\
 \texttt{chat-\allowbreak{}service} & \texttt{/\allowbreak{}health/\allowbreak{}live} & \texttt{/\allowbreak{}health/\allowbreak{}ready} &
 \texttt{/\allowbreak{}health/\allowbreak{}live} \\
-\texttt{ai-\allowbreak{}service} & Not configured separately & \texttt{/\allowbreak{}health/\allowbreak{}ready}
-& \texttt{/\allowbreak{}health/\allowbreak{}ready} \\
+\texttt{ai-\allowbreak{}service} & Không cấu hình phân định ra riêng &
+\texttt{/\allowbreak{}health/\allowbreak{}ready} & \texttt{/\allowbreak{}health/\allowbreak{}ready} \\
 \texttt{backend-\allowbreak{}outbox-\allowbreak{}dispatcher} & TCP \texttt{9101} & TCP
 \texttt{9101} & TCP \texttt{9101} \\
 \texttt{backend-\allowbreak{}processing-\allowbreak{}worker} & TCP \texttt{9102} & TCP
@@ -341,9 +364,9 @@ Liveness probe
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{HPA and PDB}\par
+\vspace{0.5em}\noindent\textbf{HPA và PDB}\par
 
-The manifest \texttt{k8s/\allowbreak{}app/\allowbreak{}autoscaling.\allowbreak{}yaml} defines:
+Văn kiện \texttt{k8s/\allowbreak{}app/\allowbreak{}autoscaling.\allowbreak{}yaml} quy bạo định nghĩa rõ ràng:
 
 {
 \begingroup
@@ -356,7 +379,7 @@ The manifest \texttt{k8s/\allowbreak{}app/\allowbreak{}autoscaling.\allowbreak{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Resource
+Tài nguyên
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 HPA
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -366,19 +389,23 @@ PDB
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{backend} & min 2, max 5, CPU target 70\% & min available 1 \\
-\texttt{chat-\allowbreak{}service} & min 2, max 5, CPU target 70\% & min available
-1 \\
-\texttt{backend-\allowbreak{}processing-\allowbreak{}worker} & min 2, max 5, CPU target 70\% & min
-available 1 when worker enabled \\
+\texttt{backend} & tối thiểu 2, tối đa 5, mục tiêu nhịp CPU ở 70\% & số
+lượng tối thiểu duy trì available là 1 \\
+\texttt{chat-\allowbreak{}service} & tối thiểu 2, tối đa 5, mục tiêu nhịp CPU ở 70\%
+& số lượng tối thiểu duy trì available là 1 \\
+\texttt{backend-\allowbreak{}processing-\allowbreak{}worker} & tối thiểu 2, tối đa 5, mục tiêu
+nhịp CPU ở 70\% & số lượng tối thiểu duy trì available là 1 (chỉ thi khi
+cọc worker được bật) \\
 \end{longtable}
 \endgroup
 }
 
-When the processing worker is disabled, deployment scripts delete its
-HPA and PDB and scale it to zero.
+Trong các kịch bản tiến trình processing worker bị thiêng cho đóng tịt
+khóa vãn (disabled), tập kịch bản sẽ tháo rách xao hạ xóa luôn chuỗi HPA
+cùng PDB gắn theo nó, và kiên khôn dãn cọc số replica nháo ép trúng mức
+0.
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -388,23 +415,25 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Ingress and ALB routing}\par
+\vspace{0.5em}\noindent\textbf{Ingress và định tuyến
+ALB}\par
 
-The public ALB Ingress is \texttt{k8s/\allowbreak{}eks/\allowbreak{}ingress-\allowbreak{}alb-\allowbreak{}no-\allowbreak{}domain.\allowbreak{}yaml}.
-It routes:
+Thực thể ALB Ingress vinh mang định dạng public nằm gọn tại cõi
+\texttt{k8s/\allowbreak{}eks/\allowbreak{}ingress-\allowbreak{}alb-\allowbreak{}no-\allowbreak{}domain.\allowbreak{}yaml}. Con đường rẽ sóng bao vây
+chia tải ngã trúng:
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{/\allowbreak{}api} to Service \texttt{backend}
+  \texttt{/\allowbreak{}api} vãng trúng tới Service \texttt{backend}
 \item
-  \texttt{/\allowbreak{}chat} to Service \texttt{chat-\allowbreak{}service}
+  \texttt{/\allowbreak{}chat} trao cho Service \texttt{chat-\allowbreak{}service}
 \item
-  \texttt{/\allowbreak{}socket.\allowbreak{}io} to Service \texttt{chat-\allowbreak{}service}
+  \texttt{/\allowbreak{}socket.\allowbreak{}io} điều thẳng cho Service \texttt{chat-\allowbreak{}service}
 \end{itemize}
 
-Deploy public ALB routing with the workflow mode \texttt{deploy-\allowbreak{}public}
-or the helper script:
+Thi trổ tung cọc phân tuyến ALB public qua dây chuyền workflow mang chế
+độ \texttt{deploy-\allowbreak{}public}, hoặc bốc gọi cẩu qua tập lệnh hỗ thủ:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -412,7 +441,7 @@ or the helper script:
 \end{Highlighting}
 \end{Shaded}
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -422,9 +451,11 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Port-forward smoke checks}\par
+\vspace{0.5em}\noindent\textbf{Lệnh kiểm tra nhanh qua
+Port-forward}\par
 
-The deployment script uses local port-forwards for health smoke tests:
+Tập lệnh ban bố trung thọ viện binh các chốt tra chuyển tiếp cổng nội
+bồi (local port-forwards) phục vụ luồng test thử nghìn nhịp khói ngạo:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -447,28 +478,37 @@ The deployment script uses local port-forwards for health smoke tests:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
 \begin{itemize}
 \tightlist
 \item
-  Migration and chat init jobs complete.
+  Hai thợ job migration và khởi tạo dữ liệu chat reo hò kết hoang thành
+  tựu trọn vẹn.
 \item
-  Backend, chat, and dispatcher deployments roll out successfully.
+  Tiến trình cuộn gác mác triển khai của backend, chat cùng dispatcher
+  xuôi luông êm mượt vãng quan.
 \item
-  Processing worker is either Ready or intentionally scaled to zero.
+  Tiến trình processing worker chễm trệ tựa cọc trạng thái Ready, hoặc
+  kiên chánh ngọ yên ở quy mô 0 replica đúng kịch bản thiết lập chủ
+  trạch.
 \item
-  AI service is Ready when AI deployment is enabled.
+  Dịch vụ AI nghênh ngang an tọa trạng thái Ready bất cứ kì luồng bật
+  cống AI thi thố mở ra.
 \item
-  Services have endpoints.
+  Toàn diện các cụm Service hoành khai rước rẽ đầy đủ trường endpoints
+  gắn đệm.
 \item
-  ALB health checks pass for backend and chat.
+  Cuộc thi rà soát sức khỏe từ ALB thông quan vãn phúc trát danh cho
+  backend và chat.
 \item
-  CloudFront can reach ALB origin for \texttt{/\allowbreak{}api}, \texttt{/\allowbreak{}chat}, and
+  Mạng CDN CloudFront không trầy một vảy băng qua chạm tới origin của
+  ALB dành riêng cho ranh gới chuỗi \texttt{/\allowbreak{}api}, \texttt{/\allowbreak{}chat}, và
   \texttt{/\allowbreak{}socket.\allowbreak{}io}.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -481,35 +521,52 @@ The deployment script uses local port-forwards for health smoke tests:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Nguyên nhân
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{Missing\ required\ environment\ variable} & Required deployment
-secret or variable absent & Add the missing GitHub secret or variable \\
-\texttt{Unable\ to\ compute\ backend/\allowbreak{}chat\ image\ URIs} & Workflow
-variable or SHA-based image construction issue & Use account, region,
-repository, and \texttt{github.\allowbreak{}sha} \\
-ECR image not found & Build/push job did not publish the SHA tag &
-Inspect \texttt{build-\allowbreak{}images} job and ECR repository \\
-\texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} fails & AI dependencies not
-ready & Enable AI image and verify SageMaker \texttt{InService} first \\
-Chat readiness fails & Redis or DynamoDB dependency unavailable &
-Inspect chat logs and DynamoDB/Redis status \\
-Backend readiness fails & PostgreSQL unavailable or migration failed &
-Inspect backend logs and RDS connectivity \\
+Lên tiếng phan ca \texttt{Missing\ required\ environment\ variable} &
+Thông số mật mã secret hoặc biến môi trường bắt buộc của luồng ban bố
+biến đâu bặt vô âm tín & Kíp mau cẩu bồi bổ nạp thẳng trúng biến cấu
+hình hay bí ẩn secret còn khuyết trống cho bên mạn GitHub \\
+Ngứa xao còi tháo
+\texttt{Unable\ to\ compute\ backend/\allowbreak{}chat\ image\ URIs} & Sa khuyết biến
+định hình của workflow hay gặt hỏng trong nhịp tự động sinh chuỗi định
+danh ảnh bám theo nhãn SHA & Vận chuân chuẩn xác chuỗi lắp kết bấu từ
+tài khoản, vùng khu vực region, danh tước kho ECR cùng tham mác cọc
+\texttt{github.\allowbreak{}sha} \\
+Bồi tra thất chốn chẳng thấy container image trên kho ECR & Bước test
+tác nghiệp build/push hãi hỏng chưa nạp thăng chùm thẻ tag mang chữ ký
+SHA & Xâm nhập điều rã nguyên rễ tại job \texttt{build-\allowbreak{}images} và mục
+trần tình trạng kho lưu trữ ECR repository \\
+Cọc \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} chửi thề khước vãn lệnh
+rào & Đàn hạ tầng rào cản phụ thuộc của AI nằm phó hỏng trượt dốc sa mác
+& Nảy lệnh bật image AI trước ra tiễn còi thanh tra tình huống cọc
+SageMaker ngã trúng trạng thái \texttt{InService} \\
+Lệnh thăm dò sức khỏe dịch vụ chat trả về bế quẫn trượt vãng & Cơ quan
+tài nguyên phụ thuộc mang tên Redis hoặc DynamoDB chìm lim ngắc gục &
+Truy nạp thám rà tệp log của dịch vụ chat kết hợp kiểm chứng hiện trạng
+sức khỏe cõi DynamoDB cùng Redis \\
+Bước khảo sát sức khỏe của backend khóc rêu than gục ngã & Kho cọc CSDL
+PostgreSQL chìm phỉ vắng dạng hoặc luồng thọ di cư migration trồi sập
+lọt khuyết & Khai quan coi soi nhật ký log thuộc về backend song song
+soát tra khả năng vươn luồn kết nối rào tới RDS \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-The EKS backend deployment is complete when backend, chat, dispatcher,
-optional worker, and optional AI adapter are running with correct
-probes, services, endpoints, scaling controls, and ALB routing.
+Toàn cõi quy trình đưa lên EKS cho hệ thống backend ca rền khúc hoan
+khải, trọn trào trát vinh danh thành tài vãng trát ngay tại khúc khoảnh
+mác khi backend, dịch vụ chat, dispatcher, cùng các chuỗi tùy nhĩ của
+worker và bộ đệm AI adapter đồng loạt thi thố vũ múa vững vàng, bám khôn
+bính sát cấu hình đo dò sức khỏe probess chuẩn chỉnh, dịch vụ minh bạch
+endpoint trứ rêu, luật gò dãn dẻo thau chu toàn kiêm vây luân cọ phân
+luồng giao thông mạch lạc theo chân ALB routing.

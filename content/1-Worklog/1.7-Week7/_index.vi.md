@@ -21,9 +21,8 @@ Trong nhóm 5 thành viên, mục tiêu tuần 7 của tôi là tích hợp prod
 | Hoàn thành | Hoàn thiện EKS deployment script cho secret, config, job, rollout, health check và AI service tùy chọn. | `scripts/k8s/deploy-eks.sh`. |
 | Hoàn thành | Bổ sung chế độ workflow chỉ rollout workload hiện có. | Commit `51bceee` và `f81e086`. |
 | Hoàn thành | Củng cố public ingress deployment dựa trên controller readiness và ALB health check. | Commit `036a516` và `8272c4a`. |
-| Hoàn thành một phần | Thu thập AWS console/CLI evidence cho RDS, Redis, SQS, EKS và service account. | Cần bổ sung minh chứng: chưa có đầy đủ live AWS screenshot/log trong kho local. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The target production environment is centered on EKS namespace `internship`. Backend and chat are long-running Kubernetes Deployments. PostgreSQL, Redis, DynamoDB, SQS, S3, CloudFront, and SageMaker are managed AWS services outside the cluster.
 
@@ -43,7 +42,7 @@ graph TB
 
 Runtime variables such as `DATABASE_URL`, `REDIS_URL`, `OUTBOX_QUEUE_URL`, and `AWS_REGION` are treated as deployment inputs or Kubernetes secret/config values. The report does not include their secret values.
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
 | Problem | Root cause | Resolution | Status |
 |---|---|---|---|
@@ -51,9 +50,8 @@ Runtime variables such as `DATABASE_URL`, `REDIS_URL`, `OUTBOX_QUEUE_URL`, and `
 | AWS Load Balancer Controller may not be ready when ingress is applied. | Webhook endpoints can be unavailable during controller rollout. | Public ingress script waits and retries before applying ingress. | Completed |
 | Health checks can fail briefly while target groups converge. | ALB registration and pod readiness are eventually consistent. | Public deploy script retries ALB health checks. | Completed |
 | EKS rollout may run with limited permissions. | IAM/RBAC permissions may not allow every optional inspection command. | Rollout script tolerates selected limited-permission cases without hiding actual failures. | Completed |
-| Exact live managed-service evidence is missing from report files. | AWS CLI/console artifacts were not attached locally. | I kept EKS/RDS/Redis/SQS screenshots and logs pending. | Blocked |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -62,19 +60,9 @@ Runtime variables such as `DATABASE_URL`, `REDIS_URL`, `OUTBOX_QUEUE_URL`, and `
 | Rollout mode | Implemented | `scripts/aws/rollout-eks-workloads.sh` supports restart/scale behavior for backend, chat, dispatcher, and processing worker. |
 | Managed AWS resource proof | Partially completed | `PROJECT_CONTEXT.md` lists current resource names, but screenshots/CLI logs should be attached as evidence. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-07/`, for example:
-
-- `/images/worklog/week-07/eks-cluster.png`
-- `/images/worklog/week-07/rds-postgres.png`
-- `/images/worklog/week-07/elasticache-redis.png`
-- `/images/worklog/week-07/sqs-outbox.png`
-- `/images/worklog/week-07/alb-target-groups.png`
-
-### Commits and Pull Requests
+### Commit và yêu cầu kéo mã
 
 | Commit | Description | Evidence | Pull Request |
 |---|---|---|---|
@@ -84,7 +72,7 @@ Evidence pending: add screenshots under `/images/worklog/week-07/`, for example:
 | `036a516` | Waited for ALB webhook before public ingress. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/036a516acb845c75baeb3eed4d84177a2b58c447) | Evidence pending |
 | `8272c4a` | Retried ALB health checks during public deploy. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/8272c4ac1efca064f09470fe76da0e162ecc6ef6) | Evidence pending |
 
-### Test Logs
+### Nhật ký kiểm thử
 
 Evidence pending: attach actual output from:
 
@@ -97,22 +85,22 @@ kubectl get serviceaccount -n internship
 kubectl describe serviceaccount internship-runtime -n internship
 ```
 
-### Build Logs
+### Nhật ký build
 
 Evidence pending: attach EKS deployment workflow logs that show the image tags selected for backend, chat, and optional AI service.
 
-### Deployment Logs
+### Nhật ký triển khai
 
 Evidence pending: attach `kubectl rollout status`, `kubectl get pods -n internship`, and ALB health-check output.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Kết quả cá nhân tuần 7 là quy trình AWS tích hợp cho các service của nhóm: rollout EKS workload, ALB routing, cấu hình managed service và kiểm soát vận hành. Điều này không đồng nghĩa với việc cá nhân sở hữu các chức năng ứng dụng chạy trên hạ tầng đó.
 
-## Lessons Learned
+## Bài học rút ra
 
 Production Kubernetes deployment depends on more than manifests. IAM, controller readiness, target group convergence, network routing, health endpoints, and secret handling must all be validated separately.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
 Run the full build, push, deploy, frontend, SageMaker, and operational-validation path; then document final completed items, partial items, and cost-control actions.

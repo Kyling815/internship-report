@@ -1,13 +1,14 @@
-\vspace{0.5em}\noindent\textbf{Week 1 - Project Analysis and Architecture
-Baseline}\par
+\vspace{0.5em}\noindent\textbf{Tuần 1 - Phân tích project và kiến trúc cơ
+sở}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-The first week focused on understanding the Internship Application
-Tracker source code, identifying the main service boundaries, and
-documenting the initial architecture before cloud deployment work began.
+Trong nhóm 5 thành viên, mục tiêu cá nhân của tôi trong tuần đầu là tìm
+hiểu các phần mã nguồn liên quan đến triển khai, xác định ranh giới và
+phụ thuộc giữa các service, đồng thời lập tài liệu kiến trúc cơ sở cho
+công việc Cloud/DevOps ở các tuần sau.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -20,80 +21,72 @@ documenting the initial architecture before cloud deployment work began.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Reviewed the monorepo structure and identified the main
-runtime services. & Source tree, \texttt{README.\allowbreak{}md},
-\texttt{docker-\allowbreak{}compose.\allowbreak{}yml}, and commit \texttt{4e939cf}. \\
-Completed & Mapped the frontend, FastAPI backend, chat service, AI
-service, PostgreSQL, Redis, and DynamoDB dependencies. &
-\texttt{backend/\allowbreak{}}, \texttt{frontend/\allowbreak{}}, \texttt{chat-\allowbreak{}service/\allowbreak{}},
-\texttt{ai\_\allowbreak{}service/\allowbreak{}}, Compose files, and service configuration. \\
-Completed & Reviewed the initial request flow between browser, API,
-chat, and storage layers. & Frontend API clients, backend routers, chat
-Socket.IO server, and backend storage services. \\
-Completed & Checked the local startup model and documented separate
-service startup commands. & Commits \texttt{d3c1168} and
-\texttt{e43cc04}. \\
-Partially completed & Collected screenshots for the first local
-architecture baseline. & Evidence pending: screenshots are not present
-in the Hugo image directory yet. \\
+Hoàn thành & Khảo sát cấu trúc monorepo và xác định các service chạy
+chính. & Cây mã nguồn, \texttt{README.\allowbreak{}md}, \texttt{docker-\allowbreak{}compose.\allowbreak{}yml}
+và commit \texttt{4e939cf}. \\
+Hoàn thành & Lập bản đồ phụ thuộc giữa frontend, FastAPI backend, chat
+service, AI service, PostgreSQL, Redis và DynamoDB. & Các thư mục
+service, Compose và cấu hình hệ thống. \\
+Hoàn thành & Review luồng request ban đầu giữa browser, API, chat và các
+lớp lưu trữ. & API client, backend router, Socket.IO server và storage
+service. \\
+Hoàn thành & Kiểm tra mô hình khởi chạy local và tài liệu hóa cách chạy
+riêng từng service. & Commit \texttt{d3c1168} và \texttt{e43cc04}. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
-The source repository is a monorepo with separate service
-responsibilities:
+Kho mã nguồn là một monorepo, trong đó mỗi dịch vụ đảm nhiệm một trách
+nhiệm riêng:
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{frontend/\allowbreak{}}: React and Vite application for Candidate and HR
-  users.
+  \texttt{frontend/\allowbreak{}}: ứng dụng React và Vite dành cho ứng viên và nhân
+  sự.
 \item
-  \texttt{backend/\allowbreak{}}: FastAPI API, SQLAlchemy models, Alembic migrations,
-  authentication, jobs, applications, documents, and AI orchestration
-  routes.
+  \texttt{backend/\allowbreak{}}: API FastAPI, mô hình SQLAlchemy, migration Alembic,
+  xác thực, công việc, hồ sơ ứng tuyển, tài liệu và các tuyến điều phối
+  AI.
 \item
-  \texttt{chat-\allowbreak{}service/\allowbreak{}}: Node.js, Express, Socket.IO, Redis adapter,
-  and DynamoDB-backed chat persistence.
+  \texttt{chat-\allowbreak{}service/\allowbreak{}}: Node.js, Express, Socket.IO, bộ điều hợp Redis
+  và cơ chế lưu hội thoại trên DynamoDB.
 \item
-  \texttt{ai\_\allowbreak{}service/\allowbreak{}}: AI parsing, CV/job normalization, reranking,
-  and later SageMaker adapter code.
+  \texttt{ai\_\allowbreak{}service/\allowbreak{}}: phân tích AI, chuẩn hóa CV/công việc, xếp hạng
+  lại và mã bộ điều hợp SageMaker được bổ sung sau đó.
 \item
-  \texttt{docker-\allowbreak{}compose.\allowbreak{}yml}: local dependencies and multi-service
-  startup path.
+  \texttt{docker-\allowbreak{}compose.\allowbreak{}yml}: các thành phần phụ thuộc cục bộ và quy
+  trình khởi chạy nhiều dịch vụ.
 \end{itemize}
 
-Initial architecture baseline:
+Kiến trúc cơ sở ban đầu:
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR User{[}``Candidate /
-HR browser''{]} --\textgreater{} Frontend{[}``React / Vite frontend''{]}
-Frontend --\textgreater{} Backend{[}``FastAPI backend''{]} Frontend
---\textgreater{} Chat{[}``Node.js Socket.IO chat service''{]} Backend
---\textgreater{} Postgres{[}``PostgreSQL''{]} Backend --\textgreater{}
-Storage{[}``S3-compatible document storage''{]} Backend --\textgreater{}
-AI{[}``AI service''{]} Chat --\textgreater{} Redis{[}``Redis
-pub/sub''{]} Chat --\textgreater{} DynamoDB{[}``DynamoDB chat
-tables''{]} \{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Mô tả sơ bộ.} Trình duyệt sử dụng frontend React/Vite; frontend
+gọi backend FastAPI cho các chức năng ứng tuyển và dịch vụ Socket.IO cho
+trò chuyện thời gian thực. Backend dùng PostgreSQL, kho tài liệu và dịch
+vụ AI, còn chat dùng Redis pub/sub và các bảng DynamoDB.
 
-The baseline also identified the first cloud migration direction: keep
-long-running backend and chat services containerized, move durable
-relational data to PostgreSQL/RDS, use DynamoDB for chat records, use
-Redis for realtime fan-out, and prepare the application for
-containerization and CI/CD.
+Kiến trúc cơ sở cũng xác định hướng chuyển đổi lên đám mây ban đầu: đóng
+gói backend và dịch vụ chat chạy dài hạn trong container, chuyển dữ liệu
+quan hệ bền vững sang PostgreSQL/RDS, dùng DynamoDB cho bản ghi hội
+thoại, dùng Redis để phân phối sự kiện thời gian thực, đồng thời chuẩn
+bị ứng dụng cho container và CI/CD.
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -107,41 +100,38 @@ containerization and CI/CD.
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Problem
+Vấn đề
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Root cause
+Nguyên nhân gốc
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Giải pháp
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-The first source snapshot contained broad application code and generated
-dependency content. & The initial commit added the complete baseline in
-one large commit. & Later work separated documentation, scripts, and
-runtime responsibilities into clearer paths. & Completed \\
-The project originally contained Prisma-related Node database artifacts
-while the backend used SQLAlchemy/PostgreSQL. & Database strategy
-changed toward FastAPI, SQLAlchemy, Alembic, and PostgreSQL. & Commit
-\texttt{ab60f7d} removed Prisma artifacts and documented the EC2/RDS
-direction. & Completed \\
-Local startup needed to support more than one developer workflow. & A
-single startup command was useful for demos, but separate terminal
-commands were easier for debugging. & Commits \texttt{d3c1168} and
-\texttt{e43cc04} documented both startup approaches. & Completed \\
-I did not have architecture screenshots in the local evidence archive. &
-I did not have the original screenshot artifacts in the source repo. & I
-kept screenshot evidence pending instead of creating fake screenshots. &
-Blocked \\
+Ảnh chụp mã nguồn đầu tiên chứa phạm vi mã ứng dụng và thành phần phụ
+thuộc được sinh tự động quá rộng. & Commit ban đầu đưa toàn bộ nền tảng
+vào một commit lớn. & Các công việc sau đó tách tài liệu, tập lệnh và
+trách nhiệm thời gian chạy thành các đường dẫn rõ ràng hơn. & Hoàn
+thành \\
+Dự án ban đầu còn thành phần cơ sở dữ liệu Node liên quan đến Prisma
+trong khi backend dùng SQLAlchemy/PostgreSQL. & Chiến lược cơ sở dữ liệu
+chuyển sang FastAPI, SQLAlchemy, Alembic và PostgreSQL. & Commit
+\texttt{ab60f7d} loại bỏ thành phần Prisma và ghi lại hướng triển khai
+EC2/RDS. & Hoàn thành \\
+Cách khởi chạy cục bộ cần hỗ trợ nhiều quy trình phát triển. & Một lệnh
+duy nhất thuận tiện khi trình diễn, còn các lệnh terminal riêng dễ gỡ
+lỗi hơn. & Các commit \texttt{d3c1168} và \texttt{e43cc04} ghi lại cả
+hai cách khởi chạy. & Hoàn thành \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -154,50 +144,35 @@ Results}\par
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Area
+Hạng mục
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Result
+Kết quả
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence
+Minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Source inspection & Completed & \texttt{git\ show\ -\/\allowbreak{}-stat\ 4e939cf}
-shows backend, frontend, Docker, migrations, tests, and docs added in
-the first commit. \\
-Local startup & Partially completed & Startup scripts and README
-instructions exist in history, but no saved terminal log was found. \\
-Tests & Partially completed & Test files exist under
-\texttt{backend/\allowbreak{}tests}; no Week 1 test output artifact was found. \\
-Build & Partially completed & Dockerfiles and Vite project files exist;
-no Week 1 build log artifact was found. \\
-Deployment & Planned & Week 1 only defined the deployment direction; no
-AWS deployment was expected yet. \\
+Rà soát mã nguồn & Hoàn thành & \texttt{git\ show\ -\/\allowbreak{}-stat\ 4e939cf}
+cho thấy backend, frontend, Docker, migration, kiểm thử và tài liệu được
+thêm trong commit đầu tiên. \\
+Khởi chạy cục bộ & Hoàn thành một phần & Lịch sử có tập lệnh khởi chạy
+và hướng dẫn README nhưng không tìm thấy nhật ký terminal đã lưu. \\
+Kiểm thử & Hoàn thành một phần & Có các tệp kiểm thử trong
+\texttt{backend/\allowbreak{}tests}; chưa tìm thấy kết quả kiểm thử của tuần 1. \\
+Build & Hoàn thành một phần & Có Dockerfile và các tệp dự án Vite; chưa
+tìm thấy nhật ký build của tuần 1. \\
+Triển khai & Đã lập kế hoạch & Tuần 1 chỉ xác định hướng triển khai,
+chưa đặt mục tiêu triển khai AWS. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add architecture or local application screenshots
-under \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}repository-\allowbreak{}structure.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}local-\allowbreak{}backend-\allowbreak{}health.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}01/\allowbreak{}architecture-\allowbreak{}baseline.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -213,68 +188,73 @@ Requests}\par
 \begin{minipage}[b]{\linewidth}\raggedright
 Commit
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
+Mô tả
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence
+Minh chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Pull Request
+Yêu cầu kéo mã
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{4e939cf} & Initial application baseline with backend, frontend,
-Docker Compose, migrations, and tests. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/4e939cf0313e73fd915380987cce1a5a7c9728a0}{View
-commit} & Evidence pending \\
-\texttt{5ab2924} & Added AI CV matching and AWS RDS configuration. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/5ab2924ca69ed90f7ef5fe5a454578bfa888e9dc}{View
-commit} & Evidence pending \\
-\texttt{ab60f7d} & Removed Prisma artifacts and documented EC2/RDS
-deployment direction. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/ab60f7d02c6c8fc73384198117625dea5973e24f}{View
-commit} & Evidence pending \\
-\texttt{d3c1168} & Added one-command full-stack startup. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/d3c1168cea4521823febf32e1fd9714e928d0ddc}{View
-commit} & Evidence pending \\
-\texttt{e43cc04} & Documented separate service startup commands. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/e43cc042d868b1ca5c18524d4735dca178f25043}{View
-commit} & Evidence pending \\
+\texttt{4e939cf} & Tạo nền tảng ứng dụng ban đầu gồm backend, frontend,
+Docker Compose, migration và kiểm thử. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/4e939cf0313e73fd915380987cce1a5a7c9728a0}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{5ab2924} & Bổ sung đối sánh CV bằng AI và cấu hình AWS RDS. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/5ab2924ca69ed90f7ef5fe5a454578bfa888e9dc}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{ab60f7d} & Loại bỏ thành phần Prisma và ghi lại hướng triển khai
+EC2/RDS. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/ab60f7d02c6c8fc73384198117625dea5973e24f}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{d3c1168} & Bổ sung cách khởi chạy toàn bộ hệ thống bằng một
+lệnh. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/d3c1168cea4521823febf32e1fd9714e928d0ddc}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{e43cc04} & Ghi lại các lệnh khởi chạy riêng cho từng dịch vụ. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/e43cc042d868b1ca5c18524d4735dca178f25043}{Xem
+commit} & Minh chứng đang chờ \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
-Evidence pending: no saved Week 1 local or CI test log was found in the
-source repository.
+Minh chứng đang chờ: không tìm thấy nhật ký kiểm thử cục bộ hoặc CI của
+tuần 1 trong kho mã nguồn.
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
-Evidence pending: no saved Week 1 Docker or frontend build log was found
-in the source repository.
+Minh chứng đang chờ: không tìm thấy nhật ký build Docker hoặc frontend
+của tuần 1 trong kho mã nguồn.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
-Not applicable for Week 1. Deployment planning started in this phase,
-but cloud deployment was planned for later weeks.
+Không áp dụng cho tuần 1. Giai đoạn này bắt đầu lập kế hoạch triển khai;
+việc triển khai lên đám mây được dành cho các tuần sau.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-By the end of Week 1, the project had a clear service map, a baseline
-monorepo structure, a PostgreSQL-backed FastAPI backend, a React/Vite
-frontend, and an initial plan for containerization and AWS deployment.
+Cuối tuần 1, tôi đã hoàn thành bản đồ service/phụ thuộc phục vụ phạm vi
+triển khai và xác định hướng container hóa, triển khai AWS ban đầu. Mã
+nguồn ứng dụng và các chức năng nền tảng là kết quả chung của nhóm 5
+thành viên.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
-The main lesson was that deployment planning depends on clear runtime
-boundaries. Separating API, chat, AI, relational data, realtime pub/sub,
-and document storage early made later Docker, Kubernetes, and AWS work
-easier to reason about.
+Bài học chính là kế hoạch triển khai phụ thuộc vào ranh giới thời gian
+chạy rõ ràng. Việc sớm tách API, chat, AI, dữ liệu quan hệ, cơ chế
+phát/nhận thời gian thực và lưu trữ tài liệu giúp công việc Docker,
+Kubernetes và AWS ở các tuần sau dễ phân tích hơn.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
-The next week should focus on data integrity and concurrency: database
-constraints, duplicate request handling, idempotency keys, versioned
-workflow commands, and tests that prove concurrent writes return
-controlled conflicts instead of inconsistent data.
+Tuần tiếp theo tập trung vào tính toàn vẹn dữ liệu và xử lý đồng thời:
+ràng buộc cơ sở dữ liệu, xử lý yêu cầu trùng, khóa chống lặp, lệnh quy
+trình có phiên bản và các kiểm thử chứng minh thao tác ghi đồng thời trả
+về xung đột có kiểm soát thay vì dữ liệu không nhất quán.

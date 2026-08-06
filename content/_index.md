@@ -9,16 +9,40 @@ chapter: false
 
 This internship report presents the Internship Application Tracker, an AI-integrated internship application management platform that I documented, validated, and prepared for AWS deployment.
 
-![Student profile](/images/avatar.png)
-
 ## Student Information
 
-| Field | Value |
-|---|---|
-| Student name | Evidence required: student name |
-| University | Evidence required: university name |
-| Major | Evidence required: major |
-| Internship position | Cloud / AWS internship project participant |
+<div class="student-profile">
+  <img src="/images/profile/Avatar.png" alt="Student profile photo">
+</div>
+
+<table class="student-information">
+  <tbody>
+    <tr>
+      <td>Student name</td>
+      <td>Hoang Duc Hieu Anh</td>
+    </tr>
+    <tr>
+      <td>University</td>
+      <td>Ho Chi Minh City University of Technology - Vietnam National University HCM</td>
+    </tr>
+    <tr>
+      <td>Major</td>
+      <td>Computer Science</td>
+    </tr>
+    <tr>
+      <td>Internship position</td>
+      <td>Cloud / AWS internship project participant</td>
+    </tr>
+    <tr>
+      <td>Phone number</td>
+      <td><a href="tel:+84931792129">0931792129</a></td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td><a href="mailto:anh.hoangduchieu815@hcmut.edu.vn">anh.hoangduchieu815@hcmut.edu.vn</a></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Internship Organization
 
@@ -39,6 +63,7 @@ This internship report presents the Internship Application Tracker, an AI-integr
 | Project description | A Candidate and HR platform for internship job posting, application tracking, CV/document upload, realtime chat, asynchronous AI processing, and event-driven notification on AWS. |
 | Personal contribution | Architecture documentation, AWS deployment report, workshop steps, troubleshooting record, security/cost analysis, and evidence-based final report preparation. |
 | Public deployment URL | https://dhm2rz5nmsibj.cloudfront.net |
+| Demo video | [Watch the project demo](https://youtu.be/pMq3JmzhudQ?si=cuvjAVDQLTPLu8Uw) |
 
 ## Main AWS Services
 
@@ -67,6 +92,3 @@ This internship report presents the Internship Application Tracker, an AI-integr
 6. [Self-evaluation](6-Self-evaluation/)
 7. [Sharing and Feedback](7-Feedback/)
 
-## Security Notice
-
-Do not publish secrets, access keys, passwords, tokens, database URLs, private repository URLs or private source code on this website.

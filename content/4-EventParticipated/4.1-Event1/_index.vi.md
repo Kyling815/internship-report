@@ -1,10 +1,11 @@
 ---
-title: "Sự kiện 1: FCAJ Community Day – June 2026"
+title: "Sự kiện 1: Ngày hội cộng đồng FCAJ – tháng 6 năm 2026"
 date: 2024-01-01
 weight: 1
 chapter: false
 pre: " <b> 4.1. </b> "
 ---
+
 
 ## Tên sự kiện
 
@@ -79,18 +80,9 @@ Cách tiếp cận này giúp dữ liệu trao đổi giữa AI Assistant và c�
 
 ## Hình ảnh hoặc video chứng minh tham gia
 
-[Xem video ghi hình sự kiện trên YouTube](https://www.youtube.com/live/G8-WlI7f6dE?si=4tnIqB3yrCUW6yjv)
+Minh chứng tham gia cá nhân:
 
-Minh chứng cá nhân cần bổ sung:
-
-- Ảnh chụp màn hình trong quá trình theo dõi livestream.
-- Ảnh lịch sử xem video.
-- Ảnh ghi chú cá nhân về các nội dung kỹ thuật.
-
-<!--
-Evidence required: Add participation evidence image:
-static/images/events/event-1/participation-evidence.png
--->
+![Minh chứng tham gia sự kiện 1](/images/3-Events/Evidence_Events%201.jpg)
 
 ## Bài học rút ra
 

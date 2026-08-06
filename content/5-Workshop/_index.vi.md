@@ -1,9 +1,10 @@
 ---
-title: "Workshop"
+title: "Hội thảo thực hành"
 date: 2024-01-01
 weight: 5
 chapter: false
 pre: " <b> 5. </b> "
+includeContainerContentInReport: true
 ---
 
 ## Tổng quan
@@ -52,7 +53,7 @@ Workshop này phù hợp dành cho:
 
 ## Tóm tắt kiến trúc
 
-![Internship Application Tracker architecture on AWS](/images/5-Workshop/architecture.png)
+![Kiến trúc hạ tầng Internship Application Tracker trên AWS](/images/5-Workshop/infra.png)
 
 Trình duyệt người dùng kết nối an toàn tới Amazon CloudFront thông qua giao thức HTTPS.
 

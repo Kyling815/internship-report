@@ -1,14 +1,15 @@
-\vspace{0.5em}\noindent\textbf{Week 3 - Transactional Outbox and Asynchronous
-Processing}\par
+\vspace{0.5em}\noindent\textbf{Tuần 3 - Transactional outbox và xử lý bất đồng
+bộ}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Week 3 focused on separating committed business changes from downstream
-side effects. The goal was to add a transactional outbox, define an
-event-consumer contract, and move long-running document and AI work into
-retryable background processing.
+Trong nhóm 5 thành viên, mục tiêu tuần 3 của tôi là xác định yêu cầu
+triển khai và tích hợp cho transactional outbox cùng các worker xử lý
+bất đồng bộ. Tôi tập trung vào production transport, vòng đời worker,
+retry, cấu hình và observability; thành viên backend phụ trách business
+implementation.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -21,58 +22,53 @@ retryable background processing.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Designed and implemented the \texttt{outbox\_\allowbreak{}events} table.
-& \texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
-Completed & Added outbox statuses \texttt{PENDING}, \texttt{PROCESSING},
-\texttt{PUBLISHED}, and \texttt{DEAD}. & Migration check constraint and
+Hoàn thành & Review schema \texttt{outbox\_\allowbreak{}events} theo góc nhìn triển
+khai và phục hồi. &
+\texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
+Hoàn thành & Kiểm tra các trạng thái vòng đời và retry model phục vụ vận
+hành. & Migration constraint và
 \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}outbox.\allowbreak{}py}. \\
-Completed & Added \texttt{deduplication\_\allowbreak{}key} and claim/retry indexes. &
-Migration \texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
-Completed & Implemented the backend outbox dispatcher and admin
-operations. & \texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}dispatcher.\allowbreak{}py} and
-\texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}admin.\allowbreak{}py}. \\
-Completed & Documented SQS Standard as the production event transport. &
-\texttt{docs/\allowbreak{}architecture/\allowbreak{}adr/\allowbreak{}ADR-\allowbreak{}001-\allowbreak{}production-\allowbreak{}event-\allowbreak{}transport.\allowbreak{}md}. \\
-Completed & Added \texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} and a processing
-worker for document/AI tasks. & Migration
-\texttt{0008\_\allowbreak{}async\_\allowbreak{}processing\_\allowbreak{}jobs.\allowbreak{}py}, \texttt{processing\_\allowbreak{}jobs.\allowbreak{}py},
-and \texttt{processing\_\allowbreak{}worker.\allowbreak{}py}. \\
-Partially completed & Added real downstream consumers beyond the
-contract. & Source docs state downstream notification/search/analytics
-consumers were not implemented in this phase. \\
+Hoàn thành & Review \texttt{deduplication\_\allowbreak{}key} cùng các index
+claim/retry cho nhiều worker. & Migration
+\texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
+Hoàn thành & Xác định yêu cầu runtime cho outbox dispatcher và admin
+operation. & Các worker \texttt{outbox\_\allowbreak{}dispatcher.\allowbreak{}py} và
+\texttt{outbox\_\allowbreak{}admin.\allowbreak{}py}. \\
+Hoàn thành & Tài liệu hóa SQS Standard làm production event transport
+cho nhóm. & ADR về production event transport. \\
+Hoàn thành & Phối hợp xác định yêu cầu tích hợp cho
+\texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} và worker document/AI. & Migration,
+processing job service và processing worker. \\
+Hoàn thành một phần & Đánh giá mức sẵn sàng của downstream consumer
+ngoài contract. & Tài liệu nguồn cho biết notification/search/analytics
+consumer chưa được triển khai ở giai đoạn này. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
 The outbox design keeps domain mutation and event creation in the same
 PostgreSQL transaction. If the business write fails, no event is
 inserted. If the API pod dies after commit, the outbox row remains
 \texttt{PENDING} and can be claimed later by the dispatcher.
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant API
-as FastAPI backend participant DB as PostgreSQL participant D as Outbox
-dispatcher participant SQS as Amazon SQS Standard participant C as
-Future consumer API-\textgreater\textgreater DB: commit domain change +
-outbox row D-\textgreater\textgreater DB: claim PENDING event
-D-\textgreater\textgreater SQS: publish event envelope alt publish
-accepted D-\textgreater\textgreater DB: mark PUBLISHED else retryable
-failure D-\textgreater\textgreater DB: return to PENDING with backoff
-else non-retryable or max attempts D-\textgreater\textgreater DB: mark
-DEAD end C-\textgreater\textgreater SQS: consume message
-C-\textgreater\textgreater C: deduplicate by eventId \{\{\textless{}
-/mermaid \textgreater\}\}
+\textbf{Mô tả sơ bộ.} Backend ghi thay đổi nghiệp vụ và bản ghi outbox
+trong cùng PostgreSQL. Dispatcher lấy các sự kiện đang chờ và gửi sang
+SQS; sự kiện thành công được đánh dấu đã gửi, lỗi tạm thời được thử lại
+có backoff, còn lỗi cuối cùng được đánh dấu DEAD. Consumer khử trùng lặp
+theo mã sự kiện.
 
 Asynchronous processing uses a separate database-backed queue because
 document parsing and AI matching are user-visible jobs with status,
@@ -80,7 +76,8 @@ retry behavior, source-version guards, and result payloads. The worker
 claims jobs, applies lease-based retry logic, and persists results back
 to PostgreSQL.
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -131,8 +128,8 @@ added. & Partially completed \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -174,25 +171,10 @@ Runtime queue-name evidence still needs a screenshot or CLI log. \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}outbox-\allowbreak{}table.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}sqs-\allowbreak{}queue-\allowbreak{}dlq.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}dispatcher-\allowbreak{}logs.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -238,7 +220,8 @@ commit} & Evidence pending \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
 Evidence pending: attach actual output from commands such as:
 
@@ -250,30 +233,31 @@ Evidence pending: attach actual output from commands such as:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
 Evidence pending: no dedicated Week 3 image build log was found.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
 Evidence pending: add dispatcher or worker rollout logs after
 deployment, for example
 \texttt{kubectl\ rollout\ status\ deployment/\allowbreak{}backend-\allowbreak{}outbox-\allowbreak{}dispatcher\ -n\ internship}.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-The project gained a reliable event-publishing foundation and a separate
-queue for user-visible background work. The API can commit business
-state first, while dispatchers and workers handle retryable side effects
-after the transaction.
+Kết quả cá nhân tuần 3 là quyết định dùng SQS và bộ yêu cầu triển khai
+cho outbox dispatcher, processing worker. Schema outbox, backend service
+và business logic document/AI vẫn là sản phẩm chung của nhóm.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
 Idempotency exists at multiple layers. HTTP idempotency prevents
 duplicate command execution, the transactional outbox prevents lost
 domain events, and consumers still need event-level deduplication.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
 Standardize container builds, CI quality gates, smoke tests, security
 scans, and infrastructure validation so the system can be deployed

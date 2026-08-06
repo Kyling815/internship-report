@@ -21,7 +21,6 @@ Within the five-member team, my Week 2 objective was to review the concurrency a
 | Completed | Reviewed the backend member's database-backed idempotency path for candidate apply requests. | `backend/app/services/idempotency_service.py`, `backend/app/routers/jobs.py`, and migration `0004_idempotency_records.py`. |
 | Completed | Reviewed version-gated workflow commands using `expectedVersion` for multi-pod behavior. | `backend/app/services/optimistic_concurrency.py`, `backend/app/services/workflow_commands.py`, and HR/Candidate routers. |
 | Completed | Coordinated integration validation for chat retry and duplicate-write behavior with the chat member. | `chat-service/repositories/chatRepository.js` and `chat-service/tests/chatRepository.concurrency.test.js`. |
-| Partially completed | Attached visible API screenshots and CI logs where available. | Evidence pending: I did not have a screenshot or GitHub Actions log artifact in the local evidence archive. |
 
 ## Technical Implementation
 
@@ -64,7 +63,6 @@ sequenceDiagram
 | Candidate apply can be retried by browser/network clients. | A second request may reach another backend pod before the first response is received. | Scoped idempotency records persist request hash and response data. | Completed |
 | HR workflow updates can become stale when two users act on the same job/application. | Plain updates do not know whether the client saw the latest row version. | Commands require `expectedVersion` and use conditional updates. | Completed |
 | Chat retries can duplicate realtime messages. | Socket retries and REST retries can re-send the same logical message. | Chat repository uses deterministic message identity and skips duplicate broadcast on replay. | Completed |
-| Public evidence for a `409` screenshot is missing. | The source repo contains tests and docs, but no screenshot artifact. | I kept screenshot evidence pending. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -76,14 +74,6 @@ sequenceDiagram
 | Deployment | Planned | This week focused on correctness before deployment. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-02/`, for example:
-
-- `/images/worklog/week-02/duplicate-apply-409.png`
-- `/images/worklog/week-02/idempotency-replay.png`
-- `/images/worklog/week-02/postgres-concurrency-tests.png`
 
 ### Commits and Pull Requests
 

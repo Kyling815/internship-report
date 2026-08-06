@@ -158,6 +158,20 @@ a:hover {
   color: #e07d04 !important;
 }
 
+.student-profile {
+  margin: 1.5rem 0 2rem;
+  text-align: center;
+}
+
+.student-profile img {
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  border: 4px solid #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(40, 62, 91, 0.2);
+}
+
 div.notices p:first-child:before {
   position: absolute;
   top: 2px;

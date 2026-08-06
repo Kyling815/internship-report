@@ -1,14 +1,15 @@
-\vspace{0.5em}\noindent\textbf{Database Deployment}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Triển khai và kiểm chứng lớp dữ liệu (data layer) phục vụ ứng dụng
+Internship Application Tracker bao gồm: RDS PostgreSQL, ElastiCache
+Redis, các bảng DynamoDB cho dữ liệu chat, và bảng DynamoDB khử lặp sự
+kiện cho Lambda (idempotency table).
 
-Deploy and verify the data layer used by the Internship Application
-Tracker: RDS PostgreSQL, ElastiCache Redis, DynamoDB chat tables, and
-DynamoDB Lambda idempotency table.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
-
-Different data stores are used for different access patterns:
+Hệ thống tận dụng các kho dữ liệu khác nhau để giải quyết cho từng mô
+hình truy xuất chuyên biệt:
 
 {
 \begingroup
@@ -20,54 +21,59 @@ Different data stores are used for different access patterns:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Store
+Kho lưu trữ (Store)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-RDS PostgreSQL & Users, companies, jobs, applications, workflow history,
-idempotency records, async processing jobs, transactional outbox \\
-ElastiCache Redis & Socket.IO pub/sub between multiple chat pods \\
-DynamoDB chat tables & Permanent chat users, groups, and messages \\
-DynamoDB dedupe table & Lambda consumer idempotency for SQS events \\
-S3 & File storage and event archives, covered in infrastructure/frontend
-chapters \\
+RDS PostgreSQL & Lưu trữ người dùng, công ty, tin tuyển dụng, đơn xin
+việc, lịch sử thay đổi trạng thái quy trình, bản ghi tính bất biến, hàng
+đợi xử lý bất đồng bộ và bảng sự kiện outbox \\
+ElastiCache Redis & Phục vụ kênh phát tán liên lạc pub/sub theo chuẩn
+Socket.IO giữa các pod trong cụm dịch vụ chat \\
+Các bảng DynamoDB cho chat & Lưu trữ lâu dài thông tin người dùng tham
+gia chat, các nhóm hội thoại và nội dung tin nhắn \\
+Bảng DynamoDB khử lặp (dedupe table) & Bịt rào bảo lưu tính bất biến cho
+Lambda consumer trong quá trình thụ thụ tin sự kiện SQS \\
+S3 & Nơi quy giữ tệp file đính kèm cùng văn thư sự kiện lâu năm (được đề
+cập riêng trong các chương hạ tầng và frontend) \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{PostgreSQL deployment}\par
+\vspace{0.5em}\noindent\textbf{Triển khai PostgreSQL}\par
 
-The production RDS identifier is \texttt{internship-\allowbreak{}prod-\allowbreak{}postgres}.
-PostgreSQL stores transactional business data and all database-backed
-worker queues.
+Máy chủ cơ sở dữ liệu RDS trên production sở hữu danh xưng định danh
+\texttt{internship-\allowbreak{}prod-\allowbreak{}postgres}. PostgreSQL chịu trách nhiệm chốt giữ
+toàn bộ dữ liệu giao dịch cốt lõi và các hàng đợi công việc của worker
+cần bấu rào cống cơ sở dữ liệu.
 
-Evidence required:
+Cần bằng chứng:
 
 \begin{itemize}
 \tightlist
 \item
-  DB instance class
+  thông số phân loại máy chủ DB instance class
 \item
-  allocated storage
+  dung lượng đĩa được ban cấp
 \item
-  storage encryption status
+  tình trạng bật mã hóa lưu trữ
 \item
-  backup retention
+  thời gian bảo lưu sao lưu tự động (backup retention)
 \item
-  Multi-AZ setting
+  thiết lập dự phòng qua Multi-AZ
 \item
-  subnet group name
+  tên định nghĩa subnet group
 \item
-  security group IDs
+  danh mục các ID thuộc về security group
 \item
-  deletion protection setting
+  tình trạng khóa bảo vệ khỏi thao tác xóa (deletion protection setting)
 \end{itemize}
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -77,7 +83,7 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-Check subnet groups:
+Tra cứu cấu hình subnet groups:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -85,38 +91,49 @@ Check subnet groups:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Alembic migrations}\par
+\vspace{0.5em}\noindent\textbf{Bộ di cư Alembic (Alembic
+migrations)}\par
 
-The backend uses Alembic migrations in
-\texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}}. Important migrations include:
+Backend điều khiển tiến hóa cơ sở dữ liệu nhờ chuỗi tệp kịch bản Alembic
+nằm bên trong thư mục \texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}}. Các mốc di cư
+quan trọng bao gồm:
 
 {
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}ll@{}}
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
-Migration & Purpose \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Migration
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mục đích
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{0004\_\allowbreak{}idempotency\_\allowbreak{}records.\allowbreak{}py} & Idempotency records \\
-\texttt{0005\_\allowbreak{}idempotency\_\allowbreak{}status\_\allowbreak{}check.\allowbreak{}py} & Bounded idempotency
-statuses \\
-\texttt{0006\_\allowbreak{}job\_\allowbreak{}application\_\allowbreak{}versions.\allowbreak{}py} & Optimistic version
-fields \\
-\texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py} & Transactional outbox \\
-\texttt{0008\_\allowbreak{}async\_\allowbreak{}processing\_\allowbreak{}jobs.\allowbreak{}py} & Async processing queue \\
-\texttt{1065bcf66cb9\_\allowbreak{}0007\_\allowbreak{}add\_\allowbreak{}rerank\_\allowbreak{}run\_\allowbreak{}tables.\allowbreak{}py} & Rerank run
-tables \\
+\texttt{0004\_\allowbreak{}idempotency\_\allowbreak{}records.\allowbreak{}py} & Tạo bảng chốt lưu bản ghi tính
+bất biến \\
+\texttt{0005\_\allowbreak{}idempotency\_\allowbreak{}status\_\allowbreak{}check.\allowbreak{}py} & Áp quy chuẩn kiểm tra
+giới hạn cho các rào trạng thái bất biến \\
+\texttt{0006\_\allowbreak{}job\_\allowbreak{}application\_\allowbreak{}versions.\allowbreak{}py} & Thêm trường quản lý phiên
+bản phục vụ khóa lạc quan (optimistic currency) \\
+\texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py} & Kiến thiết hạ tầng bảng transactional
+outbox \\
+\texttt{0008\_\allowbreak{}async\_\allowbreak{}processing\_\allowbreak{}jobs.\allowbreak{}py} & Tạo hàng đợi tác nghiệp bất
+đồng bộ \\
+\texttt{1065bcf66cb9\_\allowbreak{}0007\_\allowbreak{}add\_\allowbreak{}rerank\_\allowbreak{}run\_\allowbreak{}tables.\allowbreak{}py} & Khai sinh bộ
+bảng vận hành tính điểm xếp hạng lại (Rerank run tables) \\
 \end{longtable}
 \endgroup
 }
 
-The EKS deployment creates a Kubernetes Job named
-\texttt{backend-\allowbreak{}migrate} that runs:
+Tiến trình triển khai EKS ban khải ra một Kubernetes Job với mã định
+danh \texttt{backend-\allowbreak{}migrate} thi thố dòng lệnh:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -124,7 +141,8 @@ The EKS deployment creates a Kubernetes Job named
 \end{Highlighting}
 \end{Shaded}
 
-Manual verification from the repository root:
+Thao tác kiểm nghiệm thủ công cẩu trực tiếp ngay tại gốc thư mục repo mã
+nguồn:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -135,17 +153,21 @@ Manual verification from the repository root:
 \end{Highlighting}
 \end{Shaded}
 
-Do not run migrations against production unless the deployment window
-and rollback plan are approved.
+Nghiêm răn: Tuyệt đối cấm thao diễn tự ý gõ chạy migration thẳng vào mạn
+cọc production trừ phi mốc khung giờ triển khai đi kèm kịch bản tháo rỡ
+sa lui (rollback plan) đã vỗ tay nhận được cái gật đầu phê duyệt.
 
-\vspace{0.5em}\noindent\textbf{PostgreSQL connection
-configuration}\par
+\vspace{0.5em}\noindent\textbf{Cấu hình kết nối
+PostgreSQL}\par
 
-The production deployment provides \texttt{DATABASE\_\allowbreak{}URL} through the
-Kubernetes Secret \texttt{internship-\allowbreak{}secrets}. The actual connection
-string is secret, so I do not print it in the documentation.
+Tiến trình ban bố production nạp chuỗi thông số biến cấu hình
+\texttt{DATABASE\_\allowbreak{}URL} tới qua cơ quan rào bảo mật Kubernetes Secret
+\texttt{internship-\allowbreak{}secrets}. Nội sung thực chuỗi kết nối lưu mang mật mã
+truy cập cẩn khôn, bởi thế tôi chối cự từ việc phơi văn xuất chuỗi ra
+khỏi bản báo cáo tài liệu này.
 
-Kubernetes verification without exposing the value:
+Kiểm chứng tình hình an bấu trên Kubernetes mà không đả thương tới giá
+trị bí ẩn:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -154,7 +176,9 @@ Kubernetes verification without exposing the value:
 \end{Highlighting}
 \end{Shaded}
 
-Backend readiness verifies PostgreSQL by executing \texttt{SELECT\ 1}:
+Luồng kiểm định sức khỏe readiness từ phía backend tiến hành thẩm ra
+tình hình an nộ của PostgreSQL thông qua lệnh tra khảo
+\texttt{SELECT\ 1}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -163,7 +187,7 @@ Backend readiness verifies PostgreSQL by executing \texttt{SELECT\ 1}:
 \end{Highlighting}
 \end{Shaded}
 
-Expected response:
+Kết quả trả về mong đợi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -173,12 +197,14 @@ Expected response:
 
 \vspace{0.5em}\noindent\textbf{ElastiCache Redis}\par
 
-The production Redis replication group is
-\texttt{internship-\allowbreak{}prod-\allowbreak{}redis}, and I verified it as \texttt{available}
-in the Week 8 evidence. Redis is used by the Socket.IO adapter so chat
-events can be broadcast between multiple chat pods.
+Cụm máy nhân bản Redis trên production giữ thẻ tên
+\texttt{internship-\allowbreak{}prod-\allowbreak{}redis}, đồng thời được tôi tra rà chứng nghiệm
+thọ trạng thái \texttt{available} trọn bãi trong bằng chứng Tuần 8. Cụm
+Redis đứng đằng sau bảo kê cho bộ giao diện Socket.IO adapter nhằm giúp
+luồng sự kiện đàm thoại thả ga reo vui lan tỏa giữa các pod phục vụ chat
+chạy song hành.
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -188,13 +214,15 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-The chat service reads \texttt{REDIS\_\allowbreak{}URL} from
-\texttt{internship-\allowbreak{}secrets}. In production, Redis must be reachable from
-chat pods and should not be exposed publicly.
+Dịch vụ chat tiếp thu thông ký biến \texttt{REDIS\_\allowbreak{}URL} tự trong hòm bí
+mật \texttt{internship-\allowbreak{}secrets}. Tại production, Redis đương nhiên bắt
+buộc nằm gọn trong cự ly bắt sóng từ các pod chat và khẩn kiêng mọi khe
+nứt rò hở tuột cọc hướng ra không gian public ngoài kia.
 
-\vspace{0.5em}\noindent\textbf{DynamoDB chat tables}\par
+\vspace{0.5em}\noindent\textbf{Các bảng DynamoDB cho
+chat}\par
 
-The chat service uses three DynamoDB tables:
+Dịch vụ chat phụ trách quán cọc 3 bàn lưu trữ cơ sở trên DynamoDB:
 
 \begin{itemize}
 \tightlist
@@ -206,9 +234,10 @@ The chat service uses three DynamoDB tables:
   \texttt{ChatMessages}
 \end{itemize}
 
-I verified all three chat tables as \texttt{ACTIVE} in the Week 8
-evidence. The chat service readiness endpoint depends on both DynamoDB
-and Redis:
+Tôi đã tự hào thẩm định toàn bộ 3 bàn chứa này ngạo ngễ rạng trạng thái
+\texttt{ACTIVE} kiên cố trong bộ tài liệu chứng cứ Tuần 8. Điểm gọi
+trích soát sức khỏe readiness của dịch vụ chat gắn kiếp ràng buộc vào sự
+hưng thịnh đồng loạt từ phía cả DynamoDB lẫn Redis:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -217,7 +246,8 @@ and Redis:
 \end{Highlighting}
 \end{Shaded}
 
-Expected response when dependencies are ready:
+Chuỗi tin đáp trả như mong đợi ngay thời khắc muôn rào phụ thuộc đều
+xanh mướt:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -225,7 +255,7 @@ Expected response when dependencies are ready:
 \end{Highlighting}
 \end{Shaded}
 
-DynamoDB verification:
+Kiểm chứng DynamoDB:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -235,14 +265,16 @@ DynamoDB verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{DynamoDB Lambda dedupe
-table}\par
+\vspace{0.5em}\noindent\textbf{Bảng DynamoDB khử lặp cho
+Lambda}\par
 
-The Lambda SQS consumer uses \texttt{InternshipLambdaEventDedupe} to
-store processed \texttt{eventId} values. This protects the Lambda side
-from duplicate SQS delivery.
+Tiến trình Lambda chuyên tiêu đè tin từ SQS gặm sử dụng bàn lưu
+\texttt{InternshipLambdaEventDedupe} để nạp chốt trữ vĩnh cửu những khóa
+\texttt{eventId} vừa múa việc xong trôi flowing over. Trục cơ quan này
+dựng thành hào cống chở che trọn bên sườn Lambda trước cảnh bẽ hão tin
+lặp vô ý trồi sa sang theo tự tính từ hạ tầng SQS.
 
-Verification:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -252,7 +284,7 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-For the successful smoke-test event:
+Đối chiếu dấu tích từ lời gõ khói (smoke test) thành quả thu được:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -263,10 +295,12 @@ For the successful smoke-test event:
 \end{Highlighting}
 \end{Shaded}
 
-The report should not claim this command was run unless the output is
-exported as evidence.
+Tài liệu báo cáo cấm được cho phép bô lô phô vãng lời tự xưng ra lệnh
+thi thố cú rẽ trên, trừ phi trích đoạn chuỗi tệp đầu lời giải được xuất
+kho bọc bồi vào kho tàng bằng chứng.
 
-\vspace{0.5em}\noindent\textbf{Data consistency design}\par
+\vspace{0.5em}\noindent\textbf{Thiết kế đảm bảo tính nhất quán dữ
+liệu}\par
 
 {
 \begingroup
@@ -278,35 +312,43 @@ exported as evidence.
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Concern
+Vấn đề (Concern)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mechanism
+Cơ chế xử lý
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Duplicate registration & PostgreSQL unique constraints and 409
-handling \\
-Duplicate candidate apply & Unique
-\texttt{(job\_\allowbreak{}posting\_\allowbreak{}id,\ candidate\_\allowbreak{}user\_\allowbreak{}id)} and
+Trùng lặp lượt đăng ký tài khoản & Vận dụng ràng buộc unique trên
+PostgreSQL đi đôi thuật khéo trả mã lỗi HTTP 409 \\
+Nộp trượt nấc 2 đơn trùng ứng tuyển cùng lúc & Cọc ràng buộc độc nhất
+\texttt{(job\_\allowbreak{}posting\_\allowbreak{}id,\ candidate\_\allowbreak{}user\_\allowbreak{}id)} quy theo tiêu chuẩn
 \texttt{Idempotency-\allowbreak{}Key} \\
-Stale HR updates & \texttt{expectedVersion} and conditional updates \\
-Long AI jobs & \texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} table with leases and
-retries \\
-Lost event publication & \texttt{outbox\_\allowbreak{}events} committed with business
-mutation \\
-Duplicate SQS delivery & Lambda DynamoDB conditional write by
+Bồi đè dữ liệu cũ kỹ lạc hậu lúc HR thao tác cập nhật & Khóa
+\texttt{expectedVersion} kết hợp chiêu update cõng theo điều kiện ràng
+rẽ \\
+Tiến trình tác nghiệp AI hao kéo dài gian phi & Cất bảng lưu bão bốc
+\texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} mang kề các quy ước thuê tác quyền
+(leases) và giới rèn lượt tự phục hồi retry \\
+Trượt rách sẩy tháo thất ngạc lời kêu gửi sự kiện outbox & Trữ vào bàn
+\texttt{outbox\_\allowbreak{}events} trói chung một cơ quan giao dịch transaction
+trúng nhịp với biến múa dữ liệu nghiệp vụ \\
+Nhận thông điệp bồi trùng lặp từ kênh hàng đợi SQS & Lệnh ghi theo điều
+kiện trên DynamoDB của Lambda giục vây cọc theo trường trường dữ liệu
 \texttt{eventId} \\
-Duplicate chat message retry & DynamoDB conditional create with
-\texttt{clientMessageId} \\
+Sẩy lặp trát mồi tin nhắn đàm thoại sau cọc retry từ phía người đàm &
+Chiêu khởi nặn dòng mới có điều kiện trên DynamoDB ôm sát chuỗi định
+danh con cọc \texttt{clientMessageId} \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Commands}\par
+\vspace{0.5em}\noindent\textbf{Các lệnh kiểm
+chứng}\par
 
-Check Kubernetes data-related configuration:
+Tra soát tình thế cấu trúc tập thông tin cấu hình phục vụ luồng cất dữ
+liệu bên trong cụm Kubernetes:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -318,7 +360,7 @@ Check Kubernetes data-related configuration:
 \end{Highlighting}
 \end{Shaded}
 
-Check application tables through application health:
+Tra cứu hiện trạng bàn bảng cơ sở thông qua điểm rà sức khỏe:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -329,25 +371,32 @@ Check application tables through application health:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{backend-\allowbreak{}migrate} completes successfully.
+  Tác vụ \texttt{backend-\allowbreak{}migrate} cắm phơi nhãn hoàn trọn thành công rực
+  rỡ.
 \item
-  Backend readiness returns PostgreSQL dependency \texttt{true}.
+  Trạm khảo sát sức khỏe sẵn lòng của backend xướng trả cọc phụ thuộc
+  PostgreSQL bằng giá trị \texttt{true}.
 \item
-  Chat readiness returns Redis and DynamoDB dependencies \texttt{true}.
+  Điểm tra soát sức khỏe của dịch vụ chat reo vui trả giá trị cọc Redis
+  cùng DynamoDB là \texttt{true}.
 \item
-  DynamoDB chat tables are \texttt{ACTIVE}.
+  Toàn thể các bàn chứa chat trên DynamoDB tự tại trụ ở trạng thái
+  \texttt{ACTIVE}.
 \item
-  Redis replication group is \texttt{available}.
+  Nhóm nhân bản thuộc dịch vụ Redis duy dãn khang trang ngả theo cọc
+  \texttt{available}.
 \item
-  Lambda dedupe table exists and supports conditional writes.
+  Bàn khử lặp Lambda nghiêng giỗ thọ hình an tọa, sẵn lòng trợ thủ trót
+  lọt các lượt thi triển ghi có điều kiện.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -360,36 +409,46 @@ Check application tables through application health:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Root cause
+Nguyên nhân gốc rễ
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Backend readiness fails & Wrong \texttt{DATABASE\_\allowbreak{}URL}, security group
-issue, migration failure & Inspect backend logs and RDS security
-groups \\
-Alembic fails to parse URL & Shell interpolation or secret formatting
-problem & Store URL as a secret and avoid printing it \\
-Chat readiness returns \texttt{not\_\allowbreak{}ready} & Redis adapter or DynamoDB
-initialization failure & Inspect \texttt{chat-\allowbreak{}service} logs and
-\texttt{chat-\allowbreak{}init} job \\
-Duplicate Lambda event sends email twice & Dedupe table write is missing
-or not conditional & Use DynamoDB conditional write keyed by
-\texttt{eventId} \\
-Outbox rows stay pending & Dispatcher cannot publish to SQS & Check
-\texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL}, IRSA SQS policy, dispatcher logs \\
+Thẩm rà sức khỏe từ backend gào khóc thất bại & Biến
+\texttt{DATABASE\_\allowbreak{}URL} cài sai thảm lật, lỗi nghẽn kẹt tường rào
+security group hoặc tiến trình migration lâm nạn & Vào sâu thanh rà tệp
+log của backend và chuỗi cấu hình security groups bên tài nguyên RDS \\
+Trình Alembic chao chát phi cớ không rã dịch ra URL & Vướng trật trượt
+trong phép nhồi biến interpolation thuộc shell hoặc file secret ngự
+trúng định dạng gieo hãm sai lệch & Đem khóa URL an trú cẩn mẫn vào
+trong một tệp secret an ninh và cấm tha buông cống gõ in chuỗi trần
+ra \\
+Điểm gọi sức khỏe dịch vụ chat gầm rầm cọc mác \texttt{not\_\allowbreak{}ready} &
+Trục bộ Redis adapter hoặc kịch bản khai quan khởi tạc DynamoDB trượt
+dốc & Rà kỹ nhật ký tệp log thuộc pod \texttt{chat-\allowbreak{}service} đi cùng tiến
+trình thợ job \texttt{chat-\allowbreak{}init} \\
+Tác vụ Lambda dính lặp sự kiện thi thố gửi đi mail cảnh báo 2 lần & Bỏ
+sẩy quên béng việc chốt ghi vào bàn khử lặp hoặc khi ghi khuyết trống
+tham số rào điều kiện & Sửa lệnh cho tuân lệnh nghiêm cấm ghi theo cơ
+quan có điều kiện DynamoDB trói sát trường biến \texttt{eventId} \\
+Các hàng tin nằm trong outbox trơ lỳ gan chây bám ngục trạng thái
+pending & Tiến trình dispatcher khốn quẫn bất lực chẳng vãng được cống
+gửi qua hàng đợi SQS & Đối soát đường URL biến
+\texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL}, dải quyền hạn bấu theo IAM IRSA SQS, cùng
+nhật ký log từ dispatcher \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Troubleshooting}\par
+\vspace{0.5em}\noindent\textbf{Xử lý sự cố
+(Troubleshooting)}\par
 
-Use these commands during incidents:
+Kịp thời ứng trói cụm lệnh bọc lót bên dưới mỗi lúc giáp mặt sự cố:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -403,9 +462,11 @@ Use these commands during incidents:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-The database layer is ready when PostgreSQL migrations have completed,
-Redis is available to chat pods, DynamoDB chat tables are active, Lambda
-dedupe is configured, and application readiness checks pass through the
-deployed routing path.
+Toàn cảnh móng rào cho cơ sở dữ liệu nghiêng còi ăn chốt thông quan ngay
+thời khắc các luồng di cư cơ quan PostgreSQL thành tài hoàn tất, cụm nhớ
+Redis nghênh tay cất sóng vui cười với đoàn pod chat, các bàn dữ liệu
+DynamoDB ngạo bạt trạng thái active, bàn khử lặp Lambda cấu định minh
+chánh và cọc kiểm định sức khỏe toàn dải ứng dụng hoan thả tin mừng êm
+xuôi băng rẽ qua khắp các cung đường định hướng triển khai.

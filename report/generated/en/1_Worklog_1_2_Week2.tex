@@ -3,13 +3,13 @@ Integrity}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 2 focused on making write operations safe when several backend or
-chat pods handle requests at the same time. The target was to prevent
-duplicate registrations, duplicate applications, stale workflow updates,
-and duplicate chat messages without using global application-level
-locks.
+Within the five-member team, my Week 2 objective was to review the
+concurrency and data-integrity requirements that would affect
+multi-replica deployment. I supported the responsible backend and chat
+members by checking that idempotency, version checks, and database
+constraints were suitable for later Kubernetes scaling.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -24,7 +24,7 @@ locks.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -34,24 +34,24 @@ Evidence basis
 \endlastfoot
 Completed & Analyzed concurrent writes across multiple backend pods. &
 \texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md}. \\
-Completed & Documented optimistic and pessimistic UI policies. &
+Completed & Contributed deployment-oriented review notes to the
+optimistic and pessimistic UI policies. &
 \texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md} and
 \texttt{docs/\allowbreak{}frontend/\allowbreak{}COMMAND\_\allowbreak{}MUTATION\_\allowbreak{}POLICY.\allowbreak{}md}. \\
-Completed & Added database-backed idempotency for candidate apply
-requests. & \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}idempotency\_\allowbreak{}service.\allowbreak{}py},
+Completed & Reviewed the backend member's database-backed idempotency
+path for candidate apply requests. &
+\texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}idempotency\_\allowbreak{}service.\allowbreak{}py},
 \texttt{backend/\allowbreak{}app/\allowbreak{}routers/\allowbreak{}jobs.\allowbreak{}py}, and migration
 \texttt{0004\_\allowbreak{}idempotency\_\allowbreak{}records.\allowbreak{}py}. \\
-Completed & Added version-gated workflow commands using
-\texttt{expectedVersion}. &
+Completed & Reviewed version-gated workflow commands using
+\texttt{expectedVersion} for multi-pod behavior. &
 \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}optimistic\_\allowbreak{}concurrency.\allowbreak{}py},
 \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}workflow\_\allowbreak{}commands.\allowbreak{}py}, and HR/Candidate
 routers. \\
-Completed & Hardened chat writes against duplicate retry behavior. &
+Completed & Coordinated integration validation for chat retry and
+duplicate-write behavior with the chat member. &
 \texttt{chat-\allowbreak{}service/\allowbreak{}repositories/\allowbreak{}chatRepository.\allowbreak{}js} and
 \texttt{chat-\allowbreak{}service/\allowbreak{}tests/\allowbreak{}chatRepository.\allowbreak{}concurrency.\allowbreak{}test.\allowbreak{}js}. \\
-Partially completed & Attached visible API screenshots and CI logs where
-available. & Evidence pending: I did not have a screenshot or GitHub
-Actions log artifact in the local evidence archive. \\
 \end{longtable}
 \endgroup
 }
@@ -88,18 +88,11 @@ level:
 
 Conflict flow:
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant C
-as Client participant API as FastAPI backend pod participant DB as
-PostgreSQL C-\textgreater\textgreater API: POST /jobs/\{id\}/apply +
-Idempotency-Key API-\textgreater\textgreater DB: reserve scoped
-idempotency record alt new request API-\textgreater\textgreater DB:
-insert application, documents, history API-\textgreater\textgreater DB:
-complete idempotency record API--\textgreater\textgreater C: 200/201
-application response else exact replay DB--\textgreater\textgreater API:
-completed stored response API--\textgreater\textgreater C: stored
-response + Idempotency-Replayed else payload mismatch or duplicate
-business conflict API--\textgreater\textgreater C: 409 Conflict end
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} A client submits an application with an
+idempotency key. The backend reserves the key in PostgreSQL, creates the
+application for a new request, returns the stored response for an exact
+replay, and returns HTTP 409 when the payload or business state
+conflicts.
 
 \vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
 
@@ -143,9 +136,6 @@ Chat retries can duplicate realtime messages. & Socket retries and REST
 retries can re-send the same logical message. & Chat repository uses
 deterministic message identity and skips duplicate broadcast on replay.
 & Completed \\
-Public evidence for a \texttt{409} screenshot is missing. & The source
-repo contains tests and docs, but no screenshot artifact. & I kept
-screenshot evidence pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -193,21 +183,6 @@ deployment. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}duplicate-\allowbreak{}apply-\allowbreak{}409.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}idempotency-\allowbreak{}replay.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}postgres-\allowbreak{}concurrency-\allowbreak{}tests.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -281,11 +256,10 @@ scaling the backend in Kubernetes.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The application gained stronger data-integrity guarantees: duplicate
-writes are constrained by PostgreSQL or DynamoDB, client retries are
-handled through idempotency records, stale updates produce
-\texttt{409\ Conflict}, and chat replay behavior avoids duplicate
-broadcasts.
+My Week 2 result was a deployment-focused review of the team's
+database-backed concurrency policy and its behavior with multiple
+replicas. The backend and chat implementations themselves were owned by
+the teammates responsible for those components.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

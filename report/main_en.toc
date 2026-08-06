@@ -1,0 +1,35 @@
+\contentsline {section}{\numberline {1}Worklog}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Week 1}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Week 2}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Week 3}{6}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Week 4}{8}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Week 5}{11}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Week 6}{13}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Week 7}{15}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Week 8}{17}{subsection.1.8}%
+\contentsline {section}{\numberline {2}Proposal}{30}{section.2}%
+\contentsline {section}{\numberline {3}Blogs Posted}{41}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Blog 1}{41}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Blog 2}{42}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Blog 3}{48}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Blog 4}{51}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Events Participated}{57}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Event 1: FCAJ Community Day – June 2026}{57}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Event 2: Enterprise Cloud Architectures and Industry Applications}{59}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Event 3: FCAJ x Agentic AI Build Week 2026}{60}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Workshop}{62}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Overview}{64}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Architecture}{67}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Prerequisites}{69}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Source Code Preparation}{73}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}AWS Infrastructure}{76}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Database Deployment}{80}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Backend Deployment}{84}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Frontend Deployment}{88}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Monitoring and Logging}{91}{subsection.5.9}%
+\contentsline {subsection}{\numberline {5.10}End-to-End Testing}{95}{subsection.5.10}%
+\contentsline {subsection}{\numberline {5.11}Security and Cost}{98}{subsection.5.11}%
+\contentsline {subsection}{\numberline {5.12}Troubleshooting}{103}{subsection.5.12}%
+\contentsline {subsection}{\numberline {5.13}Clean-up}{107}{subsection.5.13}%
+\contentsline {section}{\numberline {6}Self-Evaluation}{112}{section.6}%
+\contentsline {section}{\numberline {7}Sharing and Feedback}{114}{section.7}%

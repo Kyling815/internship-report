@@ -8,68 +8,52 @@ pre: " <b> 6. </b> "
 
 # Self-evaluation
 
-## Assessment summary
+During the development of the **Internship Application Platform**, I had the opportunity to apply knowledge in full-stack development, Cloud architecture, AI integration, realtime communication, containerization, Kubernetes, CI/CD, and observability. This self-evaluation summarizes my completion level, strengths, limitations, and improvement direction after the internship period.
 
-This is my draft self-assessment based on the Internship Application Tracker project. It is not an official supervisor rating.
+## Evaluation Criteria
 
-During the project, I worked on a cloud-native internship application platform that combines a React/Vite frontend, FastAPI backend, Node.js Socket.IO chat service, PostgreSQL, DynamoDB, Redis, SQS, Lambda, S3, CloudFront, EKS, and SageMaker. The most important learning outcome for me was understanding how application code, Kubernetes, managed AWS services, IAM, networking, CI/CD, and runtime evidence connect in a real deployment.
-
-## Skill rating table
-
-| Skill area | Draft rating | Evidence and reflection |
-|---|---:|---|
-| AWS architecture | 8/10 | I helped shape the final architecture where CloudFront routes static frontend traffic to S3 and dynamic `/api`, `/chat`, and `/socket.io` traffic to the ALB. I learned to distinguish proposal diagrams from deployed evidence. |
-| Kubernetes | 8/10 | I worked with EKS workloads for backend, chat, outbox dispatcher, processing worker, and ai-service, including Deployments, Services, readiness/liveness probes, HPA, and PDB. |
-| Networking | 7/10 | I investigated issues such as a NAT Gateway blackhole that prevented EKS nodes from joining and the AWS Load Balancer Controller VPC ID failure. I still need more practice designing VPCs from scratch. |
-| IAM and security | 7/10 | I used GitHub OIDC, IRSA, runtime roles, secret separation, S3 private access, SQS SSE, and idempotency. I need to improve formal IAM policy review and permission boundary design. |
-| CI/CD | 8/10 | I worked with GitHub Actions workflow modes such as `validate`, `deploy-app`, `deploy-public`, `deploy-frontend`, `rollout`, and `full`, including ECR SHA image verification and frontend S3 deployment. |
-| Database and messaging | 8/10 | I learned how PostgreSQL stores business data, processing jobs, idempotency records, and transactional outbox events, while SQS carries committed events to Lambda and DynamoDB supports chat and dedupe. |
-| Serverless | 7/10 | I integrated the SQS-to-Lambda notification flow conceptually and documented the successful Lambda smoke test, DynamoDB dedupe, S3 archive, SES result, and partial batch failure behavior. |
-| AI integration | 7/10 | I worked with the processing worker and ai-service adapter pattern, where the worker keeps stable routes and the adapter calls SageMaker endpoint `internship-qwen3-4b`. I need more experience operating model endpoints cost-effectively. |
-| Troubleshooting | 8/10 | I practiced evidence-led debugging for NAT, ALB controller, GitHub Actions job conditions, SQS queue naming, CloudFront routing, and DynamoDB reserved keyword errors. |
-| Documentation | 8/10 | I converted implementation details and runtime context into workshop, proposal, cost, security, testing, troubleshooting, and cleanup documentation. |
+| No. | Criteria | Description | Good | Fair | Average |
+|---|---|---|---|---|---|
+| 1 | **Professional knowledge & skills** | Understanding of the field, applying knowledge in practice, proficiency with tools, and work quality | ✅ | ☐ | ☐ |
+| 2 | **Ability to learn** | Ability to absorb new knowledge and learn quickly | ✅ | ☐ | ☐ |
+| 3 | **Proactiveness** | Taking initiative and seeking out tasks without waiting for instructions | ✅ | ☐ | ☐ |
+| 4 | **Sense of responsibility** | Completing tasks on time and ensuring quality | ✅ | ☐ | ☐ |
+| 5 | **Discipline** | Adhering to schedules, rules, and work processes | ☐ | ✅ | ☐ |
+| 6 | **Progressive mindset** | Willingness to receive feedback and improve oneself | ✅ | ☐ | ☐ |
+| 7 | **Communication** | Presenting ideas and reporting work clearly | ☐ | ✅ | ☐ |
+| 8 | **Teamwork** | Working effectively with colleagues and participating in teams | ✅ | ☐ | ☐ |
+| 9 | **Professional conduct** | Respecting colleagues, partners, and the work environment | ✅ | ☐ | ☐ |
+| 10 | **Problem-solving skills** | Identifying problems, proposing solutions, and showing creativity | ✅ | ☐ | ☐ |
+| 11 | **Contribution to project/team** | Work effectiveness, technical contribution, and recognition from the team | ✅ | ☐ | ☐ |
+| 12 | **Overall** | General evaluation of the entire internship period | ✅ | ☐ | ☐ |
 
 ## Strengths
 
-- I can connect source code, deployment manifests, workflow files, and runtime evidence into one coherent architecture explanation.
-- I became more careful about distinguishing implemented code from verified production behavior.
-- I improved at troubleshooting AWS integration failures by starting from logs and command output instead of assumptions.
-- I learned how to document deployment procedures with warnings, expected results, and common errors.
-- I understand why frontend static hosting, EKS services, database transactions, SQS delivery, Lambda idempotency, and SageMaker inference belong in different parts of the architecture.
+- I can approach problems from a system perspective instead of focusing only on isolated features. I considered authentication, storage, realtime chat, AI processing, deployment, and observability together.
+- I proactively learned AWS services and Cloud-native tools to understand how an application can operate in a production-oriented environment.
+- I connected academic knowledge with practical project requirements, such as using S3 presigned URLs for document security, Redis adapter for realtime chat, and workers for long-running tasks.
+- I improved my technical writing skills, bilingual report structure, and ability to follow the FCAJ report template.
+- I was open to feedback and willing to revise the content when something was not clear or consistent.
 
-## Challenges
+## Areas for Improvement
 
-- AWS service interactions can fail for reasons outside application code, especially IAM, route tables, controller configuration, and GitHub Actions variable scope.
-- Debugging EKS required understanding both Kubernetes objects and AWS-created resources such as ALB target groups and ENIs.
-- Cost estimation was difficult because exact AWS prices depend on live instance types, endpoint uptime, data transfer, and log retention.
-- AI integration required preserving the worker-facing contract while moving implementation details into the SageMaker adapter.
-- Documentation required discipline because it is easy to overstate something that exists in code but has not been verified in production.
+- I need to improve time estimation for each work package, especially parts involving many components such as Kubernetes, observability, and CI/CD.
+- I need more hands-on practice with production deployment on AWS, including networking, IAM, cost control, and real monitoring.
+- I need to improve automated testing coverage for auth, applications, documents, chat, and AI flows.
+- I need to improve UI/UX design skills so that the interface is easier to use for both Candidates and HR users.
+- I need to keep improving how AI results are explained, so that matching scores are not treated as the only recruitment decision.
 
-## Lessons learned
+## Future Learning Plan
 
-- Runtime evidence should be treated as stronger than old manifests when describing current production architecture.
-- A Kubernetes Service load-balances traffic but does not serialize database writes; correctness must come from constraints, idempotency, conditional writes, and transactions.
-- SQS Standard provides at-least-once delivery, so consumers must deduplicate events.
-- Lambda is useful for short event-driven processing, but it only reduces cost when it removes or scales down always-on capacity.
-- Static frontend delivery through S3 and CloudFront is a better fit than running a frontend pod in EKS for this project.
-- Worker workloads should be enabled only after their dependencies, especially SageMaker, are ready.
+- Review and practice the AWS Well-Architected Framework, especially security, reliability, and cost optimization.
+- Continue learning Kubernetes, Helm, Ingress, HPA, PDB, probes, and deployment strategies.
+- Study observability with Prometheus, Grafana, Loki, Tempo, and OpenTelemetry.
+- Improve backend skills with FastAPI, SQLAlchemy, Alembic, PostgreSQL transactions, and security best practices.
+- Practice CI/CD with GitHub Actions, OIDC, container scanning, secret scanning, and deployment automation.
+- Learn more about AI application design, prompt engineering, schema validation, fallback strategy, and human-in-the-loop review.
 
-## Areas for improvement
+## Career Orientation
 
-- Practice writing IAM policies with least privilege from the beginning instead of tightening them after deployment failures.
-- Learn more about VPC endpoint strategy to reduce NAT Gateway cost and dependency.
-- Add stronger production evidence collection for alarms, backups, encryption settings, and PITR.
-- Build a repeatable frontend/browser E2E test harness for login, job apply, chat, and AI processing flows.
-- Improve SageMaker cost control by testing scheduled shutdown, asynchronous inference, or lower-cost inference options.
+After the internship, I would like to continue developing toward **Cloud/Backend Engineering** combined with **AI integration**. This project helped me understand that a real system does not only need working features. It also needs security, scalability, observability, deployment automation, and cost control.
 
-## Future plan
-
-1. Strengthen AWS networking knowledge, especially VPC routing, NAT, endpoints, security groups, and private service access.
-2. Practice production IAM design with OIDC, IRSA, Lambda roles, and SageMaker execution roles.
-3. Build a complete evidence package for deployed systems: CLI exports, logs, screenshots, Cost Explorer, and Pricing Calculator results.
-4. Add automated E2E tests and smoke tests for the main candidate and HR flows.
-5. Continue improving event-driven design with SQS, Lambda, DLQ handling, idempotency, and observability.
-
-## Career orientation
-
-This project confirmed that I want to keep developing skills in cloud engineering, backend systems, DevOps, and AI-enabled applications. I am especially interested in work that combines application development with reliable infrastructure, security, automation, and practical troubleshooting.
+In the future, I want to keep building more practical projects, deploy them on AWS in a controlled way, and strengthen my system design mindset so that I can contribute better to Cloud-native projects in a professional environment.

@@ -4,6 +4,7 @@ date: 2024-01-01
 weight: 5
 chapter: false
 pre: " <b> 5. </b> "
+includeContainerContentInReport: true
 ---
 
 ## Overview
@@ -52,7 +53,7 @@ This workshop is intended for:
 
 ## Architecture summary
 
-![Internship Application Tracker architecture on AWS](/images/5-Workshop/architecture.png)
+![Internship Application Tracker architecture on AWS](/images/5-Workshop/infra.png)
 
 The browser connects to Amazon CloudFront through HTTPS.
 

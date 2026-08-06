@@ -3,12 +3,13 @@ Processing}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 3 focused on separating committed business changes from downstream
-side effects. The goal was to add a transactional outbox, define an
-event-consumer contract, and move long-running document and AI work into
-retryable background processing.
+Within the five-member team, my Week 3 objective was to define the
+deployment and integration requirements for the transactional outbox and
+asynchronous workers. I focused on production transport, worker
+lifecycle, retries, configuration, and observability while the backend
+member owned the business implementation.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -23,7 +24,7 @@ retryable background processing.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -31,23 +32,26 @@ Evidence basis
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Designed and implemented the \texttt{outbox\_\allowbreak{}events} table.
-& \texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
-Completed & Added outbox statuses \texttt{PENDING}, \texttt{PROCESSING},
-\texttt{PUBLISHED}, and \texttt{DEAD}. & Migration check constraint and
+Completed & Reviewed the \texttt{outbox\_\allowbreak{}events} schema from a
+deployment and recovery perspective. &
+\texttt{backend/\allowbreak{}alembic/\allowbreak{}versions/\allowbreak{}0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
+Completed & Validated the lifecycle states and retry model needed for
+operations. & Migration check constraint and
 \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}outbox.\allowbreak{}py}. \\
-Completed & Added \texttt{deduplication\_\allowbreak{}key} and claim/retry indexes. &
-Migration \texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
-Completed & Implemented the backend outbox dispatcher and admin
-operations. & \texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}dispatcher.\allowbreak{}py} and
-\texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}admin.\allowbreak{}py}. \\
-Completed & Documented SQS Standard as the production event transport. &
+Completed & Reviewed \texttt{deduplication\_\allowbreak{}key} and claim/retry indexes
+for multi-worker execution. & Migration
+\texttt{0007\_\allowbreak{}outbox\_\allowbreak{}events.\allowbreak{}py}. \\
+Completed & Defined runtime requirements for the outbox dispatcher and
+admin operations. & \texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}dispatcher.\allowbreak{}py}
+and \texttt{backend/\allowbreak{}app/\allowbreak{}workers/\allowbreak{}outbox\_\allowbreak{}admin.\allowbreak{}py}. \\
+Completed & Documented SQS Standard as the production event transport
+for the team. &
 \texttt{docs/\allowbreak{}architecture/\allowbreak{}adr/\allowbreak{}ADR-\allowbreak{}001-\allowbreak{}production-\allowbreak{}event-\allowbreak{}transport.\allowbreak{}md}. \\
-Completed & Added \texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} and a processing
-worker for document/AI tasks. & Migration
+Completed & Coordinated integration requirements for
+\texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} and the document/AI worker. & Migration
 \texttt{0008\_\allowbreak{}async\_\allowbreak{}processing\_\allowbreak{}jobs.\allowbreak{}py}, \texttt{processing\_\allowbreak{}jobs.\allowbreak{}py},
 and \texttt{processing\_\allowbreak{}worker.\allowbreak{}py}. \\
-Partially completed & Added real downstream consumers beyond the
+Partially completed & Assessed downstream consumer readiness beyond the
 contract. & Source docs state downstream notification/search/analytics
 consumers were not implemented in this phase. \\
 \end{longtable}
@@ -61,18 +65,11 @@ PostgreSQL transaction. If the business write fails, no event is
 inserted. If the API pod dies after commit, the outbox row remains
 \texttt{PENDING} and can be claimed later by the dispatcher.
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant API
-as FastAPI backend participant DB as PostgreSQL participant D as Outbox
-dispatcher participant SQS as Amazon SQS Standard participant C as
-Future consumer API-\textgreater\textgreater DB: commit domain change +
-outbox row D-\textgreater\textgreater DB: claim PENDING event
-D-\textgreater\textgreater SQS: publish event envelope alt publish
-accepted D-\textgreater\textgreater DB: mark PUBLISHED else retryable
-failure D-\textgreater\textgreater DB: return to PENDING with backoff
-else non-retryable or max attempts D-\textgreater\textgreater DB: mark
-DEAD end C-\textgreater\textgreater SQS: consume message
-C-\textgreater\textgreater C: deduplicate by eventId \{\{\textless{}
-/mermaid \textgreater\}\}
+\textbf{Flow summary.} The backend commits the business change and an
+outbox row in PostgreSQL. The dispatcher claims pending events and
+publishes them to SQS; successful events are marked published, temporary
+failures are retried with backoff, and terminal failures are marked
+dead. Consumers deduplicate messages by event ID.
 
 Asynchronous processing uses a separate database-backed queue because
 document parsing and AI matching are user-visible jobs with status,
@@ -176,21 +173,6 @@ Runtime queue-name evidence still needs a screenshot or CLI log. \\
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}outbox-\allowbreak{}table.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}sqs-\allowbreak{}queue-\allowbreak{}dlq.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}03/\allowbreak{}dispatcher-\allowbreak{}logs.\allowbreak{}png}
-\end{itemize}
-
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
 
@@ -262,10 +244,10 @@ deployment, for example
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The project gained a reliable event-publishing foundation and a separate
-queue for user-visible background work. The API can commit business
-state first, while dispatchers and workers handle retryable side effects
-after the transaction.
+My Week 3 result was the SQS transport decision and a documented set of
+deployment requirements for the outbox dispatcher and processing worker.
+The outbox schema, backend services, and document/AI business logic
+remained team deliverables.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

@@ -1,0 +1,580 @@
+\vspace{0.5em}\noindent\textbf{AWS Networking Advanced: 3 kỹ thuật nâng cấp VPC chuẩn doanh
+nghiệp}\par
+
+\vspace{0.5em}\noindent\textbf{Giới thiệu}\par
+
+Mô hình Amazon VPC cơ bản gồm Public Subnet, Private Subnet và NAT
+Gateway là nền tảng phù hợp để bắt đầu triển khai ứng dụng trên AWS.
+Kiến trúc này giúp tách các tài nguyên cần truy cập trực tiếp từ
+Internet khỏi những thành phần nội bộ như application server, database
+và cache.
+
+Tuy nhiên, khi hệ thống mở rộng thành nhiều môi trường như Development,
+Staging và Production hoặc được chia thành nhiều microservices và VPC
+khác nhau, kiến trúc cơ bản có thể bắt đầu xuất hiện ba hạn chế lớn:
+
+\begin{itemize}
+\tightlist
+\item
+  Chi phí NAT Gateway tăng cao khi các tài nguyên trong Private Subnet
+  thường xuyên truy cập Amazon S3, Amazon DynamoDB và những dịch vụ AWS
+  khác.
+\item
+  Rủi ro Single Point of Failure nếu toàn bộ lưu lượng outbound chỉ phụ
+  thuộc vào một NAT Gateway trong một Availability Zone.
+\item
+  Việc quản lý kết nối trở nên phức tạp khi nhiều VPC được kết nối với
+  nhau bằng VPC Peering theo mô hình mạng lưới.
+\end{itemize}
+
+Bài viết này trình bày ba kỹ thuật nâng cấp kiến trúc VPC theo hướng phù
+hợp hơn với hệ thống doanh nghiệp, bao gồm VPC Endpoints, Multi-AZ
+networking và AWS Transit Gateway.
+
+\vspace{0.5em}\noindent\textbf{1. Giảm chi phí và tăng bảo mật với VPC
+Endpoints}\par
+
+\vspace{0.5em}\noindent\textbf{Vấn đề khi sử dụng NAT
+Gateway}\par
+
+Các EC2 instances, container hoặc application servers nằm trong Private
+Subnet thường không có địa chỉ IP công cộng. Khi những tài nguyên này
+cần truy cập Amazon S3, DynamoDB hoặc các AWS services khác, lưu lượng
+có thể phải đi qua NAT Gateway.
+
+Luồng kết nối cơ bản có thể được mô tả như sau:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{NAT Gateway}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{AWS Public Service Endpoint}
+\end{Highlighting}
+\end{Shaded}
+
+Cách triển khai này có thể phát sinh phí NAT Gateway theo giờ và phí xử
+lý dữ liệu. Lưu lượng cũng phải đi qua public service endpoint dù cả ứng
+dụng và dịch vụ đích đều hoạt động bên trong hạ tầng AWS.
+
+\vspace{0.5em}\noindent\textbf{Gateway Endpoint}\par
+
+Gateway Endpoint được sử dụng cho hai dịch vụ chính:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon S3.
+\item
+  Amazon DynamoDB.
+\end{itemize}
+
+Sau khi Gateway Endpoint được tạo và liên kết với route table của
+Private Subnet, lưu lượng đến S3 hoặc DynamoDB có thể được chuyển trực
+tiếp qua mạng nội bộ của AWS mà không cần đi qua NAT Gateway.
+
+Luồng kết nối mới:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{VPC Gateway Endpoint}
+\NormalTok{      |}
+\NormalTok{      v}
+\NormalTok{Amazon S3 hoặc Amazon DynamoDB}
+\end{Highlighting}
+\end{Shaded}
+
+Gateway Endpoint mang lại các lợi ích:
+
+\begin{itemize}
+\tightlist
+\item
+  Không cần sử dụng NAT Gateway cho lưu lượng đến S3 và DynamoDB.
+\item
+  Giữ lưu lượng bên trong mạng AWS.
+\item
+  Giảm chi phí xử lý dữ liệu qua NAT Gateway.
+\item
+  Có thể kiểm soát quyền truy cập bằng endpoint policy.
+\item
+  Giảm việc phụ thuộc vào kết nối Internet outbound.
+\end{itemize}
+
+Gateway Endpoint cho S3 và DynamoDB không thu phí theo giờ sử dụng
+endpoint, vì vậy đây thường là một trong những giải pháp đầu tiên nên
+cân nhắc khi tối ưu chi phí network.
+
+\vspace{0.5em}\noindent\textbf{Interface Endpoint và AWS
+PrivateLink}\par
+
+Đối với những dịch vụ không hỗ trợ Gateway Endpoint, hệ thống có thể sử
+dụng Interface Endpoint.
+
+Interface Endpoint tạo các Elastic Network Interface trong subnet và gán
+địa chỉ IP nội bộ cho chúng. Ứng dụng có thể sử dụng private IP hoặc
+private DNS để truy cập dịch vụ AWS mà không cần đi qua Internet công
+cộng.
+
+Một số dịch vụ thường được truy cập thông qua Interface Endpoint gồm:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon CloudWatch.
+\item
+  AWS Secrets Manager.
+\item
+  Amazon ECR.
+\item
+  AWS Systems Manager.
+\item
+  AWS Key Management Service.
+\item
+  Amazon Kinesis.
+\end{itemize}
+
+Interface Endpoint sử dụng AWS PrivateLink để duy trì lưu lượng trong
+mạng AWS.
+
+So với việc truy cập thông qua NAT Gateway, giải pháp này có thể:
+
+\begin{itemize}
+\tightlist
+\item
+  Giảm lưu lượng Internet outbound.
+\item
+  Kiểm soát truy cập bằng Security Group.
+\item
+  Hạn chế phạm vi tấn công.
+\item
+  Hỗ trợ kiến trúc private networking rõ ràng hơn.
+\item
+  Cho phép workload trong Private Subnet truy cập dịch vụ AWS bằng
+  private IP.
+\end{itemize}
+
+Interface Endpoint vẫn có chi phí theo giờ và lưu lượng xử lý, vì vậy
+cần so sánh với chi phí NAT Gateway dựa trên lưu lượng thực tế của hệ
+thống.
+
+\vspace{0.5em}\noindent\textbf{2. Triển khai Multi-AZ và tránh chi phí Cross-AZ không cần
+thiết}\par
+
+\vspace{0.5em}\noindent\textbf{Tại sao cần nhiều Availability
+Zones?}\par
+
+Một Availability Zone có thể gặp sự cố độc lập. Nếu toàn bộ application
+server, database và network egress đều được đặt trong cùng một AZ, hệ
+thống có thể bị gián đoạn khi AZ đó gặp vấn đề.
+
+Để tăng tính sẵn sàng, kiến trúc production thường được triển khai trên
+ít nhất hai Availability Zones.
+
+Ví dụ:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Availability Zone A}
+\NormalTok{{-} Public Subnet A}
+\NormalTok{{-} Private Subnet A}
+\NormalTok{{-} NAT Gateway A}
+\NormalTok{{-} Application instances A}
+
+\NormalTok{Availability Zone B}
+\NormalTok{{-} Public Subnet B}
+\NormalTok{{-} Private Subnet B}
+\NormalTok{{-} NAT Gateway B}
+\NormalTok{{-} Application instances B}
+\end{Highlighting}
+\end{Shaded}
+
+Trong mô hình này, mỗi Availability Zone có một đường outbound độc lập.
+Nếu một AZ gặp sự cố, workload trong AZ còn lại vẫn có thể sử dụng NAT
+Gateway và các tài nguyên còn hoạt động trong AZ đó.
+
+\vspace{0.5em}\noindent\textbf{Tránh Single Point of
+Failure}\par
+
+Nếu hệ thống chỉ sử dụng một NAT Gateway trong AZ-A, các workload nằm
+trong AZ-B phải truyền lưu lượng sang AZ-A trước khi truy cập Internet.
+
+Mô hình này tạo ra hai vấn đề:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  NAT Gateway trong AZ-A trở thành điểm phụ thuộc duy nhất.
+\item
+  Lưu lượng từ AZ-B sang AZ-A có thể phát sinh chi phí truyền dữ liệu
+  Cross-AZ.
+\end{enumerate}
+
+Một kiến trúc phù hợp hơn là triển khai một NAT Gateway trong mỗi
+Availability Zone đang hoạt động. Route table của từng Private Subnet sẽ
+trỏ đến NAT Gateway nằm trong cùng AZ.
+
+Ví dụ:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Private Subnet A {-}\textgreater{} NAT Gateway A}
+\NormalTok{Private Subnet B {-}\textgreater{} NAT Gateway B}
+\end{Highlighting}
+\end{Shaded}
+
+Nếu AZ-A gặp sự cố, tài nguyên trong AZ-B vẫn có đường outbound riêng và
+không phụ thuộc vào NAT Gateway A.
+
+\vspace{0.5em}\noindent\textbf{AZ-Aware Routing}\par
+
+AZ-Aware Routing là cách ưu tiên kết nối giữa các workload và dependency
+nằm trong cùng Availability Zone.
+
+Ví dụ:
+
+\begin{itemize}
+\tightlist
+\item
+  Application instance trong AZ-A ưu tiên sử dụng NAT Gateway A.
+\item
+  Workload trong AZ-B ưu tiên kết nối cache node trong AZ-B.
+\item
+  Load balancer phân phối request đến các target phù hợp.
+\item
+  Database replica hoặc cache node được phân bố giữa nhiều AZ.
+\item
+  Service discovery ưu tiên endpoint gần workload hơn khi kiến trúc hỗ
+  trợ.
+\end{itemize}
+
+Cách bố trí này giúp:
+
+\begin{itemize}
+\tightlist
+\item
+  Giảm lưu lượng Cross-AZ không cần thiết.
+\item
+  Giảm độ trễ network.
+\item
+  Hạn chế chi phí truyền dữ liệu giữa các AZ.
+\item
+  Giúp mỗi AZ có khả năng vận hành độc lập tốt hơn.
+\end{itemize}
+
+Tuy nhiên, việc ưu tiên kết nối trong cùng AZ vẫn phải được cân bằng với
+yêu cầu High Availability. Ứng dụng không nên phụ thuộc hoàn toàn vào
+một tài nguyên trong cùng AZ nếu tài nguyên đó không có cơ chế failover.
+
+\vspace{0.5em}\noindent\textbf{3. Quản lý kết nối nhiều VPC bằng AWS Transit
+Gateway}\par
+
+\vspace{0.5em}\noindent\textbf{Hạn chế của VPC
+Peering}\par
+
+VPC Peering phù hợp khi hệ thống chỉ có một số lượng nhỏ VPC. Hai VPC có
+thể được kết nối trực tiếp và giao tiếp với nhau bằng private IP.
+
+Tuy nhiên, VPC Peering không hỗ trợ transitive routing.
+
+Ví dụ:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{VPC{-}A \textless{}{-}\textgreater{} VPC{-}B}
+\NormalTok{VPC{-}B \textless{}{-}\textgreater{} VPC{-}C}
+\end{Highlighting}
+\end{Shaded}
+
+Việc VPC-A kết nối với VPC-B và VPC-B kết nối với VPC-C không có nghĩa
+là VPC-A có thể tự động giao tiếp với VPC-C.
+
+Nếu nhiều VPC cần kết nối trực tiếp với nhau, số lượng VPC Peering
+connections có thể tăng theo công thức:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{N(N {-} 1) / 2}
+\end{Highlighting}
+\end{Shaded}
+
+Ví dụ, với 10 VPC, mô hình full mesh có thể cần đến 45 kết nối peering.
+
+Khi đó, việc quản lý route table, CIDR, Security Group và network policy
+trở nên phức tạp. Việc thêm một VPC mới cũng có thể yêu cầu tạo nhiều
+kết nối và cập nhật nhiều route table khác nhau.
+
+\vspace{0.5em}\noindent\textbf{Transit Gateway như một Cloud
+Router}\par
+
+AWS Transit Gateway hoạt động như một router trung tâm cho nhiều VPC và
+hệ thống mạng khác nhau.
+
+Các thành phần có thể kết nối với Transit Gateway gồm:
+
+\begin{itemize}
+\tightlist
+\item
+  Amazon VPC.
+\item
+  Site-to-Site VPN.
+\item
+  AWS Direct Connect thông qua Direct Connect Gateway.
+\item
+  VPC thuộc nhiều AWS accounts.
+\item
+  Các môi trường Development, Staging và Production.
+\item
+  Shared Services VPC.
+\item
+  Mạng từ Data Center On-Premises.
+\end{itemize}
+
+Thay vì tạo kết nối trực tiếp giữa từng cặp VPC, mỗi VPC chỉ cần tạo một
+attachment đến Transit Gateway.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{             Development VPC}
+\NormalTok{                    |}
+\NormalTok{                    |}
+\NormalTok{Shared VPC {-}{-}{-}{-} Transit Gateway {-}{-}{-}{-} Production VPC}
+\NormalTok{                    |}
+\NormalTok{                    |}
+\NormalTok{             On{-}Premises Network}
+\end{Highlighting}
+\end{Shaded}
+
+Mô hình hub-and-spoke này giúp đơn giản hóa network topology và tập
+trung việc quản lý routing.
+
+\vspace{0.5em}\noindent\textbf{Phân vùng mạng bằng Transit Gateway Route
+Tables}\par
+
+Transit Gateway có thể sử dụng nhiều route table để kiểm soát VPC nào
+được phép giao tiếp với VPC nào.
+
+Ví dụ:
+
+\begin{itemize}
+\tightlist
+\item
+  Development VPC có thể truy cập Shared Services VPC.
+\item
+  Production VPC có thể truy cập Shared Services VPC.
+\item
+  Development VPC không được phép kết nối trực tiếp đến Production VPC.
+\item
+  On-Premises Network chỉ được truy cập một số subnet nhất định.
+\item
+  Security VPC có thể kiểm tra lưu lượng trước khi chuyển đến các VPC
+  khác.
+\end{itemize}
+
+Việc phân vùng này giúp:
+
+\begin{itemize}
+\tightlist
+\item
+  Hạn chế lateral movement giữa các môi trường.
+\item
+  Phân tách Development, Staging và Production rõ ràng hơn.
+\item
+  Quản lý network policy từ một vị trí tập trung.
+\item
+  Đơn giản hóa việc thêm VPC mới.
+\item
+  Hỗ trợ kiến trúc multi-account với AWS Organizations.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{So sánh mô hình VPC cơ bản và kiến trúc nâng
+cao}\par
+
+{
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Tiêu chí
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mô hình cơ bản
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mô hình nâng cao
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Truy cập S3 và DynamoDB & Đi qua NAT Gateway hoặc public endpoint & Đi
+qua Gateway Endpoint \\
+Truy cập các AWS services khác & Thường sử dụng NAT Gateway & Sử dụng
+Interface Endpoint và AWS PrivateLink khi phù hợp \\
+High Availability & Có thể chỉ sử dụng một NAT Gateway & NAT Gateway độc
+lập trong từng Availability Zone \\
+Cross-AZ traffic & Dễ phát sinh nếu routing không được tối ưu & Hạn chế
+bằng AZ-aware routing \\
+Kết nối nhiều VPC & VPC Peering được cấu hình thủ công từng cặp &
+Transit Gateway quản lý tập trung \\
+Phân tách Dev và Prod & Phụ thuộc vào nhiều route và peering connections
+& Sử dụng Transit Gateway route tables \\
+Khả năng mở rộng & Phù hợp với hệ thống nhỏ & Phù hợp hơn với hệ thống
+nhiều VPC và nhiều account \\
+Quản trị & Dễ triển khai ban đầu nhưng khó kiểm soát khi mở rộng & Phức
+tạp hơn lúc thiết kế nhưng dễ quản lý tập trung \\
+\end{longtable}
+\endgroup
+}
+
+\vspace{0.5em}\noindent\textbf{Khi nào nên sử dụng từng giải
+pháp?}\par
+
+\vspace{0.5em}\noindent\textbf{Sử dụng VPC Endpoints
+khi:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  Workload trong Private Subnet thường xuyên truy cập Amazon S3 hoặc
+  DynamoDB.
+\item
+  Ứng dụng cần truy cập AWS services mà không đi qua Internet công cộng.
+\item
+  Muốn giảm lưu lượng và chi phí xử lý qua NAT Gateway.
+\item
+  Hệ thống có yêu cầu cao về bảo mật dữ liệu.
+\item
+  Muốn giới hạn quyền truy cập bằng endpoint policy.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Sử dụng Multi-AZ NAT Gateway
+khi:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  Hệ thống yêu cầu High Availability.
+\item
+  Workload được triển khai trên nhiều Availability Zones.
+\item
+  Không muốn một NAT Gateway trở thành Single Point of Failure.
+\item
+  Muốn hạn chế lưu lượng Cross-AZ không cần thiết.
+\item
+  Hệ thống cần duy trì outbound connectivity khi một AZ gặp sự cố.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Sử dụng AWS Transit Gateway
+khi:}\par
+
+\begin{itemize}
+\tightlist
+\item
+  Hệ thống có nhiều VPC hoặc nhiều AWS accounts.
+\item
+  Cần kết nối mạng On-Premises với AWS.
+\item
+  VPC Peering bắt đầu trở nên khó quản lý.
+\item
+  Cần phân tách Development, Staging và Production.
+\item
+  Muốn kiểm soát routing từ một vị trí trung tâm.
+\item
+  Cần xây dựng mô hình Shared Services hoặc Security Inspection tập
+  trung.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Lưu ý về chi phí}\par
+
+Kiến trúc network nâng cao không có nghĩa là mọi thành phần đều rẻ hơn.
+
+Gateway Endpoint cho S3 và DynamoDB có thể giúp giảm lưu lượng qua NAT
+Gateway. Tuy nhiên, Interface Endpoint, NAT Gateway và Transit Gateway
+đều có mô hình tính phí riêng.
+
+Trước khi triển khai, cần phân tích:
+
+\begin{itemize}
+\tightlist
+\item
+  Tổng lưu lượng dữ liệu hàng tháng.
+\item
+  Các dịch vụ AWS được truy cập thường xuyên.
+\item
+  Số lượng Availability Zones.
+\item
+  Số lượng VPC và Transit Gateway attachments.
+\item
+  Tần suất truyền dữ liệu giữa các AZ.
+\item
+  Lưu lượng Internet outbound.
+\item
+  Yêu cầu bảo mật và tính sẵn sàng.
+\item
+  Chi phí vận hành và độ phức tạp trong quản trị.
+\end{itemize}
+
+Mục tiêu không phải là giảm chi phí bằng mọi cách, mà là tìm được sự cân
+bằng giữa chi phí, bảo mật, hiệu năng, khả năng mở rộng và High
+Availability.
+
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
+
+Mô hình Public Subnet, Private Subnet và NAT Gateway là nền tảng tốt để
+bắt đầu xây dựng hệ thống trên AWS. Tuy nhiên, khi hệ thống phát triển
+thành nhiều môi trường, nhiều VPC hoặc nhiều AWS accounts, network
+architecture cũng cần được nâng cấp.
+
+Ba kỹ thuật quan trọng gồm:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Sử dụng VPC Endpoints để giữ lưu lượng truy cập AWS services trong
+  mạng nội bộ và giảm phụ thuộc vào NAT Gateway.
+\item
+  Triển khai Multi-AZ với NAT Gateway độc lập trong từng Availability
+  Zone để tăng tính sẵn sàng và hạn chế Cross-AZ traffic.
+\item
+  Sử dụng AWS Transit Gateway để quản lý kết nối giữa nhiều VPC theo mô
+  hình tập trung.
+\end{enumerate}
+
+Tối ưu kiến trúc VPC không chỉ là bài toán routing. Đây còn là quá trình
+cân bằng giữa bảo mật, khả năng mở rộng, tính sẵn sàng, hiệu năng và chi
+phí.
+
+Một Enterprise VPC Architecture tốt cần được thiết kế dựa trên nhu cầu
+thực tế của hệ thống. Không nên bổ sung thêm nhiều dịch vụ chỉ để kiến
+trúc trở nên phức tạp hơn mà không tạo ra giá trị rõ ràng.
+
+\vspace{0.5em}\noindent\textbf{Thông tin bài đăng}\par
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Chủ đề:} Nâng cấp kiến trúc Amazon VPC cho hệ thống doanh
+  nghiệp.
+\item
+  \textbf{Ngày đăng:} 29/07/2026.
+\item
+  \textbf{Nền tảng:} AWS Study Groups.
+\item
+  \textbf{Trạng thái:} Published.
+\item
+  \textbf{Public link:}
+  \href{https://www.facebook.com/groups/awsstudygroupfcj/permalink/2225997548165205/\#}{Blog
+  4 trên AWS Study Groups}
+\end{itemize}

@@ -1,14 +1,14 @@
-\vspace{0.5em}\noindent\textbf{Week 5 - Local Kubernetes
-Deployment}\par
+\vspace{0.5em}\noindent\textbf{Tuần 5 - Triển khai Kubernetes
+local}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Week 5 focused on running the application in local Kubernetes using
-kind. The goal was to move from Compose-only development to Kubernetes
-Deployments, Services, Jobs, ConfigMaps, Secrets, ingress, autoscaling,
-and observability resources.
+Trong nhóm 5 thành viên, mục tiêu tuần 5 của tôi là chuyển ứng dụng đã
+tích hợp từ Compose sang Kubernetes local bằng kind. Tôi phụ trách
+manifest và automation; các thành viên còn lại cung cấp và kiểm tra cấu
+hình runtime cho component của mình.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -21,65 +21,49 @@ and observability resources.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Added kind cluster configuration. &
-\texttt{k8s/\allowbreak{}cluster/\allowbreak{}kind-\allowbreak{}config.\allowbreak{}yaml} and commit \texttt{8dae02c}. \\
-Completed & Added Kubernetes resources for backend, chat, PostgreSQL,
-Redis, DynamoDB Local, migration job, and chat initialization job. &
-\texttt{k8s/\allowbreak{}app/\allowbreak{}*.\allowbreak{}yaml}. \\
-Completed & Added local deployment automation for PowerShell and shell
-users. & \texttt{scripts/\allowbreak{}k8s/\allowbreak{}deploy-\allowbreak{}local.\allowbreak{}ps1} and
-\texttt{scripts/\allowbreak{}k8s/\allowbreak{}deploy-\allowbreak{}local.\allowbreak{}sh}. \\
-Completed & Added HPA and PDB definitions for app services. &
+Hoàn thành & Bổ sung cấu hình kind cluster. &
+\texttt{k8s/\allowbreak{}cluster/\allowbreak{}kind-\allowbreak{}config.\allowbreak{}yaml} và commit \texttt{8dae02c}. \\
+Hoàn thành & Tạo Kubernetes resource cho service, dependency, migration
+job và chat initialization job. & \texttt{k8s/\allowbreak{}app/\allowbreak{}*.\allowbreak{}yaml}. \\
+Hoàn thành & Tự động hóa triển khai local cho PowerShell và shell. & Hai
+script \texttt{deploy-\allowbreak{}local}. \\
+Hoàn thành & Bổ sung HPA và PDB cho application service. &
 \texttt{k8s/\allowbreak{}app/\allowbreak{}autoscaling.\allowbreak{}yaml}. \\
-Completed & Added observability resources for Prometheus, Grafana, Loki,
-Tempo, Alloy, OTel collector, ServiceMonitors, and PrometheusRules. &
-\texttt{k8s/\allowbreak{}observability/\allowbreak{}*} and \texttt{observability/\allowbreak{}grafana/\allowbreak{}*}. \\
-Partially completed & Captured live \texttt{kubectl} screenshots and
-command logs where available. & Evidence pending: I did not have the
-full screenshot/log artifact set in the local evidence archive. \\
+Hoàn thành & Bổ sung tài nguyên observability cho Prometheus, Grafana,
+Loki, Tempo, Alloy và OTel. & \texttt{k8s/\allowbreak{}observability/\allowbreak{}*} và
+\texttt{observability/\allowbreak{}grafana/\allowbreak{}*}. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
 The local Kubernetes path uses kind for the cluster, in-cluster
 PostgreSQL/Redis/DynamoDB Local for dependencies, and Kubernetes
 manifests under \texttt{k8s/\allowbreak{}app} for the workload layer.
 
-\{\{\textless{} mermaid \textgreater\}\} graph TB subgraph
-Kind{[}``kind-internship-local''{]} subgraph Internship{[}``namespace:
-internship''{]} Backend{[}``Deployment/backend''{]}
-Chat{[}``Deployment/chat-service''{]}
-Dispatcher{[}``Deployment/backend-outbox-dispatcher''{]}
-Worker{[}``Deployment/backend-processing-worker''{]}
-Postgres{[}``Deployment/postgres''{]} Redis{[}``Deployment/redis''{]}
-DDB{[}``Deployment/dynamodb-local''{]}
-Migrate{[}``Job/backend-migrate''{]} Init{[}``Job/chat-init''{]} end
-subgraph Monitoring{[}``namespace: monitoring''{]}
-Prom{[}``Prometheus''{]} Grafana{[}``Grafana''{]} Loki{[}``Loki''{]}
-Tempo{[}``Tempo''{]} end end Backend --\textgreater{} Postgres Backend
---\textgreater{} DDB Backend --\textgreater{} Dispatcher Worker
---\textgreater{} Backend Chat --\textgreater{} Redis Chat
---\textgreater{} DDB Prom --\textgreater{} Backend Prom --\textgreater{}
-Chat Prom --\textgreater{} Dispatcher \{\{\textless{} /mermaid
-\textgreater\}\}
+\textbf{Mô tả sơ bộ.} Cụm kind cục bộ chứa các workload ứng dụng và dịch
+vụ dữ liệu trong namespace internship. Namespace monitoring riêng chạy
+Prometheus, Grafana, Loki và Tempo; Prometheus thu thập metric từ
+backend, chat service và outbox dispatcher.
 
 The deployment scripts build local images, load them into kind, apply
 app manifests, run migration/init jobs, wait for rollouts, and print
 port-forward commands for backend, chat, and optional AI service checks.
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -119,15 +103,12 @@ Local observability required multiple supporting components. & Metrics,
 logs, and traces need separate platform services. & Added Helm-backed
 Prometheus/Grafana/Loki/Tempo/Alloy resources and local runbook
 guidance. & Completed \\
-Live cluster screenshots are missing. & Runtime screenshots were not
-attached to the local evidence archive. & I kept Kubernetes evidence
-pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -165,25 +146,10 @@ but current report does not include saved \texttt{kubectl} output. \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}kubectl-\allowbreak{}get-\allowbreak{}nodes.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}kubectl-\allowbreak{}get-\allowbreak{}pods.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}grafana-\allowbreak{}dashboard.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -232,7 +198,8 @@ commit} & Evidence pending \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
 Evidence pending: attach actual local Kubernetes output from commands
 such as:
@@ -248,31 +215,33 @@ such as:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
 Evidence pending: attach output from local image builds and
 \texttt{kind\ load\ docker-\allowbreak{}image} commands.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
 Evidence pending: attach output from
 \texttt{scripts/\allowbreak{}k8s/\allowbreak{}deploy-\allowbreak{}local.\allowbreak{}ps1} or
 \texttt{scripts/\allowbreak{}k8s/\allowbreak{}deploy-\allowbreak{}local.\allowbreak{}sh}.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-The project moved from local Compose toward a Kubernetes-shaped runtime.
-Backend, chat, dependencies, jobs, workers, ingress, autoscaling, and
-observability resources were represented in manifests and deployment
-scripts.
+Kết quả cá nhân tuần 5 là quy trình Kubernetes local gồm manifest,
+automation, scaling control và observability. Kiểm thử chức năng
+backend, frontend, chat và AI được phối hợp với bốn thành viên phụ trách
+các component tương ứng.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
 Local Kubernetes validation is more than checking that pods start. Jobs,
 readiness probes, image freshness, DNS, service ports, ingress, HPA
 metrics, and observability scraping all need explicit checks.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
 Prepare the AWS foundation: AWS CLI validation, region selection, GitHub
 OIDC, IAM deployment role, ECR repositories, and image build/push

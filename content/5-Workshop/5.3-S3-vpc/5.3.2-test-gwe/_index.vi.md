@@ -1,5 +1,5 @@
 ﻿---
-title: "Kiểm tra Gateway Endpoint"
+title: "Kiểm tra điểm cuối cổng"
 date: 2024-01-01 
 weight: 2
 chapter: false

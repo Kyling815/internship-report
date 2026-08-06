@@ -1,21 +1,20 @@
-\vspace{0.5em}\noindent\textbf{Week 8 - End-to-End Deployment and Operational
-Validation}\par
+\vspace{0.5em}\noindent\textbf{Tuần 8 - Triển khai end-to-end và kiểm tra vận
+hành}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-During Week 8, I finalized the production deployment path for the
-Internship Application Tracker. I built and validated the deployment
-model for Amazon EKS workloads, Application Load Balancer routing, S3
-and CloudFront frontend delivery, AWS-managed data services,
-event-driven processing, and cost tracking.
+Trong tuần 8, tôi hoàn thiện phần đóng góp Cloud/DevOps của mình trong
+project nhóm 5 thành viên. Tôi tích hợp và kiểm tra mô hình production
+cho các service của nhóm trên Amazon EKS, Application Load Balancer,
+S3/CloudFront, các dịch vụ dữ liệu AWS managed, event-driven processing
+và cost tracking.
 
-I used the Week 08 AWS evidence directory as the source of truth for
-this section. The cost figures come from the July 1-28, 2026 AWS cost
-summary, the Billing credits screenshot, and the Cost Explorer overview
-screenshot. The finalized monthly bill and the AWS Pricing Calculator
-estimate are still unavailable.
+Tôi sử dụng thư mục minh chứng AWS tuần 08 làm nguồn dữ liệu cho phần
+này. Số liệu chi phí lấy từ tổng hợp ngày 01-28/07/2026, screenshot
+Billing credits và Cost Explorer. Hóa đơn tháng đã chốt và AWS Pricing
+Calculator vẫn chưa có.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -28,47 +27,40 @@ estimate are still unavailable.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Added the SageMaker-oriented AI service integration and
-deployment path while preserving worker-facing routes. & Source
-references from the project implementation and
+Hoàn thành & Tích hợp AI service theo hướng SageMaker do thành viên AI
+cung cấp vào deployment path. & Source implementation và
 \texttt{sagemaker-\allowbreak{}health.\allowbreak{}png}. \\
-Completed & Fixed deploy-app image propagation and deterministic ECR
-image selection. & Source references from the CI/CD workflow
-implementation. \\
-Completed & Removed frontend Kubernetes resources from the current
-runtime path so frontend delivery uses S3 and CloudFront instead of an
-EKS frontend pod. & Source references from the deployment scripts and
-architecture notes. \\
-Completed & Verified Amazon RDS PostgreSQL and Amazon ElastiCache Valkey
-runtime status from AWS CLI screenshots. & \texttt{RDS-\allowbreak{}health.\allowbreak{}png},
+Hoàn thành & Sửa image propagation của \texttt{deploy-\allowbreak{}app} và cách chọn
+ECR image xác định. & CI/CD workflow implementation. \\
+Hoàn thành & Loại frontend khỏi Kubernetes runtime để phân phối qua S3
+và CloudFront. & Deployment script và architecture note. \\
+Hoàn thành & Kiểm tra trạng thái Amazon RDS PostgreSQL và ElastiCache
+Valkey từ screenshot AWS CLI. & \texttt{RDS-\allowbreak{}health.\allowbreak{}png},
 \texttt{REDIS-\allowbreak{}health.\allowbreak{}png}. \\
-Completed & Verified the SageMaker endpoint runtime status from AWS CLI
-screenshot evidence. & \texttt{sagemaker-\allowbreak{}health.\allowbreak{}png}. \\
-Partially completed & Verified EKS workloads and ALB runtime state from
-AWS CLI screenshots. & EKS workloads were running, but the ALB target
-health screenshot showed mixed unhealthy targets. \\
-Completed & Added CloudFront, S3, DynamoDB, and SQS runtime evidence. &
-Sanitized screenshots: \texttt{Cloudfront-\allowbreak{}evidence.\allowbreak{}png},
-\texttt{S3-\allowbreak{}evidenc.\allowbreak{}png}, \texttt{DynamoDB-\allowbreak{}evidenc.\allowbreak{}png},
-\texttt{SQS-\allowbreak{}evidence.\allowbreak{}png}. \\
-Partially completed & Added AWS cost evidence for July 1-28, 2026. &
-July cost summary, \texttt{total-\allowbreak{}cost-\allowbreak{}july.\allowbreak{}png}, and
-\texttt{Cost-\allowbreak{}evidence.\allowbreak{}png}; Pricing Calculator remains blocked. \\
+Hoàn thành & Kiểm tra trạng thái SageMaker endpoint. &
+\texttt{sagemaker-\allowbreak{}health.\allowbreak{}png}. \\
+Hoàn thành một phần & Kiểm tra EKS workload và ALB runtime. & EKS
+workload chạy nhưng screenshot ALB còn target không healthy. \\
+Hoàn thành & Bổ sung minh chứng runtime CloudFront, S3, DynamoDB và SQS.
+& Các screenshot đã được xử lý thông tin nhạy cảm. \\
+Hoàn thành một phần & Bổ sung minh chứng chi phí AWS ngày 01-28/07/2026.
+& Cost summary và screenshot; Pricing Calculator còn bị chặn. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
 The final deployment model separates static frontend hosting from
 long-running service workloads. Backend, chat, worker, and AI services
@@ -76,20 +68,11 @@ run on EKS. Static browser assets are intended to be served through S3
 and CloudFront, while API, chat, and Socket.IO paths route through the
 ALB.
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR Browser{[}``User
-browser''{]} --\textgreater{} CF{[}``CloudFront distribution''{]} CF
---\textgreater{} S3{[}``S3 frontend bucket''{]} CF --\textgreater{}
-ALB{[}``ALB for /api, /chat, /socket.io''{]} ALB --\textgreater{}
-Backend{[}``EKS backend''{]} ALB --\textgreater{} Chat{[}``EKS
-chat-service''{]} Backend --\textgreater{} RDS{[}``RDS PostgreSQL''{]}
-Chat --\textgreater{} Redis{[}``ElastiCache Valkey''{]} Chat
---\textgreater{} DDB{[}``DynamoDB chat tables''{]} Backend
---\textgreater{} Worker{[}``processing worker''{]} Worker
---\textgreater{} AI{[}``ai-service''{]} AI --\textgreater{}
-SageMaker{[}``SageMaker endpoint''{]} Backend --\textgreater{}
-Outbox{[}``outbox dispatcher''{]} Outbox --\textgreater{} SQS{[}``SQS
-queue''{]} SQS --\textgreater{} Lambda{[}``Lambda notification
-handler''{]} \{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Mô tả sơ bộ.} Điểm vào production là CloudFront: yêu cầu
+frontend tĩnh đi đến S3, còn API và chat đi qua ALB đến EKS. Dữ liệu ứng
+dụng được lưu tại RDS, Redis và DynamoDB; xử lý CV bất đồng bộ dùng
+worker, AI service và SageMaker; sự kiện outbox đi đến SQS và Lambda
+thông báo.
 
 The CI/CD workflow supports deployment modes including
 \texttt{validate}, \texttt{deploy-\allowbreak{}app}, \texttt{deploy-\allowbreak{}public},
@@ -98,7 +81,8 @@ chat, and AI images are tagged with the GitHub commit SHA. The frontend
 deployment path builds the Vite app, publishes static files to S3, and
 invalidates CloudFront when frontend deployment is enabled.
 
-\vspace{0.5em}\noindent\textbf{AWS Runtime Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng vận hành
+AWS}\par
 
 The runtime evidence below uses only files that I placed in the Week 08
 AWS evidence directory. I reviewed the following files:
@@ -143,7 +127,8 @@ I did not find \texttt{.\allowbreak{}txt}, \texttt{.\allowbreak{}log}, \texttt{.
 \texttt{.\allowbreak{}yaml}, or \texttt{.\allowbreak{}yml} evidence files in this directory, so I
 did not include long CLI log excerpts.
 
-\vspace{0.5em}\noindent\textbf{Runtime Evidence Summary}\par
+\vspace{0.5em}\noindent\textbf{Tổng hợp minh chứng vận
+hành}\par
 
 {
 \begingroup
@@ -283,7 +268,8 @@ and remediation.
 \caption{Application Load Balancer target groups}
 \end{figure}
 
-\vspace{0.5em}\noindent\textbf{Amazon CloudFront and S3}\par
+\vspace{0.5em}\noindent\textbf{Amazon CloudFront và
+S3}\par
 
 \textbf{Evidence status:} Available \textbf{Runtime status:} Partially
 verified
@@ -450,7 +436,8 @@ and was serving at the time of evidence collection.
 \caption{Amazon SageMaker endpoint status}
 \end{figure}
 
-\vspace{0.5em}\noindent\textbf{AWS Cost Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng chi phí
+AWS}\par
 
 \begin{quote}
 \textbf{Status: Partially available}
@@ -479,7 +466,8 @@ service-level cost breakdown tied to the July 1-28 cost summary.
 \caption{AWS Cost Explorer overview evidence}
 \end{figure}
 
-\vspace{0.5em}\noindent\textbf{July 1-28 cost summary}\par
+\vspace{0.5em}\noindent\textbf{Tổng hợp chi phí từ ngày 1 đến 28 tháng
+7}\par
 
 {
 \begingroup
@@ -503,7 +491,8 @@ AWS credits total estimated amount remaining & \$59.35 \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Daily cost trend}\par
+\vspace{0.5em}\noindent\textbf{Xu hướng chi phí hằng
+ngày}\par
 
 {
 \begingroup
@@ -529,7 +518,8 @@ July 28 & \$31.83 \\
 The July 28 daily cost was the largest reported daily spend in the July
 1-28 period and was much higher than the earlier baseline.
 
-\vspace{0.5em}\noindent\textbf{Top cost drivers}\par
+\vspace{0.5em}\noindent\textbf{Các dịch vụ phát sinh chi phí cao
+nhất}\par
 
 {
 \begingroup
@@ -556,7 +546,8 @@ Rank & Service & Month-to-date cost & Share of total \\
 These six services account for approximately 98\% of the July 1-28
 reported spend.
 
-\vspace{0.5em}\noindent\textbf{Cost anomalies}\par
+\vspace{0.5em}\noindent\textbf{Các bất thường về chi
+phí}\par
 
 Five active anomalies were reported around July 26-28 in
 \texttt{ap-\allowbreak{}southeast-\allowbreak{}1}:
@@ -630,8 +621,8 @@ Estimated monthly cost & Not calculated & N/A \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -682,10 +673,11 @@ Pricing Calculator remain pending/blocked. \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
-\vspace{0.5em}\noindent\textbf{ALB target groups were not fully
-healthy}\par
+\vspace{0.5em}\noindent\textbf{Các nhóm đích ALB chưa hoàn toàn khỏe
+mạnh}\par
 
 \textbf{Problem:} I captured the load balancer in \texttt{active} state,
 but target health still included unhealthy backend and chat targets.
@@ -700,8 +692,8 @@ rather than fully healthy.
 \textbf{Next action:} Collect updated target health evidence after
 fixing health-check failures or deployment readiness issues.
 
-\vspace{0.5em}\noindent\textbf{AWS cost evidence is available but not
-complete}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng chi phí AWS đã có nhưng chưa đầy
+đủ}\par
 
 \textbf{Problem:} A July 1-28 cost summary and credits screenshot are
 available, but the evidence set still does not include a finalized
@@ -718,8 +710,8 @@ fields pending.
 \textbf{Next action:} Collect the finalized AWS Bills view and build an
 AWS Pricing Calculator estimate for the production architecture.
 
-\vspace{0.5em}\noindent\textbf{I added runtime evidence for several AWS
-services}\par
+\vspace{0.5em}\noindent\textbf{Đã bổ sung minh chứng vận hành cho một số dịch vụ
+AWS}\par
 
 \textbf{Problem:} The first Week 8 evidence set did not include
 CloudFront, S3, DynamoDB, or SQS screenshots.
@@ -735,8 +727,8 @@ table status, and SQS queue status.
 behavior/origin configuration export and a browser smoke test through
 the CloudFront URL.
 
-\vspace{0.5em}\noindent\textbf{Lambda screenshot required
-sanitization}\par
+\vspace{0.5em}\noindent\textbf{Ảnh chụp Lambda cần được xử lý thông tin nhạy
+cảm}\par
 
 \textbf{Problem:} The Lambda screenshot contained account-scoped ARNs,
 an IAM role ARN, a bucket name containing an account identifier, and an
@@ -753,10 +745,10 @@ listing/configuration, but not invocation success.
 CloudWatch event-detail screenshot if Lambda runtime execution must be
 marked fully verified.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-Week 8 produced meaningful AWS runtime evidence for the core compute and
-data path:
+Phần đóng góp cá nhân tuần 8 tạo được bộ minh chứng AWS runtime cho
+compute và data path chính:
 
 \begin{itemize}
 \tightlist
@@ -778,12 +770,13 @@ data path:
   CloudWatch log group, while invocation proof remains pending.
 \end{itemize}
 
-I also keep the remaining gaps explicit: ALB target health was not fully
-healthy, CloudFront behavior/origin export and browser smoke proof are
-still pending, and cost evidence still needs a finalized bill and
-Pricing Calculator estimate.
+Ứng dụng end-to-end vẫn là kết quả chung của nhóm. Trong phạm vi của
+tôi, các khoảng trống còn lại được ghi rõ: ALB target chưa hoàn toàn
+healthy, còn thiếu CloudFront behavior/origin export và browser smoke
+test, đồng thời số liệu chi phí cần hóa đơn đã chốt và Pricing
+Calculator.
 
-\vspace{0.5em}\noindent\textbf{Remaining Work}\par
+\vspace{0.5em}\noindent\textbf{Công việc còn lại}\par
 
 \begin{itemize}
 \tightlist
@@ -815,7 +808,7 @@ Pricing Calculator estimate.
   Add a sanitized Lambda screenshot.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
 Implementation evidence and runtime evidence answer different questions.
 A deployment script proves that a path exists in source control, but

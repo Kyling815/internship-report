@@ -1,5 +1,5 @@
 ---
-title: "Kiểm thử đầu - cuối (E2E Testing)"
+title: "Kiểm thử đầu cuối"
 date: 2024-01-01
 weight: 10
 chapter: false

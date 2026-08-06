@@ -1,5 +1,5 @@
 ---
-title: "VPC Endpoint Policies"
+title: "Chính sách điểm cuối VPC"
 date: 2024-01-01
 weight: 5
 chapter: false
@@ -33,6 +33,8 @@ Nội dung của bucket bao gồm hai tệp có dung lượng 1GB đã được 
 3. Tạo bucket thành công.
 
 ![Success](/images/5-Workshop/5.5-Policy/create-bucket-success.png)
+
+![policy](/images/5-Workshop/5.5-Policy/policy1.png)
 
 Policy mặc định cho phép truy cập vào tất cả các S3 Buckets thông qua VPC endpoint.
 

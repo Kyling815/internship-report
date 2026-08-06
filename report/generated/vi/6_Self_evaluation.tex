@@ -1,19 +1,13 @@
-\vspace{0.5em}\noindent\textbf{Self-evaluation}\par
+\vspace{0.5em}\noindent\textbf{Tự đánh giá}\par
 
-\vspace{0.5em}\noindent\textbf{Assessment summary}\par
+Trong quá trình thực hiện project \textbf{Internship Application
+Platform}, mình có cơ hội áp dụng kiến thức về full-stack development,
+Cloud architecture, AI integration, realtime communication,
+containerization, Kubernetes, CI/CD và observability. Phần tự đánh giá
+này tổng hợp mức độ hoàn thành, điểm mạnh, hạn chế và định hướng cải
+thiện của mình sau kỳ thực tập.
 
-This is my draft self-assessment based on the Internship Application
-Tracker project. It is not an official supervisor rating.
-
-During the project, I worked on a cloud-native internship application
-platform that combines a React/Vite frontend, FastAPI backend, Node.js
-Socket.IO chat service, PostgreSQL, DynamoDB, Redis, SQS, Lambda, S3,
-CloudFront, EKS, and SageMaker. The most important learning outcome for
-me was understanding how application code, Kubernetes, managed AWS
-services, IAM, networking, CI/CD, and runtime evidence connect in a real
-deployment.
-
-\vspace{0.5em}\noindent\textbf{Skill rating table}\par
+\vspace{0.5em}\noindent\textbf{Tiêu chí đánh giá}\par
 
 {
 \begingroup
@@ -21,177 +15,142 @@ deployment.
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
 \begin{longtable}{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3000}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3000}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Skill area
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-Draft rating
+STT
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence and reflection
+Tiêu chí
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mô tả
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Tốt
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Khá
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trung bình
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AWS architecture & 8/10 & I helped shape the final architecture where
-CloudFront routes static frontend traffic to S3 and dynamic
-\texttt{/\allowbreak{}api}, \texttt{/\allowbreak{}chat}, and \texttt{/\allowbreak{}socket.\allowbreak{}io} traffic to the
-ALB. I learned to distinguish proposal diagrams from deployed
-evidence. \\
-Kubernetes & 8/10 & I worked with EKS workloads for backend, chat,
-outbox dispatcher, processing worker, and ai-service, including
-Deployments, Services, readiness/liveness probes, HPA, and PDB. \\
-Networking & 7/10 & I investigated issues such as a NAT Gateway
-blackhole that prevented EKS nodes from joining and the AWS Load
-Balancer Controller VPC ID failure. I still need more practice designing
-VPCs from scratch. \\
-IAM and security & 7/10 & I used GitHub OIDC, IRSA, runtime roles,
-secret separation, S3 private access, SQS SSE, and idempotency. I need
-to improve formal IAM policy review and permission boundary design. \\
-CI/CD & 8/10 & I worked with GitHub Actions workflow modes such as
-\texttt{validate}, \texttt{deploy-\allowbreak{}app}, \texttt{deploy-\allowbreak{}public},
-\texttt{deploy-\allowbreak{}frontend}, \texttt{rollout}, and \texttt{full}, including
-ECR SHA image verification and frontend S3 deployment. \\
-Database and messaging & 8/10 & I learned how PostgreSQL stores business
-data, processing jobs, idempotency records, and transactional outbox
-events, while SQS carries committed events to Lambda and DynamoDB
-supports chat and dedupe. \\
-Serverless & 7/10 & I integrated the SQS-to-Lambda notification flow
-conceptually and documented the successful Lambda smoke test, DynamoDB
-dedupe, S3 archive, SES result, and partial batch failure behavior. \\
-AI integration & 7/10 & I worked with the processing worker and
-ai-service adapter pattern, where the worker keeps stable routes and the
-adapter calls SageMaker endpoint \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b}. I need
-more experience operating model endpoints cost-effectively. \\
-Troubleshooting & 8/10 & I practiced evidence-led debugging for NAT, ALB
-controller, GitHub Actions job conditions, SQS queue naming, CloudFront
-routing, and DynamoDB reserved keyword errors. \\
-Documentation & 8/10 & I converted implementation details and runtime
-context into workshop, proposal, cost, security, testing,
-troubleshooting, and cleanup documentation. \\
+1 & \textbf{Kiến thức và kỹ năng chuyên môn} & Hiểu lĩnh vực chuyên môn,
+áp dụng kiến thức vào thực tế, sử dụng công cụ và đảm bảo chất lượng
+công việc & \checkmark & \(\square\) & \(\square\) \\
+2 & \textbf{Khả năng học hỏi} & Khả năng tiếp thu kiến thức mới và học
+nhanh & \checkmark & \(\square\) & \(\square\) \\
+3 & \textbf{Tính chủ động} & Chủ động nhận việc, tìm hiểu vấn đề và đề
+xuất hướng xử lý & \checkmark & \(\square\) & \(\square\) \\
+4 & \textbf{Tinh thần trách nhiệm} & Hoàn thành công việc đúng thời gian
+và đảm bảo chất lượng & \checkmark & \(\square\) & \(\square\) \\
+5 & \textbf{Kỷ luật} & Tuân thủ lịch trình, quy định và quy trình làm
+việc & \(\square\) & \checkmark & \(\square\) \\
+6 & \textbf{Tinh thần cầu tiến} & Sẵn sàng tiếp nhận phản hồi và cải
+thiện bản thân & \checkmark & \(\square\) & \(\square\) \\
+7 & \textbf{Giao tiếp} & Trình bày ý tưởng và báo cáo công việc rõ ràng
+& \(\square\) & \checkmark & \(\square\) \\
+8 & \textbf{Làm việc nhóm} & Phối hợp hiệu quả với đồng đội và tham gia
+vào hoạt động nhóm & \checkmark & \(\square\) & \(\square\) \\
+9 & \textbf{Tác phong chuyên nghiệp} & Tôn trọng đồng đội, đối tác và
+môi trường làm việc & \checkmark & \(\square\) & \(\square\) \\
+10 & \textbf{Kỹ năng giải quyết vấn đề} & Xác định vấn đề, đề xuất giải
+pháp và thể hiện tư duy sáng tạo & \checkmark & \(\square\) &
+\(\square\) \\
+11 & \textbf{Đóng góp cho project/team} & Hiệu quả công việc, đóng góp
+kỹ thuật và sự ghi nhận từ nhóm & \checkmark & \(\square\) &
+\(\square\) \\
+12 & \textbf{Tổng quan} & Đánh giá chung cho toàn bộ kỳ thực tập &
+\checkmark & \(\square\) & \(\square\) \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Strengths}\par
+\vspace{0.5em}\noindent\textbf{Điểm mạnh}\par
 
 \begin{itemize}
 \tightlist
 \item
-  I can connect source code, deployment manifests, workflow files, and
-  runtime evidence into one coherent architecture explanation.
+  Mình có khả năng tiếp cận vấn đề theo hướng hệ thống, không chỉ tập
+  trung vào một chức năng riêng lẻ mà còn xem xét authentication,
+  storage, realtime chat, AI processing, deployment và observability.
 \item
-  I became more careful about distinguishing implemented code from
-  verified production behavior.
+  Mình chủ động học thêm các dịch vụ AWS và công cụ Cloud-native để hiểu
+  cách một ứng dụng có thể vận hành trong môi trường production.
 \item
-  I improved at troubleshooting AWS integration failures by starting
-  from logs and command output instead of assumptions.
+  Mình biết cách liên hệ kiến thức đã học với project thực tế, ví dụ như
+  áp dụng S3 presigned URL cho bảo mật tài liệu, Redis adapter cho
+  realtime chat, và worker cho các tác vụ xử lý lâu.
 \item
-  I learned how to document deployment procedures with warnings,
-  expected results, and common errors.
+  Mình cải thiện kỹ năng viết báo cáo kỹ thuật, trình bày nội dung song
+  ngữ và chuẩn hóa cấu trúc tài liệu theo template FCAJ.
 \item
-  I understand why frontend static hosting, EKS services, database
-  transactions, SQS delivery, Lambda idempotency, and SageMaker
-  inference belong in different parts of the architecture.
+  Mình có tinh thần tiếp thu phản hồi và sẵn sàng chỉnh sửa nội dung khi
+  phát hiện điểm chưa hợp lý.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Challenges}\par
+\vspace{0.5em}\noindent\textbf{Điểm cần cải
+thiện}\par
 
 \begin{itemize}
 \tightlist
 \item
-  AWS service interactions can fail for reasons outside application
-  code, especially IAM, route tables, controller configuration, and
-  GitHub Actions variable scope.
+  Mình cần cải thiện khả năng ước lượng thời gian cho từng phần công
+  việc, đặc biệt với các phần có nhiều thành phần liên quan như
+  Kubernetes, observability và CI/CD.
 \item
-  Debugging EKS required understanding both Kubernetes objects and
-  AWS-created resources such as ALB target groups and ENIs.
+  Mình cần thực hành sâu hơn về triển khai production trên AWS, bao gồm
+  networking, IAM, cost control và monitoring thực tế.
 \item
-  Cost estimation was difficult because exact AWS prices depend on live
-  instance types, endpoint uptime, data transfer, and log retention.
+  Mình cần nâng cao kỹ năng viết automated tests để bao phủ tốt hơn các
+  luồng auth, application, document, chat và AI.
 \item
-  AI integration required preserving the worker-facing contract while
-  moving implementation details into the SageMaker adapter.
+  Mình cần cải thiện khả năng thiết kế UI/UX để giao diện dễ sử dụng hơn
+  cho cả Candidate và HR.
 \item
-  Documentation required discipline because it is easy to overstate
-  something that exists in code but has not been verified in production.
+  Mình cần tiếp tục rèn luyện cách giải thích kết quả AI để tránh sử
+  dụng điểm matching như một quyết định tuyển dụng duy nhất.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Lessons learned}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch học tập tiếp
+theo}\par
 
 \begin{itemize}
 \tightlist
 \item
-  Runtime evidence should be treated as stronger than old manifests when
-  describing current production architecture.
+  Ôn tập và thực hành sâu hơn về AWS Well-Architected Framework, đặc
+  biệt là security, reliability và cost optimization.
 \item
-  A Kubernetes Service load-balances traffic but does not serialize
-  database writes; correctness must come from constraints, idempotency,
-  conditional writes, and transactions.
+  Tiếp tục học Kubernetes, Helm, Ingress, HPA, PDB, probes và deployment
+  strategies.
 \item
-  SQS Standard provides at-least-once delivery, so consumers must
-  deduplicate events.
+  Tìm hiểu thêm về observability với Prometheus, Grafana, Loki, Tempo và
+  OpenTelemetry.
 \item
-  Lambda is useful for short event-driven processing, but it only
-  reduces cost when it removes or scales down always-on capacity.
+  Cải thiện kỹ năng backend với FastAPI, SQLAlchemy, Alembic, PostgreSQL
+  transaction và security best practices.
 \item
-  Static frontend delivery through S3 and CloudFront is a better fit
-  than running a frontend pod in EKS for this project.
+  Thực hành CI/CD với GitHub Actions, OIDC, container scanning, secret
+  scanning và deployment automation.
 \item
-  Worker workloads should be enabled only after their dependencies,
-  especially SageMaker, are ready.
+  Nghiên cứu thêm về AI application design, prompt engineering, schema
+  validation, fallback strategy và human-in-the-loop review.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Areas for improvement}\par
+\vspace{0.5em}\noindent\textbf{Định hướng nghề
+nghiệp}\par
 
-\begin{itemize}
-\tightlist
-\item
-  Practice writing IAM policies with least privilege from the beginning
-  instead of tightening them after deployment failures.
-\item
-  Learn more about VPC endpoint strategy to reduce NAT Gateway cost and
-  dependency.
-\item
-  Add stronger production evidence collection for alarms, backups,
-  encryption settings, and PITR.
-\item
-  Build a repeatable frontend/browser E2E test harness for login, job
-  apply, chat, and AI processing flows.
-\item
-  Improve SageMaker cost control by testing scheduled shutdown,
-  asynchronous inference, or lower-cost inference options.
-\end{itemize}
+Sau kỳ thực tập, mình có định hướng tiếp tục phát triển theo hướng
+\textbf{Cloud/Backend Engineering} kết hợp với \textbf{AI integration}.
+Project này giúp mình nhận ra rằng một hệ thống thực tế không chỉ cần
+chạy được chức năng chính, mà còn cần bảo mật, khả năng mở rộng,
+observability, tự động hóa triển khai và kiểm soát chi phí.
 
-\vspace{0.5em}\noindent\textbf{Future plan}\par
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Strengthen AWS networking knowledge, especially VPC routing, NAT,
-  endpoints, security groups, and private service access.
-\item
-  Practice production IAM design with OIDC, IRSA, Lambda roles, and
-  SageMaker execution roles.
-\item
-  Build a complete evidence package for deployed systems: CLI exports,
-  logs, screenshots, Cost Explorer, and Pricing Calculator results.
-\item
-  Add automated E2E tests and smoke tests for the main candidate and HR
-  flows.
-\item
-  Continue improving event-driven design with SQS, Lambda, DLQ handling,
-  idempotency, and observability.
-\end{enumerate}
-
-\vspace{0.5em}\noindent\textbf{Career orientation}\par
-
-This project confirmed that I want to keep developing skills in cloud
-engineering, backend systems, DevOps, and AI-enabled applications. I am
-especially interested in work that combines application development with
-reliable infrastructure, security, automation, and practical
-troubleshooting.
+Trong thời gian tới, mình muốn tiếp tục xây dựng các project có tính
+thực tế cao hơn, triển khai trên AWS một cách có kiểm soát và rèn luyện
+tư duy thiết kế hệ thống để có thể tham gia tốt hơn vào các dự án
+Cloud-native trong môi trường doanh nghiệp.

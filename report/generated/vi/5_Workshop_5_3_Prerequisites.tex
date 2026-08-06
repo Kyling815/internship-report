@@ -1,19 +1,27 @@
-\vspace{0.5em}\noindent\textbf{Prerequisites}\par
+\vspace{0.5em}\noindent\textbf{Điều kiện tiên
+quyết}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Prepare the accounts, permissions, tools, repository access, quotas, and
-environment variables required to deploy and verify the Internship
+Chuẩn bị sẵn sàng các tài khoản, quyền hạn truy cập, công cụ kỹ thuật,
+đường dẫn mã nguồn, thông số hạn ngạch (quotas) cùng các biến môi trường
+thiết yếu để tiến hành triển khai và nghiệm thu hệ thống Internship
 Application Tracker.
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-This project uses GitHub Actions and AWS OIDC for production deployment.
-Local tools are still needed for inspection, emergency verification, and
-manual recovery. Do not use long-lived AWS access keys in the CI/CD
-pipeline.
+Dự án này ứng dụng hệ điều hành dây chuyền tích hợp GitHub Actions phối
+hợp cùng tiêu chuẩn xác thực không dùng khóa AWS OIDC trong quy trình
+triển khai môi trường production. Tuy vậy, tập công cụ lập trình tại chỗ
+trên máy tiếp tục giữ tầm quan trọng đặc biệt nhằm phục vụ công tác
+thanh tra, can thiệp nghiệm thu nóng trong hoàn cảnh nguy trượt và cứu
+rỗi phục hồi dữ liệu thủ công. Nghiêm cấm mọi ý định dùng các khóa AWS
+Access Key mang chu kỳ tồn sinh vô hạn thi thoảng đính vào dòng chảy
+CI/CD.
 
-\vspace{0.5em}\noindent\textbf{Required access}\par
+\vspace{0.5em}\noindent\textbf{Yêu cầu về quyền truy
+cập}\par
 
 {
 \begingroup
@@ -25,32 +33,35 @@ pipeline.
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Access area
+Khu vực truy cập
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Requirement
+Yêu cầu
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-AWS account & Authorized access to the project AWS account; account ID
-redacted \\
-AWS region & \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
-GitHub repository & Access to
+Tài khoản AWS & Được trao quyền tiếp thu và thao tác hợp pháp vào bên
+trong tài khoản AWS thuộc dự án; mã số ID tài khoản đã được che khuất \\
+Khu vực AWS (Region) & \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
+Kho lưu trữ GitHub & Truy nhập suôn sẻ địa chỉ
 \texttt{https:/\allowbreak{}/\allowbreak{}github.\allowbreak{}com/\allowbreak{}Temp-\allowbreak{}orgo/\allowbreak{}AWS-\allowbreak{}Internship} \\
-GitHub Actions environment & Production environment secrets and
-variables \\
-EKS & Permission to update kubeconfig and inspect namespace
-\texttt{internship} \\
-CloudFront and S3 & Permission to inspect distribution, bucket policy,
-objects, and invalidations \\
-RDS, Redis, DynamoDB, SQS, Lambda, SES, SageMaker & Read access for
-validation; deployment role needs scoped write actions \\
+Môi trường GitHub Actions & Các biến môi trường cùng thông tin bảo mật
+cho cấu trúc production environment secrets và variables \\
+EKS & Có đủ uy quyền gọi lệnh cập nhật kubeconfig và tự do tiến vào xem
+xe rà soát trong không gian namespace \texttt{internship} \\
+CloudFront và S3 & Hưởng quyền đọc soát cấu hình distribution, bucket
+policy, kiểm tra file đối tượng (objects), đồng thời gọi thực thi
+invalidations \\
+RDS, Redis, DynamoDB, SQS, Lambda, SES, SageMaker & Hưởng trọn quyền đọc
+soát cho khâu thẩm tra nghiệm thu; role triển khai (deployment role) bắt
+buộc sắm đủ dải quyền ghi (write) trúng vào mục tiêu cho phép \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Required tools}\par
+\vspace{0.5em}\noindent\textbf{Các công cụ cần
+thiết}\par
 
 {
 \begingroup
@@ -63,46 +74,51 @@ validation; deployment role needs scoped write actions \\
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Tool
+Công cụ
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Required version or configuration
+Phiên bản hoặc cấu hình bắt buộc
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence
+Bằng chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Git & Version must be verified in the target environment. & Local
-shell \\
-AWS CLI & Version must be verified in the target environment. &
-Deployment scripts call \texttt{aws} \\
-kubectl & Version must be verified in the target environment. & GitHub
-Actions uses \texttt{azure/\allowbreak{}setup-\allowbreak{}kubectl@v5} \\
-Helm & Version must be verified in the target environment. & Local
-Kubernetes runbook uses Helm \\
-Docker & Version must be verified in the target environment. & CI builds
-Docker images \\
-Node.js & \texttt{22} in \texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml}; local
-version must be verified. & Workflow env \texttt{NODE\_\allowbreak{}VERSION} \\
-npm & Comes with the local or CI Node.js runtime. & \texttt{npm\ ci},
-\texttt{npm\ run\ build}, \texttt{npm\ run\ test} \\
-Python & \texttt{3.\allowbreak{}12} in \texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml}; local
-version must be verified. & Workflow env \texttt{PYTHON\_\allowbreak{}VERSION} \\
-pip & Required for backend dependencies. &
-\texttt{backend/\allowbreak{}requirements.\allowbreak{}txt} \\
-jq & Required by CloudFront helper script. &
-\texttt{scripts/\allowbreak{}aws/\allowbreak{}ensure-\allowbreak{}cloudfront.\allowbreak{}sh} \\
-Hugo Extended & \texttt{0.\allowbreak{}134.\allowbreak{}3} in the report GitHub Actions workflow;
-local version must be verified. & Report workflow \\
-Terraform & Not found as an implementation dependency in the inspected
-repository. & Infrastructure uses YAML and scripts \\
+Git & Số phiên bản được kiểm định theo thời gian thực trên máy chạy thực
+thi. & Máy tính cá nhân (Local shell) \\
+AWS CLI & Số phiên bản cần được rà soát trực tiếp trên hệ thống sở tại.
+& Các tệp script triển khai chạy lệnh \texttt{aws} \\
+kubectl & Phiên bản được đối nghiệm trúng máy hiện trường. & GitHub
+Actions sử dụng gói \texttt{azure/\allowbreak{}setup-\allowbreak{}kubectl@v5} \\
+Helm & Số phiên bản tự thẩm rà theo cỗ máy thi công. & Sách chỉ dẫn vận
+hành tại chỗ sử dụng Helm \\
+Docker & Số phiên bản do hệ điều hành tại chỗ phán bảo. & Hệ thống CI
+tích cực bọc đóng image Docker \\
+Node.js & Phiên bản \texttt{22} thiết định tại
+\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml}; trên máy cá nhân tự chủ kiểm tra. &
+Biến môi trường trong dây chuyền \texttt{NODE\_\allowbreak{}VERSION} \\
+npm & Góp mặt đồng loạt chung thuyền cùng trình chạy Node.js trên CI
+hoặc máy địa phương. & \texttt{npm\ ci}, \texttt{npm\ run\ build},
+\texttt{npm\ run\ test} \\
+Python & Phiên bản \texttt{3.\allowbreak{}12} bấu chốt trong
+\texttt{.\allowbreak{}github/\allowbreak{}workflows/\allowbreak{}cicd.\allowbreak{}yml}; trên máy cá nhân cần kiểm nghiệm
+thực tế. & Biến môi trường workflow \texttt{PYTHON\_\allowbreak{}VERSION} \\
+pip & Công cụ thiết yếu lo toan cài cất trút thư viện phụ thuộc cho
+backend. & \texttt{backend/\allowbreak{}requirements.\allowbreak{}txt} \\
+jq & Bộ phân rã chuỗi bị triệu thuyên bởi tập lệnh kịch bản chăm khéo
+CloudFront. & \texttt{scripts/\allowbreak{}aws/\allowbreak{}ensure-\allowbreak{}cloudfront.\allowbreak{}sh} \\
+Hugo Extended & Phiên bản \texttt{0.\allowbreak{}134.\allowbreak{}3} cấm chốt tại luồng GitHub
+Actions của báo cáo; số tại chỗ phải thẩm tra. & Workflow cho báo cáo
+(Report workflow) \\
+Terraform & Không mang dấu vết hiện diện ràng buộc thực chất trong bộ
+bối cảnh kho repository đã thám rà. & Hạ tầng được kiến tạo bằng chuỗi
+tệp YAML kết hợp script \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{AWS resources that must already exist or be
-created}\par
+\vspace{0.5em}\noindent\textbf{Các tài nguyên AWS buộc phải có sẵn hoặc được khởi
+tạo}\par
 
 {
 \begingroup
@@ -114,37 +130,39 @@ created}\par
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Resource
+Tài nguyên
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Required value or status
+Giá trị hoặc trạng thái bắt buộc
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-EKS cluster & \texttt{internship-\allowbreak{}prod} \\
-Kubernetes namespace & \texttt{internship} \\
-Frontend bucket &
-\texttt{internship-prod-frontend-\textless{}AWS\_ACCOUNT\_ID\textgreater{}} \\
-Upload/archive bucket &
-\texttt{internship-prod-uploads-\textless{}AWS\_ACCOUNT\_ID\textgreater{}} \\
+Cụm EKS & \texttt{internship-\allowbreak{}prod} \\
+Namespace Kubernetes & \texttt{internship} \\
+S3 bucket cho frontend &
+\texttt{internship-\allowbreak{}prod-\allowbreak{}frontend-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}} \\
+S3 bucket cho tài liệu tải lên / archive &
+\texttt{internship-\allowbreak{}prod-\allowbreak{}uploads-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}} \\
 CloudFront distribution & \texttt{EQIGYNECXDYL8} \\
 ALB DNS &
 \texttt{k8s-\allowbreak{}internshippublic-\allowbreak{}48101b50ad-\allowbreak{}85486086.\allowbreak{}ap-\allowbreak{}southeast-\allowbreak{}1.\allowbreak{}elb.\allowbreak{}amazonaws.\allowbreak{}com} \\
 RDS PostgreSQL & \texttt{internship-\allowbreak{}prod-\allowbreak{}postgres} \\
 ElastiCache Redis & \texttt{internship-\allowbreak{}prod-\allowbreak{}redis} \\
-DynamoDB chat tables & \texttt{ChatUsers}, \texttt{ChatGroups},
+Các bảng DynamoDB cho chat & \texttt{ChatUsers}, \texttt{ChatGroups},
 \texttt{ChatMessages} \\
-DynamoDB Lambda dedupe table & \texttt{InternshipLambdaEventDedupe} \\
-SQS queue & \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox} \\
-SQS DLQ & \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} \\
+Bảng DynamoDB khử lặp cho Lambda &
+\texttt{InternshipLambdaEventDedupe} \\
+Hàng đợi SQS & \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox} \\
+Hàng đợi lỗi SQS DLQ & \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} \\
 SageMaker endpoint & \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b} \\
-Lambda function & \texttt{internship-\allowbreak{}outbox-\allowbreak{}handler} \\
+Hàm Lambda (Lambda function) & \texttt{internship-\allowbreak{}outbox-\allowbreak{}handler} \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{AWS quotas to check}\par
+\vspace{0.5em}\noindent\textbf{Hạn ngạch (Quota) AWS cần kiểm
+tra}\par
 
 {
 \begingroup
@@ -157,47 +175,58 @@ Lambda function & \texttt{internship-\allowbreak{}outbox-\allowbreak{}handler} \
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Service
+Dịch vụ
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Quota to check
+Hạn ngạch cần kiểm tra
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Why it matters
+Lý do quan trọng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-EKS & Cluster and managed node group quotas & Required for workload
-scheduling \\
-EC2 & vCPU, Elastic IP, NAT Gateway, ENI quotas & EKS nodes, ALB
-targets, and NAT depend on these \\
-ALB & Load balancer and target group quotas & Ingress controller creates
-ALB resources \\
-RDS & DB instances and storage & PostgreSQL deployment \\
-ElastiCache & Node quota & Redis replication group \\
-DynamoDB & Table and account throughput quotas & Chat and Lambda dedupe
-tables \\
-SQS & Queue and message throughput & Outbox event delivery \\
-Lambda & Concurrency & SQS event consumer \\
-SES & Sending sandbox or production sending limit & Email notification
-smoke tests \\
-SageMaker & Endpoint instance quota, especially GPU quota if used & AI
-endpoint uptime and capacity \\
-CloudFront & Distribution and invalidation quotas & Frontend delivery
-and deployments \\
+EKS & Hạn ngạch về số lượng cluster và managed node groups & Rất tối
+thượng để phân rã lịch cho các workload cắm neo \\
+EC2 & Hạn ngạch về số lõi vCPU, địa chỉ Elastic IP, bộ chuyển tiếp NAT
+Gateway và số lượng ENI & Máy trạm EKS, các mục tiêu từ ALB cùng rãnh
+tháo NAT hoàn toàn phụ thuộc vào thông số này \\
+ALB & Hạn ngạch cân bằng tải Load balancer cùng target group & Ingress
+controller sẽ thi gõ sinh tạo tài nguyên cân bằng tải này \\
+RDS & Số con máy DB instances và trữ lượng ổ lưu chữ & Thi đắc lực cho
+cụm vận hành PostgreSQL \\
+ElastiCache & Hạn ngạch về số lượng Node & Gánh cụm Redis replication
+group \\
+DynamoDB & Số lượng bàn cấu hình Table cùng định dạng trần thông lượng
+của tài khoản & Nuôi sống bộ đôi bàn chứa thư tín Chat và bảng cọc khử
+lặp cho Lambda \\
+SQS & Quy mô số hàng đợi Queue cùng giới hạn tốc độ lưu lót tin nhắn &
+Nới đường cho quy trình tung phát ra thông báo outbox \\
+Lambda & Khả năng thực thi song song (Concurrency) & Dành cho cỗ máy
+người tiêu dùng (consumer) đón nhật sự kiện SQS \\
+SES & Tình trạng bị giam hãm ngục sandbox hoặc ranh giới trần thư từ cho
+phép ở production & Rất cốt lõi để test luồng phát thử nghiệp thư điện
+tử tin báo khói \\
+SageMaker & Giới hạn về số máy endpoint instance, đặc sắc ưu việt là hạn
+ngạch GPU nếu dùng & Phán xử an ninh sức khỏe duy trì online cùng quy mô
+phục hồi cho AI \\
+CloudFront & Giới hạn về lượng distribution cùng định ngạch số lần gọi
+lệnh invalidation & Cơ quan tối cao cho luồng tải nộp tệp và nâng cấp
+giao tiếp frontend \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{GitHub Actions variables and
-secrets}\par
+\vspace{0.5em}\noindent\textbf{Biến và bí mật (Secrets) của GitHub
+Actions}\par
 
-The workflow reads deployment values from GitHub environment variables
-and secrets. Values below are names only and must not be published with
-secret values.
+Quy trình tự động (workflow) hấp thụ thông số cấu hình thông qua các
+biến môi trường và bí mật (secrets) được gìn giữ trong hệ thống GitHub
+Environment. Danh sách bên dưới chỉ minh họa tên trường dữ liệu và tuyệt
+đối không bao giờ được phép phơi lộ giá trị nhạy cảm thật sự trên văn
+bản công cộng.
 
-\vspace{0.5em}\noindent\textbf{Required or commonly used
-variables}\par
+\vspace{0.5em}\noindent\textbf{Các biến bắt buộc hoặc thường
+dùng}\par
 
 {
 \begingroup
@@ -209,75 +238,94 @@ variables}\par
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Variable
+Biến
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích sử dụng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{AWS\_\allowbreak{}REGION} & Target region, default \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
-\texttt{AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID} & Target account ID, set from the project AWS
-account \\
-\texttt{EKS\_\allowbreak{}CLUSTER\_\allowbreak{}NAME} & EKS cluster, default
+\texttt{AWS\_\allowbreak{}REGION} & Khu vực đích, mặc định \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
+\texttt{AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID} & Số định danh tài khoản AWS đích, trích mang
+sang từ tài khoản thuộc về dự án \\
+\texttt{EKS\_\allowbreak{}CLUSTER\_\allowbreak{}NAME} & Tên cụm EKS, mặc định
 \texttt{internship-\allowbreak{}prod} \\
-\texttt{K8S\_\allowbreak{}NAMESPACE} & Namespace, default \texttt{internship} \\
-\texttt{EKS\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Must be \texttt{true} for app
-deployment \\
-\texttt{ENABLE\_\allowbreak{}ALB\_\allowbreak{}INGRESS} & Controls public ALB Ingress
-deployment \\
-\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Must be \texttt{true} for frontend
-deployment \\
-\texttt{CREATE\_\allowbreak{}CLOUDFRONT} & Allows CloudFront creation when
-distribution ID is absent \\
-\texttt{FRONTEND\_\allowbreak{}BUCKET} & Frontend bucket \\
-\texttt{CLOUDFRONT\_\allowbreak{}DISTRIBUTION\_\allowbreak{}ID} & CloudFront distribution ID \\
-\texttt{ALB\_\allowbreak{}DNS} & Existing ALB origin when needed \\
-\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}BACKEND} & Backend ECR repository, default
-\texttt{internship-\allowbreak{}backend} \\
-\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}CHAT} & Chat ECR repository, default
-\texttt{internship-\allowbreak{}chat} \\
-\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}AI} & AI ECR repository, default
-\texttt{internship-\allowbreak{}ai} \\
-\texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Controls AI adapter deployment \\
-\texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED} & Controls processing worker
-scale-up \\
-\texttt{SAGEMAKER\_\allowbreak{}ENDPOINT\_\allowbreak{}NAME} & SageMaker endpoint, default
-\texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b} \\
-\texttt{IRSA\_\allowbreak{}ROLE\_\allowbreak{}ARN} & Runtime IAM role annotation \\
+\texttt{K8S\_\allowbreak{}NAMESPACE} & Không gian tên Kubernetes namespace, mặc định
+\texttt{internship} \\
+\texttt{EKS\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Bắt buộc định giá trị \texttt{true} khi
+có nhu cầu thiển thau triển khai ứng dụng vào cụm \\
+\texttt{ENABLE\_\allowbreak{}ALB\_\allowbreak{}INGRESS} & Cọc giữ điều phối việc có ban bố bạt cài
+cấu hình cho ALB Ingress public hay chăng \\
+\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Bắt buộc gắn bằng \texttt{true} mỗi
+lúc nạp bồi tệp lên cho frontend \\
+\texttt{CREATE\_\allowbreak{}CLOUDFRONT} & Trao quyền nặn đúc CloudFront distribution
+mới nếu số định danh cũ khuyết trống \\
+\texttt{FRONTEND\_\allowbreak{}BUCKET} & Danh xưng hòm lưu S3 của frontend \\
+\texttt{CLOUDFRONT\_\allowbreak{}DISTRIBUTION\_\allowbreak{}ID} & Mã định danh duy nhất (ID) của
+CloudFront distribution \\
+\texttt{ALB\_\allowbreak{}DNS} & Chuỗi danh xưng miền định hướng của ALB origin dùng
+lúc kết dính ngược vào trong \\
+\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}BACKEND} & Tên kho lưu trữ ảnh cho backend ECR,
+mặc định \texttt{internship-\allowbreak{}backend} \\
+\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}CHAT} & Tên kho lưu trữ ảnh cho dịch vụ chat
+ECR, mặc định \texttt{internship-\allowbreak{}chat} \\
+\texttt{ECR\_\allowbreak{}REPOSITORY\_\allowbreak{}AI} & Tên kho lưu trữ ảnh cho dịch vụ AI trên
+ECR, mặc định \texttt{internship-\allowbreak{}ai} \\
+\texttt{AI\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Công tắc cho phép triển khai pod trung
+gian adapter cho AI \\
+\texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED} & Quyết đoán lệnh dãn bẻ tăng số
+lượng replica cho cụm worker \\
+\texttt{SAGEMAKER\_\allowbreak{}ENDPOINT\_\allowbreak{}NAME} & Tên máy chủ suy đoán SageMaker
+endpoint, mặc định \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b} \\
+\texttt{IRSA\_\allowbreak{}ROLE\_\allowbreak{}ARN} & Định vị chú thích IAM Role dành cho pod bên
+trong runtime \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Required secrets}\par
+\vspace{0.5em}\noindent\textbf{Các bí mật (secrets) bắt
+buộc}\par
 
 {
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}ll@{}}
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
-Secret & Purpose \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Bí mật
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mục đích sử dụng
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{AWS\_\allowbreak{}ROLE\_\allowbreak{}TO\_\allowbreak{}ASSUME} & GitHub OIDC deployment role \\
-\texttt{SECRET\_\allowbreak{}KEY} & Backend JWT/application secret \\
-\texttt{DATABASE\_\allowbreak{}URL} & PostgreSQL connection URL \\
-\texttt{REDIS\_\allowbreak{}URL} & Redis connection URL \\
-\texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL} & SQS main queue URL \\
-\texttt{AI\_\allowbreak{}SERVICE\_\allowbreak{}API\_\allowbreak{}KEY} & Optional shared key for worker-to-AI
-calls \\
+\texttt{AWS\_\allowbreak{}ROLE\_\allowbreak{}TO\_\allowbreak{}ASSUME} & Vai trò IAM Role an ninh để GitHub OIDC
+nhận diện hoán vị quyền \\
+\texttt{SECRET\_\allowbreak{}KEY} & Khóa bảo mật cốt lõi dành riêng cho quá trình
+sinh khóa JWT ở lớp backend \\
+\texttt{DATABASE\_\allowbreak{}URL} & Chuỗi kết nối trực diện với máy chủ cơ sở dữ
+liệu PostgreSQL \\
+\texttt{REDIS\_\allowbreak{}URL} & Chuỗi kết nối trực diện tới cụm nhớ bộ đệm
+Redis \\
+\texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL} & Chuỗi định hướng dẫn nhập trúng vào hàng
+đợi chủ lực của SQS \\
+\texttt{AI\_\allowbreak{}SERVICE\_\allowbreak{}API\_\allowbreak{}KEY} & Khóa xác nhận chéo (nếu bật) cho lời gõ
+cửa từ worker đi sang dịch vụ AI \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Verification commands}\par
+\vspace{0.5em}\noindent\textbf{Lệnh kiểm tra và xác
+minh}\par
 
-Run these commands only with authorized credentials:
+Thực hiện nhấp chạy loạt câu lệnh dưới đây (buộc phải bấu kèm uy quyền
+định danh tài khoản hợp pháp):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -290,7 +338,7 @@ Run these commands only with authorized credentials:
 \end{Highlighting}
 \end{Shaded}
 
-Check tool versions:
+Kiểm tra định danh và các con số phiên bản công cụ trên máy:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -307,25 +355,31 @@ Check tool versions:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
 \begin{itemize}
 \tightlist
 \item
-  The AWS account ID is the project account ID and should be redacted
-  from published screenshots or logs.
+  Số ID của tài khoản AWS thuộc về tài khoản chuyên quản của dự án và
+  nhất thiết phải được bôi nhọ che giấu kỹ từ mọi bức ảnh hay tệp log
+  ném công khai.
 \item
-  The active region is \texttt{ap-\allowbreak{}southeast-\allowbreak{}1}.
+  Khu vực thao tác được khai báo nằm chuẩn xác tại vùng
+  \texttt{ap-\allowbreak{}southeast-\allowbreak{}1}.
 \item
-  \texttt{kubectl} can inspect the \texttt{internship} namespace.
+  Trình lệnh \texttt{kubectl} thành công thám thính và xem xe được trạng
+  thái không gian namespace \texttt{internship}.
 \item
-  GitHub Actions can assume the deploy role through OIDC.
+  Luồng thi công từ GitHub Actions múa kiếm an toàn hoán vị thọ nhập vai
+  trò deploy thông qua bộ giáp OIDC.
 \item
-  Required secrets are stored in GitHub environment secrets, not in
-  source control.
+  Mọi mảng thông tin bí mật cốt tử đều nằm cẩn nhẫn im lặng sâu thẳm ở
+  hòm giấu secret của GitHub environment, cấm tuyệt lộ diện ra tập code
+  ban đầu.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -338,36 +392,47 @@ Check tool versions:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Nguyên nhân
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{AccessDenied} during deployment & Missing IAM action on the OIDC
-role & Add least-privilege permission for the specific API call \\
-\texttt{kubectl} connects to the wrong cluster & Active kube context is
-not production & Run \texttt{kubectl\ config\ current-\allowbreak{}context} and
-update kubeconfig \\
-Frontend deployment skipped & \texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} is
-false or only configured as an environment variable unavailable to a
-job-level \texttt{if} & Set the required flag as a GitHub repository or
-environment variable as used by the workflow \\
-Worker deployment fails & \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true}
-without AI readiness & Enable worker only after AI service image and
-SageMaker endpoint are ready \\
-\texttt{jq\ is\ required} & \texttt{jq} missing from local environment &
-Install \texttt{jq} before running CloudFront helper locally \\
+Lỗi từ chối quyền \texttt{AccessDenied} trong tiến trình triển khai &
+OIDC role thiếu bấu mất thông số phân chia quyền lực thi thoảng ở các
+API rạch ròi & Bồi nạp thêm chi tiết cụ thể hành vi tác động vào IAM
+Policy của Role, gìn vững ranh giới đặc quyền tối thiểu \\
+\texttt{kubectl} móc trật sang cụm máy lạ hoắc không như ý & Cọc kube
+context được chọn hiện thời chẳng nằm đúng mạn cụm production & Kêu gọi
+thi lệnh \texttt{kubectl\ config\ current-\allowbreak{}context} rồi tái lập
+kubeconfig \\
+Công tác triển khai frontend bị bỏ khinh không trôi qua & Khóa
+\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} bị cài sai bằng false, hoặc bị vô tâm
+gắn theo kiểu biến cục bộ không cho phép bộ lệnh rào \texttt{if} gặm
+nhấm & Chỉnh sửa gài chuẩn thông số vào trong hệ cấu hình biến
+repository hoặc môi trường GitHub đúng tầm bắt của workflow \\
+Khâu dãn tải worker lầm lỗi trượt dốc & Bật thông số
+\texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED=true} giữa lúc AI service vẫn mờ xịt
+nằm lê chơ chưa trỗi sắm xong sức khỏe & Chỉ ra quyết lệnh kích hoạt
+worker sau mốc cọc dịch vụ AI cùng máy chủ SageMaker endpoint thi thố
+rực rỡ trọn trạng thái sắm sửa xong \\
+Thông báo \texttt{jq\ is\ required} trỗi khóc & Công cụ \texttt{jq} bốc
+sa biến vắng trong cỗ máy phát triển hiện trăng & Cài đặt sung túc trình
+biên giải \texttt{jq} trước phút giục gọi chạy kịch bản CloudFront ngay
+ở máy địa phương \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-The environment is ready for source-code preparation and deployment only
-after account access, tools, OIDC variables, secrets, quotas, and
-Kubernetes access have been verified.
+Toàn cảnh bộ môi trường hạ tầng nay chính thức thỏa mãn 100\% điều kiện
+chín múa để tiến thẳng sang chặng sửa sắm chuẩn bị mã nguồn cùng thi
+thao triển khai, ngay khi mọi đầu cọc quyền bính tài khoản, kho tệp công
+cụ, cấu trúc biến an ninh OIDC, tập mật tín secrets, giới rào hạn ngạch
+quotas và dải vạch kết nối Kubernetes đều kiên kỵ băng đọ thông suôn
+thành toàn bước thẩm định.

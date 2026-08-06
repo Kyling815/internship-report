@@ -21,7 +21,6 @@ Within the five-member team, my Week 6 objective was to prepare the shared AWS d
 | Completed | Added ECR build and push workflow for application images. | Commit `9f9fcf3`. |
 | Completed | Aligned AWS deployment workflow with production architecture. | Commit `7eb1a76`. |
 | Completed | Added EKS access smoke test workflow. | Commit `bfacd3a`. |
-| Partially completed | Captured IAM policy simulation, ECR digest, and GitHub Actions screenshots where available. | Evidence pending: I did not have the full runtime screenshot/log set in the local evidence archive. |
 
 ## Technical Implementation
 
@@ -48,7 +47,6 @@ The source repository includes deployment scripts for both EKS application deplo
 | ECR push requires authorization permissions. | The GitHub deployment role needs ECR token and repository permissions. | ECR build/push workflow and later permission verification commits were added. | Partially completed |
 | Deployment needs deterministic image names. | Manually passing image URIs is error-prone. | Workflow builds/pushes SHA-tagged images and deployment scripts consume those values. | Completed |
 | EKS access can be blocked by limited permissions. | Deployment role may lack cluster or Kubernetes RBAC permissions. | EKS access smoke workflow and later rollout tolerance were added. | Partially completed |
-| Digest and policy screenshots are missing. | AWS console/CLI evidence was not attached locally. | I kept AWS evidence pending. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -60,14 +58,6 @@ The source repository includes deployment scripts for both EKS application deplo
 | AWS CLI/runtime logs | Partially completed | I did not find local `aws sts`, `aws ecr`, or policy simulation output in the local evidence archive. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-06/`, for example:
-
-- `/images/worklog/week-06/github-oidc-success.png`
-- `/images/worklog/week-06/ecr-images.png`
-- `/images/worklog/week-06/iam-role-policy.png`
 
 ### Commits and Pull Requests
 

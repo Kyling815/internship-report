@@ -2,65 +2,25 @@
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
   Navigate to \textbf{S3 management console}
 \item
   In the Bucket console, choose \textbf{Create bucket}
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Create bucket}]{5-Workshop/5.3-S3-vpc/create-bucket.png}}
-\caption{Create bucket}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
 \item
   In \textbf{the Create bucket console}
 \end{enumerate}
 
 \begin{itemize}
-\tightlist
 \item
   \textbf{Name the bucket}: choose a name that hasn't been given to any
   bucket globally (hint: lab number and your name)
-\end{itemize}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Bucket name}]{5-Workshop/5.3-S3-vpc/bucket-name.png}}
-\caption{Bucket name}
-\end{figure}
-
-\begin{itemize}
-\tightlist
 \item
   Leave other fields as they are (default)
 \item
   Scroll down and choose \textbf{Create bucket}
-\end{itemize}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Create}]{5-Workshop/5.3-S3-vpc/create-button.png}}
-\caption{Create}
-\end{figure}
-
-\begin{itemize}
-\tightlist
 \item
   Successfully create S3 bucket.
 \end{itemize}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Success}]{5-Workshop/5.3-S3-vpc/bucket-success.png}}
-\caption{Success}
-\end{figure}
 
 \vspace{0.5em}\noindent\textbf{Connect to EC2 with session
 manager}\par
@@ -83,38 +43,13 @@ manager}\par
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
   In the \textbf{AWS Management Console}, start typing
   \texttt{Systems\ Manager} in the quick search box and press
   \textbf{Enter}:
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={system manager}]{5-Workshop/5.3-S3-vpc/sm.png}}
-\caption{system manager}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
 \item
   From the \textbf{Systems Manager} menu, find \textbf{Node Management}
   in the left menu and click \textbf{Session Manager}:
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={system manager}]{5-Workshop/5.3-S3-vpc/sm1.png}}
-\caption{system manager}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
 \item
   Click \textbf{Start Session}, and select \textbf{the EC2 instance}
   named \textbf{Test-Gateway-Endpoint}.
@@ -124,20 +59,8 @@ This EC2 instance is already running in ``VPC Cloud'' and will be used
 to test connectivity to Amazon S3 through the Gateway endpoint you just
 created (s3-gwe).
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Start session}]{5-Workshop/5.3-S3-vpc/start-session.png}}
-\caption{Start session}
-\end{figure}
-
 \textbf{Session Manager} will open a new browser tab with a shell
 prompt: sh-4.2 \$
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Success}]{5-Workshop/5.3-S3-vpc/start-session-success.png}}
-\caption{Success}
-\end{figure}
 
 You have successfully start a session - connect to the EC2 instance in
 VPC cloud. In the next step, we will create a S3 bucket and a file in
@@ -148,49 +71,18 @@ bucket}\par
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
   Change to the ssm-user's home directory by typing
   \texttt{cd\ \textasciitilde{}} in the CLI
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Change user's dir}]{5-Workshop/5.3-S3-vpc/cli1.png}}
-\caption{Change user's dir}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
 \item
   Create a new file to use for testing with the command
   \texttt{fallocate\ -l\ 1G\ testfile.\allowbreak{}xyz}, which will create a file of
   1GB size named ``testfile.xyz''.
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Create file}]{5-Workshop/5.3-S3-vpc/cli-file.png}}
-\caption{Create file}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
 \item
   Upload file to S3 bucket with command
   \texttt{aws\ s3\ cp\ testfile.\allowbreak{}xyz\ s3:/\allowbreak{}/\allowbreak{}your-\allowbreak{}bucket-\allowbreak{}name}. Replace
   your-bucket-name with the name of S3 bucket that you created earlier.
 \end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Uploaded}]{5-Workshop/5.3-S3-vpc/uploaded.png}}
-\caption{Uploaded}
-\end{figure}
 
 You have successfully uploaded the file to your S3 bucket. You can now
 terminate the session.
@@ -208,12 +100,6 @@ terminate the session.
   In the Bucket console, you will see the file you have uploaded to your
   S3 bucket
 \end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Check S3}]{5-Workshop/5.3-S3-vpc/check-s3-bucket.png}}
-\caption{Check S3}
-\end{figure}
 
 \vspace{0.5em}\noindent\textbf{Section summary}\par
 

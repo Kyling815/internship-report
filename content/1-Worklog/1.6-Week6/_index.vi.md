@@ -21,9 +21,8 @@ Trong nhóm 5 thành viên, mục tiêu tuần 6 của tôi là chuẩn bị n�
 | Hoàn thành | Bổ sung workflow build và push application image lên ECR. | Commit `9f9fcf3`. |
 | Hoàn thành | Đồng bộ AWS deployment workflow với production architecture. | Commit `7eb1a76`. |
 | Hoàn thành | Bổ sung EKS access smoke-test workflow. | Commit `bfacd3a`. |
-| Hoàn thành một phần | Thu thập IAM policy simulation, ECR digest và screenshot GitHub Actions hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ runtime screenshot/log trong kho local. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The CI/CD path uses GitHub Actions OIDC to assume the AWS deployment role instead of storing long-lived AWS access keys. ECR image URIs are based on AWS account, region, repository name, and immutable Git SHA tags.
 
@@ -40,7 +39,7 @@ graph LR
 
 The source repository includes deployment scripts for both EKS application deployment and frontend deployment. I keep sensitive runtime values such as `DATABASE_URL`, `REDIS_URL`, and `SECRET_KEY` in environment variables or Kubernetes Secrets, not in published documentation.
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
 | Problem | Root cause | Resolution | Status |
 |---|---|---|---|
@@ -48,9 +47,8 @@ The source repository includes deployment scripts for both EKS application deplo
 | ECR push requires authorization permissions. | The GitHub deployment role needs ECR token and repository permissions. | ECR build/push workflow and later permission verification commits were added. | Partially completed |
 | Deployment needs deterministic image names. | Manually passing image URIs is error-prone. | Workflow builds/pushes SHA-tagged images and deployment scripts consume those values. | Completed |
 | EKS access can be blocked by limited permissions. | Deployment role may lack cluster or Kubernetes RBAC permissions. | EKS access smoke workflow and later rollout tolerance were added. | Partially completed |
-| Digest and policy screenshots are missing. | AWS console/CLI evidence was not attached locally. | I kept AWS evidence pending. | Blocked |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -59,17 +57,9 @@ The source repository includes deployment scripts for both EKS application deplo
 | Production deploy workflow | Implemented | Commit `7eb1a76` added `scripts/ci/deploy-eks-pipeline.sh` and `scripts/ci/deploy-frontend.sh`. |
 | AWS CLI/runtime logs | Partially completed | I did not find local `aws sts`, `aws ecr`, or policy simulation output in the local evidence archive. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-06/`, for example:
-
-- `/images/worklog/week-06/github-oidc-success.png`
-- `/images/worklog/week-06/ecr-images.png`
-- `/images/worklog/week-06/iam-role-policy.png`
-
-### Commits and Pull Requests
+### Commit và yêu cầu kéo mã
 
 | Commit | Description | Evidence | Pull Request |
 |---|---|---|---|
@@ -79,7 +69,7 @@ Evidence pending: add screenshots under `/images/worklog/week-06/`, for example:
 | `bfacd3a` | Added EKS access smoke test workflow. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/bfacd3acc67aeba66cc7ad9071b10eb1c0145fe9) | Evidence pending |
 | `404ba6c` | Reran deployment path with ECR verify permission. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/404ba6c8da2344e38edf10498cf904105a618545) | Evidence pending |
 
-### Test Logs
+### Nhật ký kiểm thử
 
 Evidence pending: attach actual output from:
 
@@ -90,22 +80,22 @@ aws ecr describe-images --repository-name internship-backend
 aws ecr describe-images --repository-name internship-chat
 ```
 
-### Build Logs
+### Nhật ký build
 
 Evidence pending: attach GitHub Actions or terminal logs showing Docker image build, tag, push, and digest output.
 
-### Deployment Logs
+### Nhật ký triển khai
 
 Evidence pending: attach OIDC, ECR, or EKS smoke workflow logs. Do not include secrets or database URLs.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Kết quả cá nhân tuần 6 là nền tảng định danh triển khai cloud và phân phối image dùng chung. Các thành viên chịu trách nhiệm về source code và tính đúng đắn của image; tôi phụ trách tích hợp OIDC, IAM, ECR và deployment workflow.
 
-## Lessons Learned
+## Bài học rút ra
 
 AWS CI/CD work depends on both IAM and runtime evidence. A workflow file can be correct structurally, but I only mark authentication, image push, or cluster access as verified when the corresponding AWS/Actions log is available.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
 Deploy and validate the managed AWS runtime: EKS cluster, namespace, RDS PostgreSQL, ElastiCache Redis, DynamoDB tables, SQS queue/DLQ, IRSA runtime role, and ALB ingress.

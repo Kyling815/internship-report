@@ -3,12 +3,13 @@ Deployment}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 5 focused on running the application in local Kubernetes using
-kind. The goal was to move from Compose-only development to Kubernetes
-Deployments, Services, Jobs, ConfigMaps, Secrets, ingress, autoscaling,
-and observability resources.
+Within the five-member team, my Week 5 objective was to move the
+integrated application from Compose-only development to a local
+Kubernetes environment using kind. I owned the deployment manifests and
+automation, while teammates supplied and checked their
+component-specific runtime configuration.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -23,7 +24,7 @@ and observability resources.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -44,9 +45,6 @@ Completed & Added HPA and PDB definitions for app services. &
 Completed & Added observability resources for Prometheus, Grafana, Loki,
 Tempo, Alloy, OTel collector, ServiceMonitors, and PrometheusRules. &
 \texttt{k8s/\allowbreak{}observability/\allowbreak{}*} and \texttt{observability/\allowbreak{}grafana/\allowbreak{}*}. \\
-Partially completed & Captured live \texttt{kubectl} screenshots and
-command logs where available. & Evidence pending: I did not have the
-full screenshot/log artifact set in the local evidence archive. \\
 \end{longtable}
 \endgroup
 }
@@ -57,23 +55,11 @@ The local Kubernetes path uses kind for the cluster, in-cluster
 PostgreSQL/Redis/DynamoDB Local for dependencies, and Kubernetes
 manifests under \texttt{k8s/\allowbreak{}app} for the workload layer.
 
-\{\{\textless{} mermaid \textgreater\}\} graph TB subgraph
-Kind{[}``kind-internship-local''{]} subgraph Internship{[}``namespace:
-internship''{]} Backend{[}``Deployment/backend''{]}
-Chat{[}``Deployment/chat-service''{]}
-Dispatcher{[}``Deployment/backend-outbox-dispatcher''{]}
-Worker{[}``Deployment/backend-processing-worker''{]}
-Postgres{[}``Deployment/postgres''{]} Redis{[}``Deployment/redis''{]}
-DDB{[}``Deployment/dynamodb-local''{]}
-Migrate{[}``Job/backend-migrate''{]} Init{[}``Job/chat-init''{]} end
-subgraph Monitoring{[}``namespace: monitoring''{]}
-Prom{[}``Prometheus''{]} Grafana{[}``Grafana''{]} Loki{[}``Loki''{]}
-Tempo{[}``Tempo''{]} end end Backend --\textgreater{} Postgres Backend
---\textgreater{} DDB Backend --\textgreater{} Dispatcher Worker
---\textgreater{} Backend Chat --\textgreater{} Redis Chat
---\textgreater{} DDB Prom --\textgreater{} Backend Prom --\textgreater{}
-Chat Prom --\textgreater{} Dispatcher \{\{\textless{} /mermaid
-\textgreater\}\}
+\textbf{Flow summary.} The local kind cluster contains the application
+workloads and local data services in the internship namespace. A
+separate monitoring namespace runs Prometheus, Grafana, Loki, and Tempo;
+Prometheus collects metrics from the backend, chat service, and outbox
+dispatcher.
 
 The deployment scripts build local images, load them into kind, apply
 app manifests, run migration/init jobs, wait for rollouts, and print
@@ -119,9 +105,6 @@ Local observability required multiple supporting components. & Metrics,
 logs, and traces need separate platform services. & Added Helm-backed
 Prometheus/Grafana/Loki/Tempo/Alloy resources and local runbook
 guidance. & Completed \\
-Live cluster screenshots are missing. & Runtime screenshots were not
-attached to the local evidence archive. & I kept Kubernetes evidence
-pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -166,21 +149,6 @@ but current report does not include saved \texttt{kubectl} output. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}kubectl-\allowbreak{}get-\allowbreak{}nodes.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}kubectl-\allowbreak{}get-\allowbreak{}pods.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}05/\allowbreak{}grafana-\allowbreak{}dashboard.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -261,10 +229,10 @@ Evidence pending: attach output from
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The project moved from local Compose toward a Kubernetes-shaped runtime.
-Backend, chat, dependencies, jobs, workers, ingress, autoscaling, and
-observability resources were represented in manifests and deployment
-scripts.
+My Week 5 result was the local Kubernetes deployment path, including
+manifests, automation, scaling controls, and observability resources.
+Functional verification of backend, frontend, chat, and AI behavior was
+coordinated with the four component owners.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

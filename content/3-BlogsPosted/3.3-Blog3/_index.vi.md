@@ -16,7 +16,6 @@ Phần khó hơn nằm ở việc làm sao để đoạn code đó có thể ho�
 
 Trong quá trình phát triển AI-Powered Internship Application Tracker, tôi đã có cơ hội làm việc với FastAPI, React, PostgreSQL, Redis, DynamoDB, Amazon SQS, Docker, Kubernetes, GitHub Actions và nhiều dịch vụ AWS khác. Quá trình này không chỉ giúp tôi học thêm công nghệ mà còn thay đổi cách tôi nhìn nhận việc xây dựng, triển khai và vận hành phần mềm.
 
-![Software Engineering Journey](/images/blogs/blog-3/software-engineering-journey.png)
 
 ## Chạy được ở local chưa có nghĩa là chạy được trong production
 

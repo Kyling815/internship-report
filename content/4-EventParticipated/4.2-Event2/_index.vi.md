@@ -49,19 +49,9 @@ Các phần chia sẻ từ Cloud Kinetics và Renova Cloud giúp mình hiểu r�
 
 ## Hình ảnh hoặc video chứng minh tham gia
 
-[Xem video ghi hình sự kiện trên YouTube](https://www.youtube.com/live/FKtMkUqyny4?si=SdhD3d67wFy7qNr6)
+Minh chứng tham gia cá nhân:
 
-Minh chứng cá nhân cần bổ sung:
-
-- Ảnh chụp màn hình khi video sự kiện đang phát.
-- Ảnh lịch sử xem YouTube.
-- Ảnh hiển thị thông tin tài khoản người tham dự.
-- Ghi chú cá nhân được thực hiện trong quá trình theo dõi sự kiện.
-
-<!--
-Evidence required: Add participation evidence image:
-static/images/events/event-2/participation-evidence.png
--->
+![Minh chứng tham gia sự kiện 2](/images/3-Events/Evidence_Events%202.jpg)
 
 ## Bài học rút ra
 

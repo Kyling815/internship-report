@@ -3,11 +3,11 @@ Validation}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-During Week 8, I finalized the production deployment path for the
-Internship Application Tracker. I built and validated the deployment
-model for Amazon EKS workloads, Application Load Balancer routing, S3
-and CloudFront frontend delivery, AWS-managed data services,
-event-driven processing, and cost tracking.
+During Week 8, I finalized my Cloud/DevOps contribution to the
+five-member project. I integrated and validated the production
+deployment model for the teammates' services across Amazon EKS,
+Application Load Balancer routing, S3 and CloudFront frontend delivery,
+AWS-managed data services, event-driven processing, and cost tracking.
 
 I used the Week 08 AWS evidence directory as the source of truth for
 this section. The cost figures come from the July 1-28, 2026 AWS cost
@@ -15,7 +15,7 @@ summary, the Billing credits screenshot, and the Cost Explorer overview
 screenshot. The finalized monthly bill and the AWS Pricing Calculator
 estimate are still unavailable.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -30,7 +30,7 @@ estimate are still unavailable.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -38,8 +38,8 @@ Evidence basis
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Added the SageMaker-oriented AI service integration and
-deployment path while preserving worker-facing routes. & Source
+Completed & Integrated the AI member's SageMaker-oriented service into
+the deployment path while preserving worker-facing routes. & Source
 references from the project implementation and
 \texttt{sagemaker-\allowbreak{}health.\allowbreak{}png}. \\
 Completed & Fixed deploy-app image propagation and deterministic ECR
@@ -76,20 +76,11 @@ run on EKS. Static browser assets are intended to be served through S3
 and CloudFront, while API, chat, and Socket.IO paths route through the
 ALB.
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR Browser{[}``User
-browser''{]} --\textgreater{} CF{[}``CloudFront distribution''{]} CF
---\textgreater{} S3{[}``S3 frontend bucket''{]} CF --\textgreater{}
-ALB{[}``ALB for /api, /chat, /socket.io''{]} ALB --\textgreater{}
-Backend{[}``EKS backend''{]} ALB --\textgreater{} Chat{[}``EKS
-chat-service''{]} Backend --\textgreater{} RDS{[}``RDS PostgreSQL''{]}
-Chat --\textgreater{} Redis{[}``ElastiCache Valkey''{]} Chat
---\textgreater{} DDB{[}``DynamoDB chat tables''{]} Backend
---\textgreater{} Worker{[}``processing worker''{]} Worker
---\textgreater{} AI{[}``ai-service''{]} AI --\textgreater{}
-SageMaker{[}``SageMaker endpoint''{]} Backend --\textgreater{}
-Outbox{[}``outbox dispatcher''{]} Outbox --\textgreater{} SQS{[}``SQS
-queue''{]} SQS --\textgreater{} Lambda{[}``Lambda notification
-handler''{]} \{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} The production entry point is CloudFront: static
+frontend requests go to S3, while API and chat paths go through the ALB
+to EKS. Application data flows to RDS, Redis, and DynamoDB; asynchronous
+CV processing uses the worker, AI service, and SageMaker; outbox events
+reach SQS and the notification Lambda.
 
 The CI/CD workflow supports deployment modes including
 \texttt{validate}, \texttt{deploy-\allowbreak{}app}, \texttt{deploy-\allowbreak{}public},
@@ -755,8 +746,8 @@ marked fully verified.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-Week 8 produced meaningful AWS runtime evidence for the core compute and
-data path:
+My Week 8 contribution produced meaningful AWS runtime evidence for the
+core compute and data path:
 
 \begin{itemize}
 \tightlist
@@ -778,9 +769,10 @@ data path:
   CloudWatch log group, while invocation proof remains pending.
 \end{itemize}
 
-I also keep the remaining gaps explicit: ALB target health was not fully
-healthy, CloudFront behavior/origin export and browser smoke proof are
-still pending, and cost evidence still needs a finalized bill and
+The broader end-to-end application remained a team result. In my scope,
+I also kept the remaining gaps explicit: ALB target health was not fully
+healthy, CloudFront behavior/origin export and browser smoke proof were
+still pending, and cost evidence still needed a finalized bill and
 Pricing Calculator estimate.
 
 \vspace{0.5em}\noindent\textbf{Remaining Work}\par

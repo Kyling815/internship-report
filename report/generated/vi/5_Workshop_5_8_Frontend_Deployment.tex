@@ -1,18 +1,20 @@
-\vspace{0.5em}\noindent\textbf{Frontend Deployment}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Thực hiện build mã nguồn frontend trên React/Vite, đăng tải bộ tệp đầu
+ra thẳng vào một S3 bucket riêng tư, và tổ chức phân phối an toàn thông
+qua CloudFront.
 
-Build the React/Vite frontend, publish it to a private S3 bucket, and
-serve it through CloudFront.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+Hiện tại, frontend được triển khai theo quy chuẩn của các tệp tĩnh đơn
+thuần, loại trừ mọi yếu tố ràng buộc chạy như workload trên EKS. Những
+tài nguyên Kubernetes cũ mang tên frontend gồm Deployment, Service, HPA,
+PDB, đi kèm khối ALB Ingress cũ đã bị bóc tháo tiệt cọ, nhằm chặn đứng
+nguy cơ các đợt áp triển khai mã app vào EKS trong tương lai lầm lọt thi
+thoảng vô ý vác còi tự nặn sinh ra lại chúng.
 
-The frontend is currently deployed as static files, not as an EKS
-workload. The old frontend Kubernetes Deployment, Service, HPA, PDB, and
-frontend ALB Ingress were removed so future EKS app deployments cannot
-recreate them.
-
-Current public entry point:
+Điểm truy cập công cộng hiện thời của người dùng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -20,7 +22,7 @@ Current public entry point:
 \end{Highlighting}
 \end{Shaded}
 
-Current CloudFront distribution:
+Mã số định danh cọ CloudFront distribution:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -28,10 +30,10 @@ Current CloudFront distribution:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Vite environment
-configuration}\par
+\vspace{0.5em}\noindent\textbf{Cấu hình môi trường
+Vite}\par
 
-The frontend production build uses:
+Quy chuỗi build tĩnh mạn production cho frontend sử dụng các tham mác:
 
 {
 \begingroup
@@ -44,42 +46,44 @@ The frontend production build uses:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Variable
+Biến
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Production value
+Giá trị production
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & \texttt{/\allowbreak{}api} & Makes backend API calls
-go through CloudFront and ALB \\
-\texttt{VITE\_\allowbreak{}CHAT\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & empty string & Allows browser
-runtime to use \texttt{/\allowbreak{}chat} outside localhost \\
+\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & \texttt{/\allowbreak{}api} & Ép toàn bạo các lời gõ
+gọi backend API luân chảy trót lọt qua CloudFront cùng rãnh ALB \\
+\texttt{VITE\_\allowbreak{}CHAT\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & chuỗi rỗng & Ban visa cho bộ máy
+runtime trình duyệt ung dung trút lời qua cung đường \texttt{/\allowbreak{}chat}
+ngoài cõi localhost \\
 \end{longtable}
 \endgroup
 }
 
-The frontend API client defaults to local development when not
-configured:
+Bộ gọi giao dịch API client phía frontend giữ nguyên thông số gán định ở
+chế độ lập trình tại chỗ khi khuyết thiếu tham số truyền cấu hình:
 
 \begin{itemize}
 \tightlist
 \item
-  API default: \texttt{http:/\allowbreak{}/\allowbreak{}localhost:8001}
+  Chuỗi mặc định của API: \texttt{http:/\allowbreak{}/\allowbreak{}localhost:8001}
 \item
-  Chat default in local browser: \texttt{http:/\allowbreak{}/\allowbreak{}localhost:3000}
+  Chuỗi mặc định của Chat ở trình duyệt cá nhân tại chỗ:
+  \texttt{http:/\allowbreak{}/\allowbreak{}localhost:3000}
 \item
-  Chat default outside localhost: \texttt{/\allowbreak{}chat}
+  Chuỗi mặc định của Chat ở thế giới ngoại localhost: \texttt{/\allowbreak{}chat}
 \item
-  Socket.IO path: \texttt{/\allowbreak{}socket.\allowbreak{}io}
+  Đường dẫn Socket.IO path: \texttt{/\allowbreak{}socket.\allowbreak{}io}
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Build commands}\par
+\vspace{0.5em}\noindent\textbf{Các lệnh build}\par
 
-From the application repository:
+Ra lệnh thao tác thi thực tại gốc thư mục repo:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -89,7 +93,7 @@ From the application repository:
 \end{Highlighting}
 \end{Shaded}
 
-Expected output directory:
+Thư mục kết quả đầu ra theo kỳ vọng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -97,13 +101,14 @@ Expected output directory:
 \end{Highlighting}
 \end{Shaded}
 
-The deployment script detects \texttt{frontend/\allowbreak{}dist} or
-\texttt{frontend/\allowbreak{}build}, but the current Vite output is
-\texttt{frontend/\allowbreak{}dist}.
+Trình lệnh script bạt khai thâm kiểm tra tự dọn bãi nhận diện cả
+\texttt{frontend/\allowbreak{}dist} lẫn \texttt{frontend/\allowbreak{}build}, thế nhưng đầu ra
+sinh tệp mĩ mãn hiện hành do Vite ban xuất luôn nằm ngụ yên ổn tại con
+rãnh \texttt{frontend/\allowbreak{}dist}.
 
-\vspace{0.5em}\noindent\textbf{S3 publishing}\par
+\vspace{0.5em}\noindent\textbf{Đăng tải lên S3}\par
 
-The production helper is:
+Tập kịch bản chiêu xuất lực lượng cho môi trường production đóng lệnh:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -111,7 +116,7 @@ The production helper is:
 \end{Highlighting}
 \end{Shaded}
 
-Required variables:
+Các biến ràng buộc bắt buộc:
 
 {
 \begingroup
@@ -123,25 +128,28 @@ Required variables:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Variable
+Biến
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Must be \texttt{true} \\
-\texttt{FRONTEND\_\allowbreak{}BUCKET} & Target bucket, for example
-\texttt{internship-prod-frontend-\textless{}AWS\_ACCOUNT\_ID\textgreater{}} \\
-\texttt{CLOUDFRONT\_\allowbreak{}DISTRIBUTION\_\allowbreak{}ID} & Distribution to invalidate \\
-\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & \texttt{/\allowbreak{}api} \\
-\texttt{VITE\_\allowbreak{}CHAT\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & empty string \\
+\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} & Bất di bất dịch thi định giá trị
+\texttt{true} \\
+\texttt{FRONTEND\_\allowbreak{}BUCKET} & Hòm S3 đích nhắm, chẳng hạn kiểu dạng
+\texttt{internship-\allowbreak{}prod-\allowbreak{}frontend-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}} \\
+\texttt{CLOUDFRONT\_\allowbreak{}DISTRIBUTION\_\allowbreak{}ID} & Mã định danh distribution phục
+vụ việc gõ xóa bộ đệm cache (invalidate) \\
+\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & Gán bằng \texttt{/\allowbreak{}api} \\
+\texttt{VITE\_\allowbreak{}CHAT\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL} & Gán rỗng tuột \\
 \end{longtable}
 \endgroup
 }
 
-The script keeps the bucket private:
+Tập script tuân thủ cảnh giác khóa nhốt kiên kỵ ranh giới bucket ở tư
+thế vô danh bí hiểm riêng tư:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -152,7 +160,8 @@ The script keeps the bucket private:
 \end{Highlighting}
 \end{Shaded}
 
-Static assets are uploaded with long cache headers:
+Toàn thể dải tệp tĩnh (static assets) buông mình trôi thâu tải lên vân
+gắn kèm trường mác giữ cache dài hạn thọ sinh bền lâu:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -163,7 +172,8 @@ Static assets are uploaded with long cache headers:
 \end{Highlighting}
 \end{Shaded}
 
-\texttt{index.\allowbreak{}html} is uploaded separately with no-cache semantics:
+Riêng tệp \texttt{index.\allowbreak{}html} vinh hoa hưởng luồng nạp bồi cô lập, cắm
+rào kiêu sa chối cự việc bấu giữ trong cối nhớ tạm (no-cache semantics):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -173,141 +183,11 @@ Static assets are uploaded with long cache headers:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{CloudFront configuration}\par
+\vspace{0.5em}\noindent\textbf{Cấu hình CloudFront}\par
 
-The helper \texttt{scripts/\allowbreak{}aws/\allowbreak{}ensure-\allowbreak{}cloudfront.\allowbreak{}sh} validates or
-creates the distribution. The current design uses:
-
-{
-\begingroup
-\small
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}lll@{}}
-\toprule\noalign{}
-Behavior & Origin & Notes \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Default \texttt{*} & S3 frontend bucket & Static frontend and SPA
-assets \\
-\texttt{/\allowbreak{}api/\allowbreak{}*} & ALB & Backend API \\
-\texttt{/\allowbreak{}chat/\allowbreak{}*} & ALB & Chat REST API \\
-\texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} & ALB & Socket.IO traffic \\
-\end{longtable}
-\endgroup
-}
-
-CloudFront also configures SPA fallback:
-
-{
-\begingroup
-\small
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}lll@{}}
-\toprule\noalign{}
-Error & Response path & Response code \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-403 & \texttt{/\allowbreak{}index.\allowbreak{}html} & 200 \\
-404 & \texttt{/\allowbreak{}index.\allowbreak{}html} & 200 \\
-\end{longtable}
-\endgroup
-}
-
-CloudFront invalidation:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{aws}\NormalTok{ cloudfront create{-}invalidation }\DataTypeTok{\textbackslash{}}
-  \AttributeTok{{-}{-}distribution{-}id}\NormalTok{ EQIGYNECXDYL8 }\DataTypeTok{\textbackslash{}}
-  \AttributeTok{{-}{-}paths} \StringTok{"/*"}
-\end{Highlighting}
-\end{Shaded}
-
-\vspace{0.5em}\noindent\textbf{GitHub Actions frontend
-deployment}\par
-
-Use workflow dispatch mode:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{GitHub {-}\textgreater{} Actions {-}\textgreater{} CI/CD {-}\textgreater{} Run workflow {-}\textgreater{} mode: deploy{-}frontend}
-\end{Highlighting}
-\end{Shaded}
-
-The \texttt{deploy-\allowbreak{}frontend} job:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Configures AWS credentials through OIDC.
-\item
-  Sets Node.js from workflow \texttt{NODE\_\allowbreak{}VERSION}.
-\item
-  Verifies ALB health at \texttt{/\allowbreak{}api/\allowbreak{}health/\allowbreak{}ready} and
-  \texttt{/\allowbreak{}chat/\allowbreak{}health/\allowbreak{}ready}.
-\item
-  Runs \texttt{scripts/\allowbreak{}ci/\allowbreak{}deploy-\allowbreak{}frontend.\allowbreak{}sh}.
-\item
-  Uploads frontend files to S3.
-\item
-  Creates a CloudFront invalidation.
-\end{enumerate}
-
-\vspace{0.5em}\noindent\textbf{Verification}\par
-
-Check CloudFront:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{curl} \AttributeTok{{-}I}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/}
-\ExtensionTok{curl} \AttributeTok{{-}fsS}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/api/health/ready}
-\ExtensionTok{curl} \AttributeTok{{-}fsS}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/chat/health/ready}
-\end{Highlighting}
-\end{Shaded}
-
-Check S3 bucket privacy:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{aws}\NormalTok{ s3api get{-}public{-}access{-}block }\DataTypeTok{\textbackslash{}}
-  \AttributeTok{{-}{-}bucket}\NormalTok{ internship{-}prod{-}frontend{-}}\OperatorTok{\textless{}}\NormalTok{AWS\_ACCOUNT\_ID}\OperatorTok{\textgreater{}}
-\end{Highlighting}
-\end{Shaded}
-
-Check distribution:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{aws}\NormalTok{ cloudfront get{-}distribution }\AttributeTok{{-}{-}id}\NormalTok{ EQIGYNECXDYL8}
-\ExtensionTok{aws}\NormalTok{ cloudfront list{-}invalidations }\AttributeTok{{-}{-}distribution{-}id}\NormalTok{ EQIGYNECXDYL8}
-\end{Highlighting}
-\end{Shaded}
-
-\vspace{0.5em}\noindent\textbf{Expected result}\par
-
-\begin{itemize}
-\tightlist
-\item
-  The frontend loads through CloudFront.
-\item
-  Direct frontend S3 bucket public access remains blocked.
-\item
-  \texttt{/\allowbreak{}api/\allowbreak{}*}, \texttt{/\allowbreak{}chat/\allowbreak{}*}, and \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} routes
-  use the ALB origin.
-\item
-  SPA deep links return \texttt{index.\allowbreak{}html}.
-\item
-  A new CloudFront invalidation is created after deployment.
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+Trình kịch bản giúp tay \texttt{scripts/\allowbreak{}aws/\allowbreak{}ensure-\allowbreak{}cloudfront.\allowbreak{}sh} sắm
+vóc dáng uyên thâm đảm nhận rà thẩm hoặc tác sinh ra tài nguyên
+distribution mới. Thiết lập kiến trúc hiện hành được nạp dải:
 
 {
 \begingroup
@@ -320,39 +200,201 @@ Check distribution:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Behavior
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Origin
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Ghi chú
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Frontend job skipped & \texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} not true in
-the context used by the job & Configure the flag in GitHub variables as
-required by the workflow \\
-API calls go to localhost in production & Missing
-\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL=/\allowbreak{}api} & Rebuild with production Vite
-variables \\
-CloudFront returns old UI & Cached assets or missing invalidation &
-Check invalidation status and \texttt{index.\allowbreak{}html} cache control \\
-S3 access denied through CloudFront & Missing OAC bucket policy & Run
-\texttt{ensure-\allowbreak{}cloudfront.\allowbreak{}sh} with correct account and distribution \\
-Direct S3 website endpoint fails & Expected current behavior & Frontend
-bucket is private and should be accessed through CloudFront \\
-Socket.IO fails & Missing \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} CloudFront behavior or
-ALB route & Verify CloudFront behavior and Ingress path \\
+Mặc định \texttt{*} & S3 frontend bucket & Giao diện tĩnh của frontend
+cùng các tệp nền cho SPA \\
+\texttt{/\allowbreak{}api/\allowbreak{}*} & ALB & Dữ liệu REST API backend \\
+\texttt{/\allowbreak{}chat/\allowbreak{}*} & ALB & REST API thuộc về dịch vụ chat \\
+\texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} & ALB & Giao thông luân chuyển cho Socket.IO \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Removal of old Kubernetes frontend
-resources}\par
+CloudFront khôn ngoan giêu thiết lập cơ chế cứu rỗi điều bẻ dự phòng cho
+SPA (SPA fallback):
 
-The current architecture intentionally removes frontend Kubernetes
-resources. Do not recreate:
+{
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}lll@{}}
+\toprule\noalign{}
+Lỗi (Error) & Đường dẫn phản hồi & Mã phản hồi \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+403 & \texttt{/\allowbreak{}index.\allowbreak{}html} & 200 \\
+404 & \texttt{/\allowbreak{}index.\allowbreak{}html} & 200 \\
+\end{longtable}
+\endgroup
+}
+
+Ra lệnh xóa bỏ nội dung bộ nhớ đệm cũ kỹ lạc hậu (CloudFront
+invalidation):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{aws}\NormalTok{ cloudfront create{-}invalidation }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}distribution{-}id}\NormalTok{ EQIGYNECXDYL8 }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}paths} \StringTok{"/*"}
+\end{Highlighting}
+\end{Shaded}
+
+\vspace{0.5em}\noindent\textbf{Triển khai frontend qua GitHub
+Actions}\par
+
+Ra tay gõ chọn điều rũ thực thi chế độ workflow dispatch theo mô hình:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{GitHub {-}\textgreater{} Actions {-}\textgreater{} CI/CD {-}\textgreater{} Run workflow {-}\textgreater{} mode: deploy{-}frontend}
+\end{Highlighting}
+\end{Shaded}
+
+Quy tắc bước nhảy của thợ job \texttt{deploy-\allowbreak{}frontend}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Tiến hành ủy quyền và nạp định danh tài khoản AWS credentials cẩn kỵ
+  thông qua luồng an ninh OIDC.
+\item
+  Thiết định môi trường máy Node.js bám theo giá trị ghi ở biến workflow
+  \texttt{NODE\_\allowbreak{}VERSION}.
+\item
+  Thẩm định cẩn mật sức khỏe đường rẽ cọc ALB tại điểm trạm
+  \texttt{/\allowbreak{}api/\allowbreak{}health/\allowbreak{}ready} lẫn \texttt{/\allowbreak{}chat/\allowbreak{}health/\allowbreak{}ready}.
+\item
+  Gọi khởi nháy tệp lệnh \texttt{scripts/\allowbreak{}ci/\allowbreak{}deploy-\allowbreak{}frontend.\allowbreak{}sh}.
+\item
+  Đẩy tút mượt chuỗi tập tin giao diện tĩnh của frontend an trú vào lòng
+  hòm S3.
+\item
+  Phát đi trát thi thoảng xóa bạt tàn nhẫn cọc dữ liệu đệm cũ qua lệnh
+  CloudFront invalidation.
+\end{enumerate}
+
+\vspace{0.5em}\noindent\textbf{Kiểm chứng}\par
+
+Khảo rà tình hình CDN CloudFront:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{curl} \AttributeTok{{-}I}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/}
+\ExtensionTok{curl} \AttributeTok{{-}fsS}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/api/health/ready}
+\ExtensionTok{curl} \AttributeTok{{-}fsS}\NormalTok{ https://dhm2rz5nmsibj.cloudfront.net/chat/health/ready}
+\end{Highlighting}
+\end{Shaded}
+
+Thanh rà rào cản ngăn công khai trần tuột của hòm S3:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{aws}\NormalTok{ s3api get{-}public{-}access{-}block }\DataTypeTok{\textbackslash{}}
+  \AttributeTok{{-}{-}bucket}\NormalTok{ internship{-}prod{-}frontend{-}}\OperatorTok{\textless{}}\NormalTok{AWS\_ACCOUNT\_ID}\OperatorTok{\textgreater{}}
+\end{Highlighting}
+\end{Shaded}
+
+Khám xét thông số cấu hình tài nguyên distribution:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{aws}\NormalTok{ cloudfront get{-}distribution }\AttributeTok{{-}{-}id}\NormalTok{ EQIGYNECXDYL8}
+\ExtensionTok{aws}\NormalTok{ cloudfront list{-}invalidations }\AttributeTok{{-}{-}distribution{-}id}\NormalTok{ EQIGYNECXDYL8}
+\end{Highlighting}
+\end{Shaded}
+
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
+
+\begin{itemize}
+\tightlist
+\item
+  Trang frontend hoành nghênh hiện múa êm thắm từ sau vây cống mạng
+  CloudFront.
+\item
+  Ranh giới cản phá ngăn mạn cất chặn việc mở cửa lộ thiên (public
+  access) của hòm S3 tiếp chặng đứng sừng sững gác vững vàng.
+\item
+  Dải luân điều hướng tuyến \texttt{/\allowbreak{}api/\allowbreak{}*}, \texttt{/\allowbreak{}chat/\allowbreak{}*}, kết mác
+  cùng \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} răm rắp dốc đầu về rẽorigin ALB hợp hiền.
+\item
+  Chuỗi tra truy nhập thẳng (deep links) bỗng chốc bốc sa hẫng đều khôn
+  lanh được CDN nén trả quay đầu theo vạch \texttt{index.\allowbreak{}html}.
+\item
+  Một bản trát ban lệnh xóa cối đệm (invalidation) hiển lộ oai phong
+  ngay tại hồi sau đợt bung ban triển khai.
+\end{itemize}
+
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
+
+{
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Triệu chứng
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nguyên nhân
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hướng khắc phục
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Tác vụ thợ job của frontend khinh bạc giễu lướt qua bẻ bỏ & cọc biến mác
+\texttt{FRONTEND\_\allowbreak{}DEPLOY\_\allowbreak{}ENABLED} trượt giá trị true ở tầm bắt không
+gian biến cho job vồ vỗ & Hãy cẩn thêu định trát cờ cho cọc biến ở cấu
+hình biến GitHub environment theo đúng thói gặm nhấm workflow \\
+Trục trặc lời gõ gọi API chao bốc lao húc sai về cọc localhost ở cõi
+production & Quên bẳng mang cắp cho tham mác biến trường
+\texttt{VITE\_\allowbreak{}API\_\allowbreak{}BASE\_\allowbreak{}URL=/\allowbreak{}api} & Thi nặn build lại từ gốc phối nạp
+sung túc tham mác biến Vite chốn production \\
+Trang CDN CloudFront ngậm mồi khước trần giao diện bộ cũ kỹ & Tập file
+tĩnh gõ nhầm kho cối đệm cache hay sẩy bãi sót việc phát lệnh
+invalidation & Kiểm kê trạng thái danh bạ invalidation kết cọc thẩm quy
+chế cache control của tệp \texttt{index.\allowbreak{}html} \\
+Luồng chui vãng kho S3 thề khước cự tuế từ cất sau cánh CloudFront &
+Quyền hạn bucket policy khiếm khuyết chuỗi cam gạt giao tình OAC & Kích
+chuông thi thi rào cho kịch bản \texttt{ensure-\allowbreak{}cloudfront.\allowbreak{}sh} kèm thông
+ký số tài khoản cùng ID của distribution \\
+Điểm gõ thẳng vào website tĩnh qua origin S3 chọc chát cự tuệ dội bãi &
+Trạng thái kiên cố 100\% đúng quy luật thiết lập an ninh thọ thi & Hòm
+frontend vững chí giam cọc ở thế private ngặt nghẽo, chỉ đón nhở ngọ rẽ
+cẩu nhờCDN CloudFront buông thả \\
+Trượt rách kênh thời gian thực Socket.IO & Sa sẩy quên cất behavior mang
+ranh \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} bên trong cống CloudFront hoặc tuột trượt
+trên vạch định tuyến ALB & Thanh soát tỉ mẩn behavior bên CloudFront đi
+đôi cọc đường dẫn Ingress của ALB \\
+\end{longtable}
+\endgroup
+}
+
+\vspace{0.5em}\noindent\textbf{Việc tháo rỡ các tài nguyên frontend cũ trên
+Kubernetes}\par
+
+Cấu hình hạ tầng nay vững chí kiên định cất tay trục hủy tiệt toàn thể
+dải tài nguyên frontend khai trên Kubernetes. Tuyệt đối kiên răn không
+được lầm tưởng dựng ra phác lại:
 
 \begin{itemize}
 \tightlist
@@ -361,21 +403,26 @@ resources. Do not recreate:
 \item
   \texttt{Service/\allowbreak{}frontend}
 \item
-  frontend HPA
+  ranh giới HPA chuyên trách cho frontend
 \item
-  frontend PDB
+  ngân sách PDB cống hiến cho frontend
 \item
-  frontend-specific ALB Ingress
+  cọc ALB Ingress gánh phần cự rẽ riêng tư của frontend
 \item
-  \texttt{FRONTEND\_\allowbreak{}IMAGE} deployment path for EKS app deploy
+  chốt đường rãnh triển khai \texttt{FRONTEND\_\allowbreak{}IMAGE} thọ cọc bên trong
+  luồng thi app vào EKS
 \end{itemize}
 
-The frontend is built once and served as static files from S3 and
-CloudFront.
+Frontend kiên cọc vinh thọ duy nhất một lần dịch build tĩnh rẽ phân cất
+gửi trên hai cọc trụ bộ đôi S3 kết cống CloudFront CDN.
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-Frontend deployment is complete when the Vite build is in S3, CloudFront
-has invalidated cached objects, public users can load the application
-through \texttt{https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net}, and dynamic
-routes reach backend/chat through CloudFront and the ALB.
+Thao tác triển khai frontend cất mốc ăn còi thông vãn chính cống ngay
+chặng các tệp build sinh từ Vite nhở cẩu im lặng an ngự trong lòng S3,
+mạng CloudFront ra trát trút xóa rũ nhẵn củi xác đệm cũ rách, và trọn
+muôn ngọ cộng đồng có thể hưng múa chiêu nghênh giao diện ứng dụng từ
+cung rễ địa chỉ web chính danh
+\texttt{https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net}, giữa lúc luông
+API/realtime mỉm cười chao lướt êm trót lọt sang mạn backend/chat thi
+nhau bám cống CloudFront cùng cánh cổng ALB.

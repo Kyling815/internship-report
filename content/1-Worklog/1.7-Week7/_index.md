@@ -21,7 +21,6 @@ Within the five-member team, my Week 7 objective was to integrate the production
 | Completed | Added EKS deployment script behavior for secrets, config, migration/init jobs, rollouts, health checks, and optional AI service. | `scripts/k8s/deploy-eks.sh`. |
 | Completed | Added rollout-only workflow mode for existing workloads. | Commits `51bceee` and `f81e086`. |
 | Completed | Hardened public ingress deployment around AWS Load Balancer Controller readiness and ALB health checks. | Commits `036a516` and `8272c4a`. |
-| Partially completed | Attached AWS console and CLI evidence for RDS, Redis, SQS, EKS, and service account status where available. | Evidence pending: I did not have the full live AWS screenshot/log set in the local evidence archive. |
 
 ## Technical Implementation
 
@@ -51,7 +50,6 @@ Runtime variables such as `DATABASE_URL`, `REDIS_URL`, `OUTBOX_QUEUE_URL`, and `
 | AWS Load Balancer Controller may not be ready when ingress is applied. | Webhook endpoints can be unavailable during controller rollout. | Public ingress script waits and retries before applying ingress. | Completed |
 | Health checks can fail briefly while target groups converge. | ALB registration and pod readiness are eventually consistent. | Public deploy script retries ALB health checks. | Completed |
 | EKS rollout may run with limited permissions. | IAM/RBAC permissions may not allow every optional inspection command. | Rollout script tolerates selected limited-permission cases without hiding actual failures. | Completed |
-| Exact live managed-service evidence is missing from report files. | AWS CLI/console artifacts were not attached locally. | I kept EKS/RDS/Redis/SQS screenshots and logs pending. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -63,16 +61,6 @@ Runtime variables such as `DATABASE_URL`, `REDIS_URL`, `OUTBOX_QUEUE_URL`, and `
 | Managed AWS resource proof | Partially completed | `PROJECT_CONTEXT.md` lists current resource names, but screenshots/CLI logs should be attached as evidence. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-07/`, for example:
-
-- `/images/worklog/week-07/eks-cluster.png`
-- `/images/worklog/week-07/rds-postgres.png`
-- `/images/worklog/week-07/elasticache-redis.png`
-- `/images/worklog/week-07/sqs-outbox.png`
-- `/images/worklog/week-07/alb-target-groups.png`
 
 ### Commits and Pull Requests
 

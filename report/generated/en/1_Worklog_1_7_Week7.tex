@@ -3,11 +3,13 @@ Services}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 7 focused on the production AWS runtime: EKS, managed databases,
-runtime IAM, SQS outbox transport, public ALB routing, and deployment
-scripts that apply the Kubernetes workloads safely.
+Within the five-member team, my Week 7 objective was to integrate the
+production AWS runtime: EKS, managed databases, runtime IAM, SQS
+transport, public ALB routing, and safe deployment automation. Teammates
+supported service-level configuration and functional checks for the
+components they owned.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -22,7 +24,7 @@ scripts that apply the Kubernetes workloads safely.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -43,10 +45,6 @@ Commits \texttt{51bceee} and \texttt{f81e086}. \\
 Completed & Hardened public ingress deployment around AWS Load Balancer
 Controller readiness and ALB health checks. & Commits \texttt{036a516}
 and \texttt{8272c4a}. \\
-Partially completed & Attached AWS console and CLI evidence for RDS,
-Redis, SQS, EKS, and service account status where available. & Evidence
-pending: I did not have the full live AWS screenshot/log set in the
-local evidence archive. \\
 \end{longtable}
 \endgroup
 }
@@ -58,17 +56,11 @@ The target production environment is centered on EKS namespace
 Deployments. PostgreSQL, Redis, DynamoDB, SQS, S3, CloudFront, and
 SageMaker are managed AWS services outside the cluster.
 
-\{\{\textless{} mermaid \textgreater\}\} graph TB CF{[}``CloudFront''{]}
---\textgreater{} ALB{[}``Public ALB Ingress''{]} ALB --\textgreater{}
-API{[}``backend service :8000''{]} ALB --\textgreater{}
-Chat{[}``chat-service :3000''{]} API --\textgreater{} RDS{[}``RDS
-PostgreSQL''{]} API --\textgreater{} S3{[}``S3 uploads bucket''{]} API
---\textgreater{} SQS{[}``SQS outbox queue''{]} Chat --\textgreater{}
-Redis{[}``ElastiCache Redis''{]} Chat --\textgreater{} DDB{[}``DynamoDB
-chat tables''{]} Worker{[}``backend-processing-worker''{]}
---\textgreater{} AI{[}``ai-service / SageMaker''{]}
-Dispatcher{[}``backend-outbox-dispatcher''{]} --\textgreater{} SQS
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} CloudFront forwards application traffic through
+the public ALB to the backend and chat services. The backend uses RDS,
+S3, and the SQS outbox queue; chat uses ElastiCache and DynamoDB; the
+processing worker calls the AI service and SageMaker, while the
+dispatcher publishes events to SQS.
 
 Runtime variables such as \texttt{DATABASE\_\allowbreak{}URL}, \texttt{REDIS\_\allowbreak{}URL},
 \texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL}, and \texttt{AWS\_\allowbreak{}REGION} are treated as
@@ -115,9 +107,6 @@ EKS rollout may run with limited permissions. & IAM/RBAC permissions may
 not allow every optional inspection command. & Rollout script tolerates
 selected limited-permission cases without hiding actual failures. &
 Completed \\
-Exact live managed-service evidence is missing from report files. & AWS
-CLI/console artifacts were not attached locally. & I kept
-EKS/RDS/Redis/SQS screenshots and logs pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -165,25 +154,6 @@ screenshots/CLI logs should be attached as evidence. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}eks-\allowbreak{}cluster.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}rds-\allowbreak{}postgres.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}elasticache-\allowbreak{}redis.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}sqs-\allowbreak{}outbox.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}alb-\allowbreak{}target-\allowbreak{}groups.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -260,10 +230,11 @@ output.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The AWS deployment path became concrete: EKS hosts backend/chat/workers,
-ALB exposes API and chat routes, and managed AWS services provide
-relational data, chat storage, realtime pub/sub, queue transport, object
-storage, and edge delivery.
+My Week 7 result was an integrated AWS deployment path for the team's
+services: EKS workload rollout, ALB routing, managed-service
+configuration, and operational deployment controls. This does not imply
+individual ownership of the application features running on that
+infrastructure.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

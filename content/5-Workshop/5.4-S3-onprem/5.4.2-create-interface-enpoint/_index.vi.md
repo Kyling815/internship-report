@@ -1,5 +1,5 @@
 ﻿---
-title: "Tạo một S3 Interface endpoint"
+title: "Tạo điểm cuối giao diện S3"
 date: 2024-01-01
 weight: 2
 chapter: false

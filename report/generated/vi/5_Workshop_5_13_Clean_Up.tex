@@ -1,55 +1,75 @@
-\vspace{0.5em}\noindent\textbf{Clean-up}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Cung cấp quy trình dọn dẹp tài nguyên an toàn, thấu đáo trình tự tựa
+theo sự ràng buộc và phụ thuộc của các thành phần trong môi trường AWS
+production sau khi đã triển khai kiểm thử và hoàn thành nghiệm thu báo
+cáo thành công.
 
-Provide a safe, dependency-aware cleanup sequence for the AWS production
-environment after testing or demonstration is complete.
+\vspace{0.5em}\noindent\textbf{Cảnh báo (Warning)}\par
 
-\vspace{0.5em}\noindent\textbf{Warning}\par
+Các chuỗi câu lệnh khai báo trong chương này mang tính chất phá vỡ và
+xóa vĩnh viễn (destructive). Tuyệt đối cấm khởi búng thi thố thực thi
+chúng chừng nào bạn chưa gặt được sự đồng thuận và phê chuẩn minh khéo
+từ phía người bảo trợ dự án, người làm chủ tài khoản AWS, và ban tư lệnh
+tổ đội. Hãy chủ động cẩu xuất cất giữ an thọ toàn bãi thư viện bằng
+chứng, tệp nhật ký logs, thành quả kiểm nghiệm, bảng báo cáo tài chi
+cước, cùng muôn ảnh chụp thau chốt nghiệm thu sau cùng ngay trước thềm
+phất cờ gõ xóa tài nguyên.
 
-The commands in this chapter are destructive. Do not run them unless the
-project owner, AWS account owner, and team have approved cleanup. Export
-required evidence, logs, test results, cost reports, and final
-screenshots before deleting resources.
+Chương tài liệu này có mục đích hướng dẫn và làm tư liệu chuyên môn.
+Toàn vẹn không một dòng lệnh tháo xóa rũ nào bị đem búng thi thố cẩu
+chạy trần thực trong chu kỳ dịch may nặn nên cuốn báo cáo này.
 
-This chapter is documentation only. No cleanup commands were executed as
-part of preparing this report.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+Công tác dọn dẹp tài nguyên bắt buộc phải quy theo chuỗi trật tự phụ
+thuộc tầng lớp. Thao tác cầm đèn sa tay xóa đi cõi mạng ngang hay vai
+trò IAM trước nhất rất dễ gieo bãi khiến cho các bộ cân bằng tải ALB,
+giao diện mạng con ENI, các node group, cụm endpoint, con hàng đợi, hòm
+sọt bucket, hay hệ thống tệp log CloudWatch hãm rách bế thợ tắc nghẽn
+gầm lì bên thế giới lại. Giải pháp an nộ tối thượng là ra trát cất dừng
+lực lượng nhà sản xuất tin (producers), bẽ nấc đóng cụm gặt tin
+(consumers), xóa tan lập tức khối máy chủ phát sinh chi phí cao, và chỉ
+cho buông vãng xóa bỏ các thành phần nền tảng mạng và vai trò IAM ở khúc
+cuối cùng.
 
-Cleanup must follow dependency order. Deleting shared networking or IAM
-first can leave load balancers, ENIs, node groups, endpoints, queues,
-buckets, or log groups stuck. The safest approach is to stop producers,
-stop consumers, delete high-cost compute, then remove networking and IAM
-last.
-
-\vspace{0.5em}\noindent\textbf{Pre-cleanup checklist}\par
+\vspace{0.5em}\noindent\textbf{Danh sách kiểm tra trước khi dọn dẹp (Pre-cleanup
+checklist)}\par
 
 \begin{itemize}
 \tightlist
 \item[$\square$]
-  Confirm the environment is no longer needed.
+  Xác minh chắc chắn rằng cụm môi trường AWS hiện tại đã mãn cất sứ mệnh
+  và không còn nhuần cầu cho sử dụng nữa.
 \item[$\square$]
-  Export CloudFront, ALB, EKS, RDS, Redis, DynamoDB, SQS, Lambda,
-  SageMaker, and S3 evidence.
+  Tải xuất và sao bưu trọn vẹn tệp tài liệu minh chứng thuộc CloudFront,
+  ALB, EKS, RDS, Redis, DynamoDB, SQS, Lambda, SageMaker, cùng hòm S3.
 \item[$\square$]
-  Export AWS Cost Explorer or Pricing Calculator evidence.
+  Truy xuất cẩn thêu hồ sơ chi tiêu trong AWS Cost Explorer hay bảng
+  tính AWS Pricing Calculator.
 \item[$\square$]
-  Export Lambda logs for the final smoke test.
+  Export tệp nhật ký log từ Lambda chứng minh cho bước test khói (smoke
+  test) sau cùng.
 \item[$\square$]
-  Export any required S3 event archive objects.
+  Sao chép nạp an tịnh muôn cõi văn thư sự kiện lâu dài (archive
+  objects) cất giấu trên mạn kho S3 (nếu cần).
 \item[$\square$]
-  Confirm no production users depend on the deployment.
+  Thẩm định cẩn kỵ rằng không có bất kỳ cộng đồng người dùng thực tiễn
+  nào kiêng thọ phụ thuộc vào hệ cất hiện hành.
 \item[$\square$]
-  Confirm backups or snapshots are either retained or intentionally
-  deleted.
+  Quyết gặt minh bạch việc các bản sao lưu (backups) hay ảnh chụp dữ
+  liệu (snapshots) sẽ được kiên bão bảo lưu hay thống nhất tháo bẻ ra
+  cho xóa bỏ.
 \item[$\square$]
-  Confirm the active AWS account is the intended project account.
+  Đối soát xác thực số hiệu tài khoản AWS hiện tại trúng khớp 100\% tài
+  khoản cõi dự án mưu trù thau gõ dọn bãi.
 \item[$\square$]
-  Confirm the active region is \texttt{ap-\allowbreak{}southeast-\allowbreak{}1}.
+  Soát cọc khẳng định chắc nịch rằng mã vùng khu vực region thọ thực là
+  \texttt{ap-\allowbreak{}southeast-\allowbreak{}1}.
 \end{itemize}
 
-Verification:
+Lệnh kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -59,14 +79,15 @@ Verification:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Dependency-aware cleanup
-order}\par
+\vspace{0.5em}\noindent\textbf{Trình tự dọn dẹp theo phụ thuộc tài nguyên (Dependency-aware
+cleanup
+order)}\par
 
-\vspace{0.5em}\noindent\textbf{1. Disable the processing
+\vspace{0.5em}\noindent\textbf{1. Vô hiệu hóa processing
 worker}\par
 
-Stop long-running AI work before deleting SageMaker or database
-resources:
+Khóa vãn trút dừng mọi luông tác vụ bão AI chạy dai cẳng trước thềm gạt
+tay cẩu chôn cõi SageMaker hoặc chuỗi tài nguyên cơ sở dữ liệu:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -77,10 +98,10 @@ resources:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{2. Disable Lambda SQS event-source
-mapping}\par
+\vspace{0.5em}\noindent\textbf{2. Vô hiệu hóa event-source mapping của Lambda
+SQS}\par
 
-List mappings:
+Tra khảo danh bạ mapping:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -90,7 +111,7 @@ List mappings:
 \end{Highlighting}
 \end{Shaded}
 
-Disable each mapping:
+Thực hiện tắt nút gạt (disable) cho từng bản ghi liên kết:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -101,10 +122,11 @@ Disable each mapping:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{3. Delete SageMaker
+\vspace{0.5em}\noindent\textbf{3. Xóa trạm suy đoán SageMaker
 endpoint}\par
 
-SageMaker endpoint uptime can be a major cost driver:
+Số giờ mở máy duy trì thọ của SagMaker endpoint chính là tay ngốn cước
+phái cọc hung mãnh nhất:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -114,7 +136,9 @@ SageMaker endpoint uptime can be a major cost driver:
 \end{Highlighting}
 \end{Shaded}
 
-Then inspect endpoint config and model resources before deleting them:
+Tiếp nhịp thăm dò tra khảo trù bã ra cấu hình endpoint (endpoint config)
+kết cùng các cõi mô hình (models) trước phút quyết gõ cho tiễn trát tháo
+gỡ chúng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -123,9 +147,10 @@ Then inspect endpoint config and model resources before deleting them:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{4. Delete Lambda function}\par
+\vspace{0.5em}\noindent\textbf{4. Xóa hàm Lambda}\par
 
-Delete after disabling the event-source mapping:
+Ban trát xóa tiệt cọ sau khi kịch bản cản khóa cống liên thông sự kiện
+event-source mapping thọ thi thành tài:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -135,8 +160,8 @@ Delete after disabling the event-source mapping:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{5. Delete Lambda event-source
-mapping}\par
+\vspace{0.5em}\noindent\textbf{5. Xóa event-source mapping của
+Lambda}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -146,10 +171,10 @@ mapping}\par
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{6. Inspect or purge test
-messages}\par
+\vspace{0.5em}\noindent\textbf{6. Kiểm tra hoặc dọn dẹp tin nhắn kiểm thử
+(purge)}\par
 
-Check queue state:
+Kiêm tra soát hiện trạng bên trong hàng đợi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -160,7 +185,8 @@ Check queue state:
 \end{Highlighting}
 \end{Shaded}
 
-If approved, purge test messages:
+Nếu nhở cẩn vinh nhận được lệnh thuận chuẩn cho xóa nạp tệp, thực hiện
+ra trát xóa sạch (purge) muôn tin test rách:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -168,7 +194,8 @@ If approved, purge test messages:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{7. Delete SQS queues}\par
+\vspace{0.5em}\noindent\textbf{7. Xóa các hàng đợi
+SQS}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -177,10 +204,12 @@ If approved, purge test messages:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{8. Delete Kubernetes
+\vspace{0.5em}\noindent\textbf{8. Xóa Kubernetes
 Ingress}\par
 
-Deleting the Ingress lets AWS Load Balancer Controller remove the ALB:
+Sự biến tháo xô gục tài nguyên Ingress bên mạn k8s lập tức nháy chuồng
+giục trình AWS Load Balancer Controller ra tay tháo rỡ xóa bãi ALB thực
+thụ trên AWS:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -188,7 +217,8 @@ Deleting the Ingress lets AWS Load Balancer Controller remove the ALB:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{9. Wait for ALB deletion}\par
+\vspace{0.5em}\noindent\textbf{9. Chờ quá trình xóa ALB hoàn
+tất}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -197,9 +227,12 @@ Deleting the Ingress lets AWS Load Balancer Controller remove the ALB:
 \end{Highlighting}
 \end{Shaded}
 
-Wait until the internship ALB and target groups are gone.
+Kiêm trung sa chìm êm kiên bế nhẫn chờ đợi cho tới khúc khoảnh mác khi
+thực thể ALB cùng các target group của internship thọ biến tiệt hoàn
+cõi.
 
-\vspace{0.5em}\noindent\textbf{10. Delete EKS workloads}\par
+\vspace{0.5em}\noindent\textbf{10. Xóa các workload trên
+EKS}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -213,7 +246,9 @@ Wait until the internship ALB and target groups are gone.
 \end{Highlighting}
 \end{Shaded}
 
-Delete namespace only after confirming no resources remain:
+Duy trì tuế gõ xóa bỏ không gian tên (namespace) khi và chỉ khi đã thấu
+đáo cản bão chẳng còn con workload nhát tài nguyên nào gan lì trườn ngụ
+lại:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -222,7 +257,7 @@ Delete namespace only after confirming no resources remain:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{11. Delete EKS node group}\par
+\vspace{0.5em}\noindent\textbf{11. Xóa EKS node group}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -237,7 +272,7 @@ Delete namespace only after confirming no resources remain:
 \end{Highlighting}
 \end{Shaded}
 
-Wait:
+Kêu còi kiên chờ quy nạp xóa xong:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -248,7 +283,8 @@ Wait:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{12. Delete EKS cluster}\par
+\vspace{0.5em}\noindent\textbf{12. Xóa cụm EKS
+cluster}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -258,9 +294,11 @@ Wait:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{13. Delete RDS}\par
+\vspace{0.5em}\noindent\textbf{13. Xóa cơ sở dữ liệu
+RDS}\par
 
-Decide whether to keep a final snapshot:
+Cân nhắc ra quyết chốt có muốn nặn thi một ảnh sao bưu chốt hạ cuối cùng
+(final snapshot) trước thềm dọn dẹp hay không:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -271,7 +309,8 @@ Decide whether to keep a final snapshot:
 \end{Highlighting}
 \end{Shaded}
 
-Only skip the snapshot when explicitly approved:
+Chỉ được khôn ra quyết bỏ lơ (skip) việc chụp ảnh sao lưu cuội cùng
+chặng kỳ nhận được lời đồng thuận cất văn phê chuẩn ranh mạch:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -282,7 +321,8 @@ Only skip the snapshot when explicitly approved:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{14. Delete ElastiCache}\par
+\vspace{0.5em}\noindent\textbf{14. Xóa cụm ElastiCache
+Redis}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -292,9 +332,11 @@ Only skip the snapshot when explicitly approved:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{15. Delete DynamoDB tables}\par
+\vspace{0.5em}\noindent\textbf{15. Xóa các bảng
+DynamoDB}\par
 
-Delete only after confirming no data retention is required:
+Ra tay xóa bẻ cọ ngay sau khi minh chanh xác thực không ai kêu đòi giữ
+lại tài sản dữ liệu của bảng nữa:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -305,10 +347,10 @@ Delete only after confirming no data retention is required:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{16. Empty and delete S3
-buckets}\par
+\vspace{0.5em}\noindent\textbf{16. Làm trống và xóa các bucket
+S3}\par
 
-Inspect first:
+Khảo rà thẩm sát nội bồi trước khi can thiệp:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -317,7 +359,7 @@ Inspect first:
 \end{Highlighting}
 \end{Shaded}
 
-Empty and delete after approval:
+Ra lệnh cất bẻ làm trống tệp và thi tháo kho sau nhịp được phê chuẩn:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -328,13 +370,16 @@ Empty and delete after approval:
 \end{Highlighting}
 \end{Shaded}
 
-If versioning is enabled, delete object versions and delete markers
-before removing the bucket.
+Nếu cơ chế theo cọc ghi phiên bản (versioning) thọ được nháy cất cho
+bật, bắt buộc bạn phải quét sạch mọi cọc phiên bản object versions đi
+kèm các nhãn dập xóa delete markers trước thềm mới tuột bẻ lệnh trù dập
+bucket được.
 
-\vspace{0.5em}\noindent\textbf{17. Disable and delete
+\vspace{0.5em}\noindent\textbf{17. Vô hiệu hóa và xóa
 CloudFront}\par
 
-CloudFront must be disabled before deletion:
+Tài nguyên CloudFront khẩn khôn đòi hỏi phải gặt nút tắt (disabled)
+trước thời khắc cho lệnh ra trát xóa bỏ:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -342,8 +387,9 @@ CloudFront must be disabled before deletion:
 \end{Highlighting}
 \end{Shaded}
 
-Update the distribution config with \texttt{Enabled=false}, keep the
-current \texttt{ETag}, then wait:
+Cập nhật tệp cấu hình cõi distribution chuyển trường
+\texttt{Enabled=false}, bảo vẹn nguyên chuế giá trị mã nhãn thẻ
+\texttt{ETag}, và sau đó kiên nhĩ chờ đợi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -351,7 +397,7 @@ current \texttt{ETag}, then wait:
 \end{Highlighting}
 \end{Shaded}
 
-Delete:
+Gõ lệnh cẩu tháo rỡ xóa bãi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -361,7 +407,7 @@ Delete:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{18. Delete NAT Gateway}\par
+\vspace{0.5em}\noindent\textbf{18. Xóa NAT Gateway}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -370,10 +416,12 @@ Delete:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{19. Release Elastic IP}\par
+\vspace{0.5em}\noindent\textbf{19. Giải phóng địa chỉ Elastic
+IP}\par
 
-Release the NAT Gateway Elastic IP only after the NAT Gateway is
-deleted:
+Ra lệnh phỏng thích trả còi lại địa chỉ IP tĩnh (Elastic IP) cho AWS chỉ
+ở thời mác khi con cõi NAT Gateway đã tiễn trát ngã cọc xóa bỏ thành
+tài:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -381,10 +429,11 @@ deleted:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{20. Delete IAM roles and
-policies}\par
+\vspace{0.5em}\noindent\textbf{20. Xóa các vai trò và chính sách IAM (IAM roles and
+policies)}\par
 
-Delete IAM roles last, after workloads that use them are gone:
+Xóa nhãn phân quyền IAM ở khúc muộn muôn cùng, cản sau chặng toàn thể
+các vi workload gặm thọ nhờ chúng đều đã biến đi vào dĩ vãng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -393,13 +442,14 @@ Delete IAM roles last, after workloads that use them are gone:
 \end{Highlighting}
 \end{Shaded}
 
-Repeat for project-specific roles only after confirming no shared
-resource depends on them.
+Lặp lại quy luật tháo dọn này ứng cho từng IAM role sinh ra riêng cho dự
+án cản bãi, kiên trung thọ thi chỉ sau nhịp cất thẩm minh bạch chẳng có
+một dịch vụ chia cẩu chung chao nào mạn ngoài kiên cầu vào chúng nữa.
 
-\vspace{0.5em}\noindent\textbf{21. Delete remaining VPC
-resources}\par
+\vspace{0.5em}\noindent\textbf{21. Xóa các tài nguyên VPC còn
+lại}\par
 
-Inspect and remove:
+Khám xét và thu gọn bã, tháo gỡ tiệt:
 
 \begin{itemize}
 \tightlist
@@ -412,14 +462,14 @@ Inspect and remove:
 \item
   Internet Gateway
 \item
-  NAT routes
+  các ranh định tuyến qua NAT (NAT routes)
 \item
   VPC endpoints
 \item
-  leftover ENIs
+  những cọc cống kết nối ENIs còn sa kẹt bám lại
 \end{itemize}
 
-Commands:
+Các câu lệnh kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -431,10 +481,10 @@ Commands:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{22. Verify billing resources are
-gone}\par
+\vspace{0.5em}\noindent\textbf{22. Kiểm chứng việc xóa các tài nguyên phát sinh chi
+phí}\par
 
-Final checks:
+Những lệnh cất bão khải thông cẩu gạt kiểm rà sau cuối:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -449,10 +499,13 @@ Final checks:
 \end{Highlighting}
 \end{Shaded}
 
-Review AWS Billing and Cost Explorer the next day because some usage
-records appear after a delay.
+Đăng nhập tra lại mạn hóa đơn AWS Billing kết cọc cõi Cost Explorer vào
+ngày kế tiếp (the next day), bởi thói quen kỹ thuật định chốt rằng một
+số bản ghi thông lượng hao phí tiêu thu có xu thế sa trễ sau một khoảng
+trần chu kỳ delay nhất định.
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -465,32 +518,44 @@ records appear after a delay.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Nguyên nhân
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-VPC cannot be deleted & ENIs, ALB, NAT, endpoints, or security groups
-remain & Inspect ENIs and dependent resources \\
-S3 bucket cannot be deleted & Versioned objects or delete markers remain
-& Delete all object versions and markers \\
-CloudFront cannot be deleted & Distribution still enabled or ETag
-mismatch & Disable, wait for deployed state, use latest ETag \\
-IAM role cannot be deleted & Policies still attached & Detach inline and
-managed policies first \\
-SQS messages keep reappearing & Lambda event source still enabled &
-Disable/delete event-source mapping before queue deletion \\
+Cự tuyệt án gõ tháo dẹp xóa mạng VPC & Các ENI, cổng ALB, trạm NAT, VPC
+endpoint, hoặc security groups kiên lì còn mắc ngụ & Khảo sát tra cọc
+các ENI đi đôi cọ danh mục tài nguyên cất bấu phụ thuộc \\
+Không thể ra lệnh trát chôn xóa S3 bucket & Vẫn mắc rẹt cộc phiên bản
+object versions hoặc nhãn dập xóa delete markers & Tra bẻ gõ xóa sạch
+muôn bản ghi version cùng thẻ marker khỏi hòm \\
+Châm trách thề cự tháo tài nguyên CloudFront & Tài nguyên distribution
+vẫn sa ở mức đang kích bật (enabled) hay sa xéo xô lệch chuỗi ETag & Tắt
+nút enabled, cẩu chờ trạng thái deployed hoàn trọn, và ra cẩu tháo với
+mã ETag mới nhất \\
+Bất lực rên than không tháo xóa được vai trò IAM & Chính sách (policies)
+vẫn đang mang tư thế đính trói cọc cõng vào role & Tháo gỡ gạt nhả
+(detach) các chính sách inline và managed policies trước kỳ thao tác \\
+Tin nhắn trong hàng đợi SQS gan bầm lỳ kiếp gieo bục sa múa cọc xuất
+trồi lại & Cấu trúc rào liên thông sự kiện (event-source mapping) của
+Lambda kiên trinh buông thả công tắc enabled & Tắt vãn bãi/xóa hẳn con
+cọc event-source mapping trước thì khoảnh mác khi ra trát gõ dẹp hàng
+đợi SQS \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-Cleanup is complete only when high-cost services, queues, buckets,
-databases, load balancers, endpoints, IAM roles, and VPC resources are
-removed or intentionally retained with written approval.
+Quy chu trình thau dọn bãi tài nguyên chỉ oai nghiêm giễu còi khải xướng
+tự mang mác vinh quy chốt hoàn tàn sau khi muôn cụm máy dịch vụ hao tiêu
+tàn độc nhất (high-cost services), những con hàng đợi, hòm cối bucket,
+bãi CSDL, hệ bộ cân bằng tải, trạm endpoint, vai trò quyền IAM và mạng
+VPC đều hoan khải bị nhả dẹp thu gọn, hoặc giả thọ khôn ngoan an tịnh
+giữ bấu lại muôn kiếp với lời ban trát minh văn cho phép tuất quyền
+chính khôn.

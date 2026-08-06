@@ -21,7 +21,6 @@ Week 4 was the first week centered on my primary Cloud/DevOps assignment in the 
 | Completed | Consolidated GitHub Actions into the main CI/CD workflow. | `.github/workflows/cicd.yml` and commit `e09e84e`. |
 | Completed | Added required quality/security gates. | `scripts/ci/repository_quality.py`, `scripts/ci/infrastructure.py`, `scripts/ci/security_scan.py`, `.gitleaks.toml`, and `.pre-commit-config.yaml`. |
 | Completed | Fixed ShellCheck SC2155 in the smoke test script. | Commit `98f3420`. |
-| Partially completed | Attached GitHub Actions screenshots and full before/after logs where available. | Evidence pending: I did not have the full CI screenshot/log artifact set in the local evidence archive. |
 
 ## Technical Implementation
 
@@ -53,7 +52,6 @@ docker build -f Dockerfile.ai-service -t internship-ai:ci .
 | ShellCheck flagged SC2155 in the smoke test script. | Assignment and command substitution were combined in a way ShellCheck warns about. | Commit `98f3420` split the logic to satisfy ShellCheck. | Completed |
 | `.env` files can contain UTF-8 BOM and break shell parsing. | Windows editors may add BOM at the beginning of files. | `scripts/ci/smoke-test.sh` strips the BOM when preparing smoke-test env input. | Completed |
 | Docker-based infra validation may hang or fail when Docker is unavailable. | Local Windows/Docker setups vary by machine. | Infrastructure scripts support local CLI binaries and bounded Docker fallback behavior. | Completed |
-| Full CI result screenshots are missing from the Hugo report. | GitHub Actions artifacts were not attached locally. | I kept CI log screenshots pending. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -66,14 +64,6 @@ docker build -f Dockerfile.ai-service -t internship-ai:ci .
 | Compose smoke test | Implemented | `scripts/ci/smoke-test.sh` exists and ends with `Compose smoke test passed` on success. Current-run output is pending. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-04/`, for example:
-
-- `/images/worklog/week-04/github-actions-validate.png`
-- `/images/worklog/week-04/shellcheck-before-after.png`
-- `/images/worklog/week-04/docker-builds.png`
 
 ### Commits and Pull Requests
 

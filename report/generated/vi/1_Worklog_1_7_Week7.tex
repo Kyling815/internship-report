@@ -1,13 +1,14 @@
-\vspace{0.5em}\noindent\textbf{Week 7 - Amazon EKS and Managed AWS
-Services}\par
+\vspace{0.5em}\noindent\textbf{Tuần 7 - Amazon EKS và các dịch vụ AWS
+managed}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Week 7 focused on the production AWS runtime: EKS, managed databases,
-runtime IAM, SQS outbox transport, public ALB routing, and deployment
-scripts that apply the Kubernetes workloads safely.
+Trong nhóm 5 thành viên, mục tiêu tuần 7 của tôi là tích hợp production
+runtime trên AWS: EKS, managed database, runtime IAM, SQS transport,
+public ALB routing và automation triển khai an toàn. Các thành viên khác
+hỗ trợ cấu hình, kiểm tra chức năng cho service mình phụ trách.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -20,62 +21,53 @@ scripts that apply the Kubernetes workloads safely.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Added production deployment pipeline logic for EKS, ALB, and
-CloudFront support. & Commit \texttt{899ff3b}. \\
-Completed & Added no-domain ALB ingress path for \texttt{/\allowbreak{}api},
-\texttt{/\allowbreak{}chat}, and \texttt{/\allowbreak{}socket.\allowbreak{}io}. &
+Hoàn thành & Bổ sung logic production pipeline cho EKS, ALB và
+CloudFront. & Commit \texttt{899ff3b}. \\
+Hoàn thành & Bổ sung ALB ingress không cần domain cho \texttt{/\allowbreak{}api},
+\texttt{/\allowbreak{}chat} và \texttt{/\allowbreak{}socket.\allowbreak{}io}. &
 \texttt{k8s/\allowbreak{}eks/\allowbreak{}ingress-\allowbreak{}alb-\allowbreak{}no-\allowbreak{}domain.\allowbreak{}yaml}. \\
-Completed & Added EKS deployment script behavior for secrets, config,
-migration/init jobs, rollouts, health checks, and optional AI service. &
+Hoàn thành & Hoàn thiện EKS deployment script cho secret, config, job,
+rollout, health check và AI service tùy chọn. &
 \texttt{scripts/\allowbreak{}k8s/\allowbreak{}deploy-\allowbreak{}eks.\allowbreak{}sh}. \\
-Completed & Added rollout-only workflow mode for existing workloads. &
-Commits \texttt{51bceee} and \texttt{f81e086}. \\
-Completed & Hardened public ingress deployment around AWS Load Balancer
-Controller readiness and ALB health checks. & Commits \texttt{036a516}
-and \texttt{8272c4a}. \\
-Partially completed & Attached AWS console and CLI evidence for RDS,
-Redis, SQS, EKS, and service account status where available. & Evidence
-pending: I did not have the full live AWS screenshot/log set in the
-local evidence archive. \\
+Hoàn thành & Bổ sung chế độ workflow chỉ rollout workload hiện có. &
+Commit \texttt{51bceee} và \texttt{f81e086}. \\
+Hoàn thành & Củng cố public ingress deployment dựa trên controller
+readiness và ALB health check. & Commit \texttt{036a516} và
+\texttt{8272c4a}. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
 The target production environment is centered on EKS namespace
 \texttt{internship}. Backend and chat are long-running Kubernetes
 Deployments. PostgreSQL, Redis, DynamoDB, SQS, S3, CloudFront, and
 SageMaker are managed AWS services outside the cluster.
 
-\{\{\textless{} mermaid \textgreater\}\} graph TB CF{[}``CloudFront''{]}
---\textgreater{} ALB{[}``Public ALB Ingress''{]} ALB --\textgreater{}
-API{[}``backend service :8000''{]} ALB --\textgreater{}
-Chat{[}``chat-service :3000''{]} API --\textgreater{} RDS{[}``RDS
-PostgreSQL''{]} API --\textgreater{} S3{[}``S3 uploads bucket''{]} API
---\textgreater{} SQS{[}``SQS outbox queue''{]} Chat --\textgreater{}
-Redis{[}``ElastiCache Redis''{]} Chat --\textgreater{} DDB{[}``DynamoDB
-chat tables''{]} Worker{[}``backend-processing-worker''{]}
---\textgreater{} AI{[}``ai-service / SageMaker''{]}
-Dispatcher{[}``backend-outbox-dispatcher''{]} --\textgreater{} SQS
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Mô tả sơ bộ.} CloudFront chuyển lưu lượng ứng dụng qua ALB công
+khai đến backend và chat service. Backend dùng RDS, S3 và hàng đợi
+outbox SQS; chat dùng ElastiCache và DynamoDB; processing worker gọi AI
+service và SageMaker, còn dispatcher gửi sự kiện vào SQS.
 
 Runtime variables such as \texttt{DATABASE\_\allowbreak{}URL}, \texttt{REDIS\_\allowbreak{}URL},
 \texttt{OUTBOX\_\allowbreak{}QUEUE\_\allowbreak{}URL}, and \texttt{AWS\_\allowbreak{}REGION} are treated as
 deployment inputs or Kubernetes secret/config values. The report does
 not include their secret values.
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -115,15 +107,12 @@ EKS rollout may run with limited permissions. & IAM/RBAC permissions may
 not allow every optional inspection command. & Rollout script tolerates
 selected limited-permission cases without hiding actual failures. &
 Completed \\
-Exact live managed-service evidence is missing from report files. & AWS
-CLI/console artifacts were not attached locally. & I kept
-EKS/RDS/Redis/SQS screenshots and logs pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -164,29 +153,10 @@ screenshots/CLI logs should be attached as evidence. \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}eks-\allowbreak{}cluster.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}rds-\allowbreak{}postgres.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}elasticache-\allowbreak{}redis.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}sqs-\allowbreak{}outbox.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}07/\allowbreak{}alb-\allowbreak{}target-\allowbreak{}groups.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -232,7 +202,8 @@ commit} & Evidence pending \\
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
 Evidence pending: attach actual output from:
 
@@ -247,31 +218,33 @@ Evidence pending: attach actual output from:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
 Evidence pending: attach EKS deployment workflow logs that show the
 image tags selected for backend, chat, and optional AI service.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
 Evidence pending: attach \texttt{kubectl\ rollout\ status},
 \texttt{kubectl\ get\ pods\ -n\ internship}, and ALB health-check
 output.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-The AWS deployment path became concrete: EKS hosts backend/chat/workers,
-ALB exposes API and chat routes, and managed AWS services provide
-relational data, chat storage, realtime pub/sub, queue transport, object
-storage, and edge delivery.
+Kết quả cá nhân tuần 7 là quy trình AWS tích hợp cho các service của
+nhóm: rollout EKS workload, ALB routing, cấu hình managed service và
+kiểm soát vận hành. Điều này không đồng nghĩa với việc cá nhân sở hữu
+các chức năng ứng dụng chạy trên hạ tầng đó.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
 Production Kubernetes deployment depends on more than manifests. IAM,
 controller readiness, target group convergence, network routing, health
 endpoints, and secret handling must all be validated separately.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
 Run the full build, push, deploy, frontend, SageMaker, and
 operational-validation path; then document final completed items,

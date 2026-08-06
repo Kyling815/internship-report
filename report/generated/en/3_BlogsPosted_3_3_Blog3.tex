@@ -1,51 +1,301 @@
-\vspace{0.5em}\noindent\textbf{Blog 3}\par
+\vspace{0.5em}\noindent\textbf{A Few Takeaways from My Software Engineering Journey: From
+Writing Code to Breaking the System and Fixing It
+Myself}\par
 
-\vspace{0.5em}\noindent\textbf{Publication status}\par
+\vspace{0.5em}\noindent\textbf{Introduction}\par
 
-I have not completed or published the third blog yet.
+I once believed that the main responsibility of a Software Engineer was
+to receive requirements, write code, complete features, and push the
+source code to a repository. However, after working directly on a
+relatively complete system, I realized that writing functional code is
+only the first step.
 
-{
-\begingroup
-\small
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}ll@{}}
-\toprule\noalign{}
-Field & Value \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Topic & Evidence required: final Blog 3 topic \\
-Publication date & Evidence required: publication date \\
-Platform & AWS Study Groups \\
-Public link & Evidence required: public URL after publishing \\
-Status & Not completed in the available report evidence \\
-\end{longtable}
-\endgroup
-}
+The more difficult challenge is ensuring that the code operates reliably
+within a real system containing multiple interconnected components,
+including a frontend, backend APIs, databases, message queues,
+containers, Kubernetes, CI/CD pipelines, and AWS infrastructure.
 
-\vspace{0.5em}\noindent\textbf{Planned content}\par
+While developing the AI-Powered Internship Application Tracker, I worked
+with FastAPI, React, PostgreSQL, Redis, DynamoDB, Amazon SQS, Docker,
+Kubernetes, GitHub Actions, and several AWS services. This experience
+did not simply introduce me to more technologies. It also changed how I
+understand software development, deployment, failure, and recovery.
 
-The final Blog 3 page should be updated after publication with:
+\vspace{0.5em}\noindent\textbf{Running Locally Does Not Mean Running Successfully in
+Production}\par
+
+In a local environment, system components are usually close together and
+relatively easy to control. The database may run inside Docker Compose,
+Redis may share the same network, and environment variables may be
+stored in a local \texttt{.\allowbreak{}env} file.
+
+When the system is moved to Kubernetes or AWS, communication becomes
+more complex. A service must use the correct DNS name, namespace, port,
+and network configuration to reach another service. A pod connecting to
+a database requires the correct connection string, security group, and
+network route. Applications in private subnets also need an appropriate
+outbound path to access external services.
+
+This experience helped me understand that an application does not
+operate based on source code alone. Its reliability also depends on the
+environment surrounding it.
+
+\vspace{0.5em}\noindent\textbf{Docker and the Runtime
+Environment}\par
+
+Docker helps standardize the runtime environment across different
+machines, but containerization also introduces new types of problems.
+
+A container may be running while its health check is failing. An
+application may start before its database becomes available. Environment
+variables may exist on the host machine but may not be passed correctly
+into the container. Port conflicts, missing volumes, Docker Desktop
+settings, and WSL integration can also prevent the system from operating
+even when the code has not changed.
+
+These situations encouraged me to examine more than the application
+code:
 
 \begin{itemize}
 \tightlist
 \item
-  a concise topic summary
+  Which environment variables does the container actually receive?
 \item
-  key technical points
+  Are the required dependencies ready?
 \item
-  the public article link
+  Are the services connected to the correct network?
 \item
-  screenshots or evidence of publication
+  Are ports exposed and mapped properly?
 \item
-  a reflection on how the article relates to the Internship Application
-  Tracker project
+  What behavior is the health check validating?
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Current note}\par
+\vspace{0.5em}\noindent\textbf{CI/CD Is Not a Magical YAML
+File}\par
 
-This page intentionally avoids inventing a topic, link, date, or
-publication result. Official publication evidence is required before
-this page can be marked as complete.
+GitHub Actions can automate linting, testing, image building, security
+scanning, and deployment. However, a pipeline works only when all of its
+assumptions are correct.
+
+A workflow may fail because a secret is missing, a branch condition is
+incorrect, an image tag is inconsistent, or the runner does not contain
+the required tools. A deployment job may also be skipped because an
+environment variable or execution condition has not been configured
+correctly.
+
+Through troubleshooting failed workflows, I learned that CI/CD is not
+simply about creating a configuration file. Developers need to
+understand what each step does, what data is passed between jobs, and
+what state the destination system must be in before deployment can
+proceed.
+
+\vspace{0.5em}\noindent\textbf{IAM and the Importance of Verifying
+Permissions}\par
+
+AWS IAM was one of the areas that required the most troubleshooting.
+Initially, I assumed that a missing permission could be fixed by adding
+a policy containing the required action.
+
+In practice, AWS permissions also depend on trust policies, principals,
+conditions, repositories, branches, resource ARNs, and whether a
+particular action supports resource-level permissions.
+
+A policy may appear secure and carefully restricted but still fail to
+operate. Some actions require the resource to be set to \texttt{"*"},
+while others can be limited to a specific ARN.
+
+Instead of continuing to guess, I began using policy simulation tools to
+verify each action. The main lesson was straightforward:
+
+\begin{quote}
+Permissions should not be guessed. Each required action should be
+verified to determine whether it is allowed or denied.
+\end{quote}
+
+\vspace{0.5em}\noindent\textbf{Kubernetes: Running Does Not Always Mean
+Healthy}\par
+
+Kubernetes may report a pod as \texttt{Running}, but that status only
+confirms that the container currently exists. It does not guarantee that
+the application inside it is functioning correctly.
+
+A running pod may still fail to connect to Redis, wait for an unfinished
+migration, return no API response, or lack outbound network access.
+Therefore, system validation should include more than pod status:
+
+\begin{itemize}
+\tightlist
+\item
+  Application logs.
+\item
+  Readiness and liveness probes.
+\item
+  Kubernetes Services and Ingress.
+\item
+  Database migrations.
+\item
+  Network connectivity.
+\item
+  Dependent services.
+\end{itemize}
+
+This taught me not to rely only on infrastructure status. The actual
+behavior of the application must also be tested through endpoints and
+real user flows.
+
+\vspace{0.5em}\noindent\textbf{The NAT Gateway Incident and Network
+Architecture}\par
+
+One of the most memorable incidents occurred when I disabled the NAT
+Gateway to reduce operating costs. Afterward, pods in private subnets
+could no longer access the Internet, some connections to AWS services
+were interrupted, and deployment processes began to fail.
+
+Because the source code, IAM configuration, and security groups had not
+changed, the cause was initially difficult to identify. After reviewing
+the network architecture, I discovered that the outbound route had
+disappeared when the NAT Gateway was disabled.
+
+This incident gave me a much clearer understanding of public subnets,
+private subnets, Internet Gateways, NAT Gateways, route tables, and VPC
+Endpoints. Concepts that had previously existed only in architecture
+diagrams became practical knowledge after I experienced and resolved the
+failure myself.
+
+\vspace{0.5em}\noindent\textbf{Database Concurrency and
+Idempotency}\par
+
+Many backend problems do not appear when only one user is testing the
+system. They become visible when two or more requests arrive at nearly
+the same time.
+
+For example, two requests may both check that a record does not exist
+and then attempt to insert it. Without proper constraints and
+transaction handling, duplicate data may be created.
+
+To reduce these risks, the system can use:
+
+\begin{itemize}
+\tightlist
+\item
+  Database unique constraints.
+\item
+  Transactions and rollback handling.
+\item
+  HTTP 409 responses for conflicts.
+\item
+  Optimistic locking.
+\item
+  Idempotency keys for important operations.
+\end{itemize}
+
+An internship application should not be created twice simply because the
+user clicked a button multiple times or because the client retried the
+request.
+
+\vspace{0.5em}\noindent\textbf{Message Queues and the Transactional Outbox
+Pattern}\par
+
+Another challenge appears when a system must update a database and
+publish a message to a queue as part of the same logical operation.
+
+If the database commit succeeds but message delivery fails, the data
+exists while the event is lost. Sending the message first is also unsafe
+because the database transaction may later fail.
+
+The transactional outbox pattern addresses this issue by storing both
+the main data and its event within the same database transaction. A
+separate dispatcher then reads the outbox records and sends them to
+Amazon SQS. Failed deliveries can be retried, while consumers should
+support deduplication to prevent the same event from being processed
+repeatedly.
+
+This is an example of an engineering effort that users may never see
+directly but that significantly improves system reliability.
+
+\vspace{0.5em}\noindent\textbf{A Systematic Debugging
+Approach}\par
+
+The most valuable lesson was not memorizing a large number of commands.
+It was learning how to divide a problem into smaller layers.
+
+When an error occurs, I now begin with questions such as:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Is the issue located in the application or the infrastructure?
+\item
+  Did it occur before or after deployment?
+\item
+  Are the container and pod running?
+\item
+  Is the service exposing the correct port?
+\item
+  Can DNS resolve the required hostname?
+\item
+  Does the network provide the necessary route?
+\item
+  Does IAM allow the required action?
+\item
+  Are the database and other dependencies ready?
+\item
+  What was the last step that completed successfully?
+\end{enumerate}
+
+Instead of changing several components at once, I try to identify the
+first point of failure in the processing chain. This approach makes
+troubleshooting more structured and reduces the time spent making random
+changes.
+
+\vspace{0.5em}\noindent\textbf{Conclusion}\par
+
+This journey significantly changed how I understand Software
+Engineering.
+
+Previously, my first response to a system failure was to modify the
+code. I now understand that a failure may originate from configuration,
+environment variables, containers, networking, databases, permissions,
+infrastructure, or CI/CD.
+
+I also consider questions beyond whether a feature simply works:
+
+\begin{itemize}
+\tightlist
+\item
+  What happens when a request is submitted twice?
+\item
+  What happens if the database commits but the queue fails?
+\item
+  How are simultaneous updates handled?
+\item
+  How does the system recover when a pod restarts?
+\item
+  Can a failed deployment be rolled back safely?
+\end{itemize}
+
+A Software Engineer is not someone who never causes a system failure.
+More importantly, a Software Engineer learns from each failure,
+understands the system more deeply, resolves issues systematically, and
+designs the system so that the same failure is less likely to occur
+again.
+
+\vspace{0.5em}\noindent\textbf{Publication Information}\par
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Topic:} Practical lessons from developing, deploying, and
+  operating a software system.
+\item
+  \textbf{Published date:} July 28, 2026.
+\item
+  \textbf{Platform:} AWS Study Groups.
+\item
+  \textbf{Status:} Pending.
+\item
+  \textbf{Public link:}
+  \href{https://www.facebook.com/groups/awsstudygroupfcj/permalink/2227122848052675/\#}{Blog
+  3 on AWS Study Groups}
+\end{itemize}

@@ -25,7 +25,6 @@ This blog introduces the design of a scalable real-time chat system using Socket
 **Published on:** July 23, 2026  
 **Platform:** AWS Study Groups  
 **Status:** Pending  
-**Public link:** Blog 2
 
 ### [Blog 3 - A Few Takeaways from My Software Engineering Journey: From Writing Code to Breaking the System and Fixing It Myself](3.3-Blog3/)
 

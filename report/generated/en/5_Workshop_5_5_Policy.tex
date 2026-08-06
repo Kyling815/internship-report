@@ -14,7 +14,7 @@ access to the S3 bucket specified in the VPC endpoint policy.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={endpoint diagram}]{5-Workshop/5.5-Policy/s3-bucket-policy.png}}
+\includegraphics{5-Workshop/5.5-Policy/s3-bucket-policy.png}
 \caption{endpoint diagram}
 \end{figure}
 
@@ -34,12 +34,6 @@ S3}\par
 aws s3 ls s3://\<your-bucket-name\>
 \end{verbatim}
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={test}]{5-Workshop/5.5-Policy/test1.png}}
-\caption{test}
-\end{figure}
-
 The bucket contents include the two 1 GB files uploaded in earlier.
 
 \begin{enumerate}
@@ -52,19 +46,7 @@ The bucket contents include the two 1 GB files uploaded in earlier.
   create
 \end{enumerate}
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={create bucket}]{5-Workshop/5.5-Policy/create-bucket.png}}
-\caption{create bucket}
-\end{figure}
-
 Successfully create bucket
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Success}]{5-Workshop/5.5-Policy/create-bucket-success.png}}
-\caption{Success}
-\end{figure}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -75,12 +57,6 @@ Successfully create bucket
   then select the Gateway VPC endpoint you created earlier. Click the
   Policy tab. Click Edit policy.
 \end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={policy}]{5-Workshop/5.5-Policy/policy1.png}}
-\caption{policy}
-\end{figure}
 
 The default policy allows access to all S3 Buckets through the VPC
 endpoint.
@@ -96,38 +72,10 @@ endpoint.
   other bucket in Amazon S3. Click Save to apply the policy.
 \end{enumerate}
 
-\begin{verbatim}
-{
-  "Id": "Policy1631305502445",
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "Stmt1631305501021",
-      "Action": "s3:*",
-      "Effect": "Allow",
-      "Resource": [
-                    "arn:aws:s3:::yourbucketname-2",
-                    "arn:aws:s3:::yourbucketname-2/*"
-       ],
-      "Principal": "*"
-    }
-  ]
-}
-\end{verbatim}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={custom policy}]{5-Workshop/5.5-Policy/policy2.png}}
-\caption{custom policy}
-\end{figure}
+\emph{Detailed configuration is omitted from the condensed PDF; see the
+web report for the complete listing.}
 
 Successfully customize policy
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/success.png}}
-\caption{success}
-\end{figure}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -144,12 +92,6 @@ aws s3 ls s3://<yourbucketname>
 
 This command will return an error because access to this bucket is not
 permitted by your new VPC endpoint policy:
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={error}]{5-Workshop/5.5-Policy/error.png}}
-\caption{error}
-\end{figure}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -169,20 +111,8 @@ permitted by your new VPC endpoint policy:
   \texttt{aws\ s3\ cp\ test-bucket2.xyz\ s3://\textless{}your-2nd-bucket-name\textgreater{}}
 \end{itemize}
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/test2.png}}
-\caption{success}
-\end{figure}
-
 This operation succeeds because it is permitted by the VPC endpoint
 policy.
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/test2-success.png}}
-\caption{success}
-\end{figure}
 
 \begin{itemize}
 \tightlist
@@ -190,12 +120,6 @@ policy.
   Then we test access to the first bucket by copy the file to 1st bucket
   \texttt{aws\ s3\ cp\ test-bucket2.xyz\ s3://\textless{}your-1st-bucket-name\textgreater{}}
 \end{itemize}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={fail}]{5-Workshop/5.5-Policy/test2-fail.png}}
-\caption{fail}
-\end{figure}
 
 This command will return an error because access to this bucket is not
 permitted by your new VPC endpoint policy.

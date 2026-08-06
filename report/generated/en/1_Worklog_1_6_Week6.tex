@@ -3,12 +3,13 @@ ECR}\par
 
 \vspace{0.5em}\noindent\textbf{Objectives}\par
 
-Week 6 focused on preparing the AWS deployment foundation: AWS region,
-GitHub OIDC authentication, IAM deployment permissions, ECR image
-repositories, and CI jobs that build and push backend/chat images
-without long-lived AWS credentials.
+Within the five-member team, my Week 6 objective was to prepare the
+shared AWS deployment foundation: region configuration, GitHub OIDC
+authentication, IAM deployment permissions, ECR image repositories, and
+CI jobs that publish the team's service images without long-lived AWS
+credentials.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{My Contributions}\par
 
 {
 \begingroup
@@ -23,7 +24,7 @@ without long-lived AWS credentials.
 \begin{minipage}[b]{\linewidth}\raggedright
 Status
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+My assigned contribution
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Evidence basis
 \end{minipage} \\
@@ -42,10 +43,6 @@ Completed & Aligned AWS deployment workflow with production
 architecture. & Commit \texttt{7eb1a76}. \\
 Completed & Added EKS access smoke test workflow. & Commit
 \texttt{bfacd3a}. \\
-Partially completed & Captured IAM policy simulation, ECR digest, and
-GitHub Actions screenshots where available. & Evidence pending: I did
-not have the full runtime screenshot/log set in the local evidence
-archive. \\
 \end{longtable}
 \endgroup
 }
@@ -57,16 +54,10 @@ role instead of storing long-lived AWS access keys. ECR image URIs are
 based on AWS account, region, repository name, and immutable Git SHA
 tags.
 
-\{\{\textless{} mermaid \textgreater\}\} graph LR GitHub{[}``GitHub
-Actions''{]} --\textgreater{} OIDC{[}``GitHub OIDC token''{]} OIDC
---\textgreater{} IAM{[}``IAM role: internship-github-deploy''{]} IAM
---\textgreater{} ECR{[}``Amazon ECR''{]} IAM --\textgreater{}
-EKS{[}``Amazon EKS''{]} ECR --\textgreater{}
-BackendImage{[}``internship-backend:\textless github.sha\textgreater{}''{]}
-ECR --\textgreater{}
-ChatImage{[}``internship-chat:\textless github.sha\textgreater{}''{]}
-EKS --\textgreater{} Deploy{[}``scripts/k8s/deploy-eks.sh''{]}
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Flow summary.} GitHub Actions obtains an OIDC token and assumes
+the scoped deployment role. That role permits SHA-tagged backend and
+chat images to be pushed to ECR and allows the deployment script to
+update the EKS workloads without long-lived AWS credentials.
 
 The source repository includes deployment scripts for both EKS
 application deployment and frontend deployment. I keep sensitive runtime
@@ -113,8 +104,6 @@ deployment scripts consume those values. & Completed \\
 EKS access can be blocked by limited permissions. & Deployment role may
 lack cluster or Kubernetes RBAC permissions. & EKS access smoke workflow
 and later rollout tolerance were added. & Partially completed \\
-Digest and policy screenshots are missing. & AWS console/CLI evidence
-was not attached locally. & I kept AWS evidence pending. & Blocked \\
 \end{longtable}
 \endgroup
 }
@@ -159,21 +148,6 @@ local evidence archive. \\
 }
 
 \vspace{0.5em}\noindent\textbf{Evidence}\par
-
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}06/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}06/\allowbreak{}github-\allowbreak{}oidc-\allowbreak{}success.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}06/\allowbreak{}ecr-\allowbreak{}images.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}06/\allowbreak{}iam-\allowbreak{}role-\allowbreak{}policy.\allowbreak{}png}
-\end{itemize}
 
 \vspace{0.5em}\noindent\textbf{Commits and Pull
 Requests}\par
@@ -247,10 +221,10 @@ include secrets or database URLs.
 
 \vspace{0.5em}\noindent\textbf{Weekly Results}\par
 
-The project gained a cloud deployment identity model and image delivery
-foundation. GitHub Actions can be used as the deployment controller, ECR
-stores immutable image tags, and deployment scripts were prepared for
-EKS rollout.
+My Week 6 result was the cloud deployment identity and image-delivery
+foundation used by the whole team. The teammates remained responsible
+for their service code and image correctness; I owned the OIDC, IAM,
+ECR, and deployment-workflow integration.
 
 \vspace{0.5em}\noindent\textbf{Lessons Learned}\par
 

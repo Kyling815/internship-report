@@ -1,30 +1,35 @@
-\vspace{0.5em}\noindent\textbf{End-to-End Testing}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Xây dựng và định nghĩa trọn bộ danh sách ca kiểm thử nghiệm thu
+(acceptance test set) cho hệ thống Internship Application Tracker đã
+triển khai thực tiễn, đồng thời tường minh ghi nhận các kết quả đã được
+rà kiểm chứng, các tính năng đã cài đặt nhưng còn chờ minh chứng lúc
+chạy (runtime evidence), các hạng mục được đề xuất hay những thành phần
+chưa hoàn thiện.
 
-Define an acceptance test set for the deployed Internship Application
-Tracker and record which results are verified, implemented but still
-requiring runtime evidence, proposed, or not completed.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
-
-End-to-end tests must cover the full public path:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{Browser {-}\textgreater{} CloudFront {-}\textgreater{} S3 or ALB {-}\textgreater{} EKS workloads {-}\textgreater{} managed AWS services}
-\end{Highlighting}
-\end{Shaded}
-
-They must also cover asynchronous paths:
+Các kịch bản kiểm thử E2E buộc phải bao quát trọn mạch truy cập công
+cộng toàn trình:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{Backend {-}\textgreater{} PostgreSQL outbox {-}\textgreater{} dispatcher {-}\textgreater{} SQS {-}\textgreater{} Lambda {-}\textgreater{} DynamoDB dedupe {-}\textgreater{} S3 archive {-}\textgreater{} SES}
+\NormalTok{Trình duyệt (Browser) {-}\textgreater{} CloudFront {-}\textgreater{} S3 hoặc ALB {-}\textgreater{} Các workload EKS {-}\textgreater{} Các dịch vụ AWS được quản lý}
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Test status definitions}\par
+Song song, các luồng kiểm định phải thâu trượt qua dải tác vụ xử lý bất
+đồng bộ:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Backend {-}\textgreater{} Bảng PostgreSQL outbox {-}\textgreater{} Tiến trình dispatcher {-}\textgreater{} SQS {-}\textgreater{} Lambda {-}\textgreater{} Bảng DynamoDB khử lặp dedupe {-}\textgreater{} Kho lưu trữ S3 archive {-}\textgreater{} Dịch vụ mail SES}
+\end{Highlighting}
+\end{Shaded}
+
+\vspace{0.5em}\noindent\textbf{Định nghĩa các trạng thái kiểm
+thử}\par
 
 {
 \begingroup
@@ -36,26 +41,30 @@ They must also cover asynchronous paths:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Meaning
+Ý nghĩa
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Verified & Runtime evidence from Week 8 or exported production evidence
-confirms the result \\
-Implemented, verification required & Code or manifests implement the
-capability, but production runtime evidence is not included \\
-Proposed & Recommended test or control, not proven implemented \\
-Not completed & Not implemented or not completed in the evidence I
-have \\
+Đã kiểm chứng (Verified) & Bằng chứng lúc chạy (runtime evidence) trong
+hồ sơ Tuần 8 hoặc chuỗi tài liệu trích cẩu từ mạn production chứng minh
+thuyết phục thành quả thực thi \\
+Đã triển khai, cần xác minh (Implemented, verification required) & Hồ sơ
+mã nguồn hoặc hệ manifests đã gài đặt chức năng, nhưng tài liệu minh
+chứng khi chạy thực tại cõi production vẫn còn vắng hụt \\
+Đề xuất (Proposed) & Các kịch bản kiểm thử hoặc giải pháp rào cản mang
+tính tiến cử, chưa có minh chứng áp dụng rõ ràng \\
+Chưa hoàn thành (Not completed) & Tính năng chưa được dệt tạo hoặc chưa
+đạt độ hoàn vãn trong bộ bằng chứng lưu chiểu hiện có \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Acceptance test table}\par
+\vspace{0.5em}\noindent\textbf{Bảng kiểm thử nghiệm thu (Acceptance test
+table)}\par
 
 {
 \begingroup
@@ -72,109 +81,142 @@ have \\
 \begin{minipage}[b]{\linewidth}\raggedright
 ID
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Test case
+Ca kiểm thử (Test case)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Test input or command
+Đầu vào hoặc lệnh kiểm thử
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Expected result
+Kết quả mong đợi
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence status
+Trạng thái bằng chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-TC01 & CloudFront frontend &
+TC01 & Kiểm định frontend từ CloudFront &
 \texttt{curl\ -I\ https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net/\allowbreak{}} & CloudFront
-returns frontend response & Implemented, verification required \\
-TC02 & Backend health through CloudFront &
+trả về dữ liệu phản hồi tiêu đề của frontend & Đã triển khai, cần xác
+minh \\
+TC02 & Điểm tra sức khỏe backend qua CloudFront &
 \texttt{curl\ -fsS\ https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net/\allowbreak{}api/\allowbreak{}health/\allowbreak{}ready}
-& Backend readiness JSON with PostgreSQL dependency true & Implemented,
-verification required \\
-TC03 & Chat health through CloudFront &
+& Trả về JSON sức khỏe backend, xác nhận cọc phụ thuộc PostgreSQL đạt
+true & Đã triển khai, cần xác minh \\
+TC03 & Điểm tra sức khỏe chat qua CloudFront &
 \texttt{curl\ -fsS\ https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net/\allowbreak{}chat/\allowbreak{}health/\allowbreak{}ready}
-& Chat readiness JSON with Redis and DynamoDB true & Implemented,
-verification required \\
-TC04 & Socket.IO handshake & Browser or Socket.IO client connects with
-path \texttt{/\allowbreak{}socket.\allowbreak{}io} & Socket connection established through
-CloudFront and ALB & Implemented, verification required \\
-TC05 & Registration & Create candidate or HR account & User created or
-duplicate email returns 409 & Implemented, verification required \\
-TC06 & Login & Valid credentials & JWT session created and role-based
-route opens & Implemented, verification required \\
-TC07 & Job creation & HR creates job posting & Job stored in PostgreSQL
-with version & Implemented, verification required \\
-TC08 & Application submission & Candidate applies to published job &
-Application, documents, status history, outbox event and processing job
-are committed & Implemented, verification required \\
-TC09 & Duplicate application handling & Repeat apply for same
-job/candidate & \texttt{409} duplicate application or idempotent replay
-& Implemented, verification required \\
-TC10 & CV upload & Apply with CV/document & File stored in S3 or
-configured storage backend and metadata stored in PostgreSQL &
-Implemented, verification required \\
-TC11 & Processing job creation & Submit CV/job parse request &
-\texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} row created and status visible &
-Implemented, verification required \\
-TC12 & AI completion & Worker calls \texttt{ai-\allowbreak{}service} and SageMaker
-endpoint & Parsed CV/job or matching result persisted & Implemented,
-verification required \\
-TC13 & Chat between two clients & Send direct or group message & Sender
-receives ACK; recipient receives realtime message & Implemented,
-verification required \\
-TC14 & Chat persistence & Reload chat history & DynamoDB returns
-persisted message & Implemented, verification required \\
-TC15 & Chat pod restart and reconnect & Restart one chat pod during
-active session & Socket reconnects and no duplicate persisted message
-for retry & Implemented, verification required \\
-TC16 & PostgreSQL connectivity & Backend \texttt{/\allowbreak{}health/\allowbreak{}ready} &
-\texttt{postgres:\ true} & Implemented, verification required \\
-TC17 & Redis status & Chat \texttt{/\allowbreak{}health/\allowbreak{}ready} &
-\texttt{redis:\ true} & Redis runtime status verified from Week 8
-evidence; health endpoint output still useful \\
-TC18 & DynamoDB table status & \texttt{describe-\allowbreak{}table} for chat tables &
-\texttt{ACTIVE} for \texttt{ChatUsers}, \texttt{ChatGroups},
-\texttt{ChatMessages} & Verified from Week 8 DynamoDB evidence \\
-TC19 & Outbox dispatcher & Inspect dispatcher deployment and logs &
-Dispatcher reads PostgreSQL outbox and publishes to SQS & Deployment
-verified from Week 8 EKS evidence; event publish verification
-required \\
-TC20 & SQS event & Inspect \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox} & Message
-accepted with SSE, visibility timeout, retention & Queue and DLQ
-verified from Week 8 SQS evidence \\
-TC21 & Lambda processing & Smoke-test event
-\texttt{lambda-\allowbreak{}smoke-\allowbreak{}fixed-\allowbreak{}1785220478} & Lambda processed event and
-returned \texttt{EMAIL\_\allowbreak{}SENT} & Function and log group partially
-verified; successful invocation evidence still required \\
-TC22 & SES notification & Same smoke-test event & Email send result
-recorded as \texttt{EMAIL\_\allowbreak{}SENT} & Verification required; Week 8
-evidence does not prove SES delivery \\
-TC23 & S3 event archive & Inspect archive key &
-\texttt{outbox-\allowbreak{}archive/\allowbreak{}2026/\allowbreak{}07/\allowbreak{}28/\allowbreak{}lambda-\allowbreak{}smoke-\allowbreak{}fixed-\allowbreak{}1785220478.\allowbreak{}json}
-exists & Verification required; Week 8 evidence does not prove archive
-object creation \\
-TC24 & DynamoDB idempotency & Process duplicate event ID & Duplicate is
-skipped by dedupe table & Implemented, verification required \\
-TC25 & Duplicate Lambda event & Re-send same event ID & No second side
-effect & Implemented, verification required \\
-TC26 & DLQ handling & Force consumer failure in controlled test &
-Message redriven to \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} after max
-receive count & Proposed \\
-TC27 & CloudFront routing correctness & Check distribution behaviors &
-Default to S3; \texttt{/\allowbreak{}api}, \texttt{/\allowbreak{}chat}, \texttt{/\allowbreak{}socket.\allowbreak{}io} to ALB
-& Partially verified from CloudFront monitoring; behavior export or
-browser smoke proof still required \\
-TC28 & Frontend no longer in EKS &
-\texttt{kubectl\ get\ deployment\ frontend\ -n\ internship} & Not found
-& Partially verified from current architecture and EKS workload
-evidence; explicit command output still useful \\
+& Trả về JSON sức khỏe dịch vụ chat, xác nhận hai trụ Redis và DynamoDB
+đạt true & Đã triển khai, cần xác minh \\
+TC04 & Bước gạt liên lạc Socket.IO (handshake) & Trình duyệt hoặc máy
+khách Socket.IO gõ kết nối vào đường rẽ \texttt{/\allowbreak{}socket.\allowbreak{}io} & Kết nối
+socket cất lập thuận buồm băng qua ranh rào CloudFront lẫn cổng ALB & Đã
+triển khai, cần xác minh \\
+TC05 & Đăng ký tài khoản & Nặn mới một thông tin người ứng tuyển
+(candidate) hoặc quản lý HR & Tài khoản thọ sinh thành tài, hoặc bị từ
+chối trả về mã HTTP 409 nếu địa chỉ mail dính trùng & Đã triển khai, cần
+xác minh \\
+TC06 & Đăng nhập hệ thống & Dùng chuỗi thông tin đăng ký xác thực & Gặt
+về thẻ phiên làm việc JWT và điều hướng lọt trúng ranh trang tương ứng
+quyền hạn & Đã triển khai, cần xác minh \\
+TC07 & Khởi tạo công việc tuyển dụng & HR ra tay ban bố vị trí việc làm
+mới & Hồ sơ tin được lưu trọ kiên trung trong PostgreSQL đi kèm số phiên
+bản & Đã triển khai, cần xác minh \\
+TC08 & Nộp hồ sơ ứng tuyển (Application submission) & Ứng viên gửi đơn
+xin việc cho một tin tuyển dụng đang mở & Toàn bộ dữ liệu đơn, tệp văn
+kiện, lịch sử quy trình, sự kiện outbox và tác vụ xử lý hàng đợi
+(processing job) thảy đều chốt vãn trọn trong 1 lượt transaction & Đã
+triển khai, cần xác minh \\
+TC09 & Kiểm soát chống nộp đơn trùng lặp & Thọ nộp đúp 2 lần cùng một vị
+trí với 1 tài khoản & Bị từ chối gay gắt qua mã \texttt{409} cho án nộp
+đơn trùng, hoặc được hệ thống xử lý bất biến mĩ mãn & Đã triển khai, cần
+xác minh \\
+TC10 & Tải lên tài liệu CV & Gửi đơn kèm đệm theo file văn kiện/CV & Tệp
+nhở cẩu an cư vào lòng S3 (hay kho dịch vụ lưu trữ trỏ cấu hình), còn
+chuỗi thông số metadata trú vào lòng PostgreSQL & Đã triển khai, cần xác
+minh \\
+TC11 & Tác tạo hàng đợi công việc xử lý & Kích nổ yêu cầu đọc hiểu
+CV/job & Nặn ra một dòng thông số mới cất tại bảng
+\texttt{async\_\allowbreak{}processing\_\allowbreak{}jobs} và trân lộ trạng thái rành mạch & Đã
+triển khai, cần xác minh \\
+TC12 & Xử lý AI hoàn tất & Worker gửi còi gọi tới pod
+\texttt{ai-\allowbreak{}service} và trạm cất suy đoán SageMaker endpoint & Dữ liệu
+CV/job đã giải mác hoặc kết quả tính điểm độ khớp hoan khải được ghim
+bão thọ thêu bền bỉ & Đã triển khai, cần xác minh \\
+TC13 & Hội thoại chat giữa 2 phía khách & Buông lời tin nhắn riêng tư
+hoặc xướng vào cả nhóm đàm & Phía xướng gặt trả lại chứng chỉ phát đi
+ACK; bên phía nhở thâu lọt tin lập tức trong thì hiện thực (realtime) &
+Đã triển khai, cần xác minh \\
+TC14 & Bền lâu cất dữ liệu hội thoại (Chat persistence) & Re-load nạp
+lại luôn mạch lịch sử đàm thoại & Cỗ dữ liệu DynamoDB ung dung trao trả
+nội sung các tin nhắn đã ghi trước đó & Đã triển khai, cần xác minh \\
+TC15 & Rà tải nặn lại pod chat và thọ tái kết nối & Cho khởi búng gục
+restart một pod chat giữa chừng khi phiên kết nối đang mở & Socket khôn
+ngoan tự tái nối tiếp và cự tuyệt hoàn toàn việc bồi chốt tạo lặp lại
+tin nhắn trong cơ quan retry & Đã triển khai, cần xác minh \\
+TC16 & Kiểm nghiệm mạch thông cõi PostgreSQL & Điểm gọi của backend
+\texttt{/\allowbreak{}health/\allowbreak{}ready} & Gặt về chuỗi \texttt{postgres:\ true} & Đã
+triển khai, cần xác minh \\
+TC17 & Sức khỏe cõi Redis & Điểm rà của chat \texttt{/\allowbreak{}health/\allowbreak{}ready} &
+Gặt về cọc \texttt{redis:\ true} & Trạng thái cất vãn của Redis thực thế
+thọ chứng qua minh chứng Tuần 8; trích chuỗi rà từ điểm endpoint tiếp
+vãng trọ vai hữu hảo \\
+TC18 & Tình thế vận hanh các bảng DynamoDB & Dùng lệnh
+\texttt{describe-\allowbreak{}table} soi rà chuỗi bảng chat & Hiển tuệ mác
+\texttt{ACTIVE} đồng loạt cho 3 ranh \texttt{ChatUsers},
+\texttt{ChatGroups}, \texttt{ChatMessages} & Đã xác minh trọn từ hồ sơ
+minh chứng DynamoDB trong Tuần 8 \\
+TC19 & Bộ chuyển tin sự kiện Outbox dispatcher & Thám xét cọc triển khai
+dispatcher và đọc kỹ nhật ký log & Trình dispatcher tựu chung thọ chiết
+rỗng bãi tin trong PostgreSQL rồi trút bạt lọt cống qua SQS & Workload
+vãn gác chứng nhận an cư qua hồ sơ EKS Tuần 8; riêng khâu gửi tin sự
+kiện khẩn hoan chờ còi xác minh \\
+TC20 & Hàng đợi sự kiện SQS & Trích kiểm cộc hàng đợi
+\texttt{internship-\allowbreak{}prod-\allowbreak{}outbox} & Thông điệp vào bãi gạt khóa bảo mật
+SSE, bấu mốc thời hạn ẩn visibility timeout cùng quy chuẩn lưu lâu dài
+retention & Hàng đợi chủ lực cùng bàn lỗi DLQ thọ vãnh chứng từ hồ sơ
+SQS Tuần 8 \\
+TC21 & Xử lý trên Lambda & Thả cẩu test thử tin
+\texttt{lambda-\allowbreak{}smoke-\allowbreak{}fixed-\allowbreak{}1785220478} & Lambda gặt thông điệp, thiếp
+múa mĩ mãn và gặt xướng kết quả \texttt{EMAIL\_\allowbreak{}SENT} & Hàm thi hành và
+log group thọ chốt xác tín 1 phần; bằng chứng ra lệnh thi cẩu thực thọ
+hoàn thiện vẫn còn trong mạn ráo đón \\
+TC22 & Tác vụ báo thư tín qua SES & Sử dụng lại cọc tin khói thử ở kịch
+bản trước & Thư bồi cảnh báo đắc thắng mang nhãn chốt
+\texttt{EMAIL\_\allowbreak{}SENT} & Cần xác minh thêm; minh chứng của Tuần 8 chả ráo
+phô vãi chớp bằng việc thư cẩu đi tót lọt qua SES \\
+TC23 & Bãi chôn văn thư sự kiện S3 archive & Tra kiếm cộc định danh
+archive key & Bồi xác minh sự thọ mang của tệp
+\texttt{outbox-\allowbreak{}archive/\allowbreak{}2026/\allowbreak{}07/\allowbreak{}28/\allowbreak{}lambda-\allowbreak{}smoke-\allowbreak{}fixed-\allowbreak{}1785220478.\allowbreak{}json} &
+Cần xác minh; cọc bằng chứng Tuần 8 không ghi mác hiển phơi việc sinh ra
+tệp lưu vào bãi archive này \\
+TC24 & Tính bất biến (idempotency) của DynamoDB & Kích cho chạy rà một
+mã event ID bị cẩu giục đúp đè & Tin nhắn trùng lập tức bị cỗ rào cản
+bảng dedupe gạt xô đi nhã nhặn & Đã triển khai, cần xác minh \\
+TC25 & Nhận thông tin bồi đè trên Lambda & Ấn gửi cẩu tiếp tục trùng một
+con số event ID & Khảng từ khước tiệm tiến nặn bục ra tác vụ phụ thứ hai
+& Đã triển khai, cần xác minh \\
+TC26 & Xử trí bãi thi cõi DLQ & Tạo giả lập một ca xử lý lỗi consumer
+bồi tụ trong không gian kiểm nghiệm an nộ & Thông điệp sau thời kỳ nỗ
+lực thu hồi (max receive count) khôn ngoan bẻ cẩu lao xuống bãi lỗi
+\texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} & Đề xuất \\
+TC27 & Minh bạch luân điều rẽ trên CloudFront & Thao soát bảng cấu hình
+cọc distribution behaviors & Rãnh mặc định hướng trúng S3; dải
+\texttt{api}, \texttt{/\allowbreak{}chat}, và \texttt{/\allowbreak{}socket.\allowbreak{}io} rẽ hướng trúng mạn
+ALB & Xác tín bán phần dựa vào quan sát bấu theo CloudFront metrics; hồ
+sơ tải cấu hình behavior hoặc cẩu múa trực quan trình duyệt vẫn khẩn
+khoản rước đợi \\
+TC28 & Frontend bóc xóa hoàn tàn ranh khỏi EKS & Tra
+\texttt{kubectl\ get\ deployment\ frontend\ -n\ internship} & Hưởng mác
+Không tìm thấy tài nguyên (Not found) & Bán phần chốt duyệt qua quy
+hoạch kiến trúc và minh chứng EKS workload; lệnh cẩu kiểm trần ra chữ
+minh văn vẫn luôn sắm vị trí trọng kính \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Manual command set}\par
+\vspace{0.5em}\noindent\textbf{Tập lệnh rà soát thủ
+công}\par
 
-Run only with approved production access:
+Lệnh gọi kiểm tra dưới đây đòi hỏi khắt khe tài khoản thực thi phải quy
+thọ ủy quyền hợp pháp bên trong ranh giới cõi production:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -186,7 +228,7 @@ Run only with approved production access:
 \end{Highlighting}
 \end{Shaded}
 
-AWS service checks:
+Thao tác kiểm tra cọc dịch vụ mạng bên chiến tuyến AWS:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -200,9 +242,10 @@ AWS service checks:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Request examples}\par
+\vspace{0.5em}\noindent\textbf{Một số mẫu lệnh kiểm thử
+nhanh}\par
 
-Backend health:
+Điểm gọi rà sức khỏe mạn backend:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -210,7 +253,7 @@ Backend health:
 \end{Highlighting}
 \end{Shaded}
 
-Chat health:
+Điểm gọi rà sức khỏe mạn dịch vụ chat:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -218,7 +261,8 @@ Chat health:
 \end{Highlighting}
 \end{Shaded}
 
-AI health through port-forward:
+Rà soát tình trạng sẵn gặt của dịch vụ AI thông qua cầu cống chuyển tiếp
+(port-forward):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -227,12 +271,16 @@ AI health through port-forward:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Database result checks}\par
+\vspace{0.5em}\noindent\textbf{Tra soát kết quả trên cơ sở dữ
+liệu}\par
 
-Do not publish database credentials or raw personal data. Use
-application APIs, migration logs, and aggregate checks where possible.
+Nghệ múa quy ước cản bãi cấm bục vãi mọi mật mã tài khoản cõi CSDL hay
+trường tin mang dữ liệu riêng tư của cá nhân ra không gian chung. Ưu
+việt áp dụng các cánh cổng API nghiệp vụ, nhật ký migration hay bảng số
+liệu trích tổng quát để thao khảo muôn kịch bản rà tra.
 
-Useful production-safe checks:
+Một bộ chuỗi lệnh tra cứu thọ chuẩn an nộ khi thao diễn thẳng trên cọc
+production:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -242,9 +290,10 @@ Useful production-safe checks:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Storage result checks}\par
+\vspace{0.5em}\noindent\textbf{Tra soát kết quả lưu
+trữ}\par
 
-Frontend bucket:
+Kho hòm lưu trữ của frontend:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -252,7 +301,7 @@ Frontend bucket:
 \end{Highlighting}
 \end{Shaded}
 
-Event archive:
+Bãi an ngụ văn thư sự kiện lâu năm:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -260,9 +309,10 @@ Event archive:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{CloudWatch log checks}\par
+\vspace{0.5em}\noindent\textbf{Tra soát nhật ký CloudWatch
+Logs}\par
 
-Lambda:
+Nhật ký của hàm Lambda:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -270,18 +320,23 @@ Lambda:
 \end{Highlighting}
 \end{Shaded}
 
-EKS workload CloudWatch log group names require evidence from log
-shipping configuration before being listed as deployed.
+Chuỗi danh sách định danh cọc CloudWatch log groups gắn đệm cùng các
+workload trên EKS khẩn nài minh chứng từ kịch bản thi gom nhật ký (log
+shipping configuration) trước khi hoan khải liệt rãnh là đã vinh vãng
+cài đặt.
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
-The platform is accepted for demonstration when critical public health
-checks pass, EKS workloads are Ready,
-DynamoDB/Redis/SQS/Lambda/SageMaker resources are available, and the
-Lambda smoke-test path has exported proof for event processing, archive,
-and email result.
+Toàn bãi nền tảng ứng dụng nghiêng còi ăn trát qua khâu nghiệm thu múa
+diễn (demonstration) ngay thềm khi muôn cọc khảo sát sức khỏe công cộng
+trọng yếu bão khải thông, khối workload bên cõi EKS hô hào trạng thái
+Ready, dàn tài nguyên hạ tầng DynamoDB/Redis/SQS/Lambda/SageMaker rạng
+ngời available, đi kèm dải minh chứng trút ra thực thụ cho kịch bản khói
+Lambda bao vây trọn khâu tiếp xử sự kiện, nén tệp archive và mác cất
+thành bại gửi mail.
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -294,36 +349,45 @@ and email result.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Likely cause
+Nguyên nhân khả nghi
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Health check passes through ALB but fails through CloudFront &
-CloudFront behavior or origin configuration issue & Inspect CloudFront
-distribution behaviors \\
-Chat test fails after scaling & Redis adapter or ALB stickiness issue &
-Verify Redis readiness and target group stickiness \\
-Duplicate application creates two records & Missing DB unique constraint
-or idempotency bug & Run backend idempotency tests and inspect
-constraints \\
-Worker jobs stay queued & Worker disabled or SageMaker not ready &
-Verify \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED}, \texttt{ai-\allowbreak{}service}, and
-endpoint status \\
-Lambda smoke test fails with DynamoDB reserved word & \texttt{result}
-used directly in UpdateExpression & Use \texttt{\#result} and
-\texttt{ExpressionAttributeNames} mapping \\
+Rà sức khỏe bổng mượt thông qua cống ALB nhưng lại chọc rách hỏng lật
+qua CDN CloudFront & Cấu hỏng trật quy bạo trong behavior của CloudFront
+hoặc khai nhầm origin & Vào tra kỹ lưỡng danh sách cọc cấu hình behavior
+thuộc mạn distribution của CloudFront \\
+Kịch bản kiểm rà chat giãy khóc sau kì thao diễn bồi thêm số pod
+(scaling) & Trục chao rãnh Redis adapter hay rào bảo băm stickiness bên
+target group của ALB trượt cọc & Xác tín thọ sinh vững chắc của Redis
+cũng như nút gạt stickiness tại target group \\
+Ứng viên nộp 1 đơn xin việc vỗ trát đẻ liền 2 bản ghi & Thiếu hụt trường
+unique constraint tại cơ quan CSDL hoặc lọt bug ở thuật toán tính bất
+biến & Cho thiển trọ chạy hệ bài test bất biến mạn backend và rà xem kỹ
+lưỡng các ràng buộc cọc CSDL \\
+Tác vụ nằm trong hàng đợi processing gầm lì bế kẹt cõi queued & Cụm
+worker gục khóa tịt (disabled) hay trạm cất SageMaker chẳng mỉm cười sẵn
+sàng & Tra thông số cờ biến \texttt{PROCESSING\_\allowbreak{}WORKER\_\allowbreak{}ENABLED}, trạng
+thái cất pod \texttt{ai-\allowbreak{}service} cùng cõi thọ của endpoint \\
+Bài kiểm test khói cho Lambda chửi rủa do vô tình phạm chuỗi từ khóa bị
+cấm (reserved word) của DynamoDB & Dùng cộc lốc chuỗi thẳng chữ
+\texttt{result} khi nặn hàm UpdateExpression & Tự trọng ứng chiêu trỏ
+\texttt{\#result} phối hở rẽ qua bản quy quy cho trường
+\texttt{ExpressionAttributeNames} \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-The E2E test plan is evidence-aware. It avoids marking tests passed
-solely because code exists and records which runtime checks still
-require exported evidence.
+Kế hoạch rà nghiệm thu E2E tuân thủ chánh đạo trọng thị minh chứng thực
+thọ. Khung bạt này ráo riết từ bẻ nhĩ ngọ thuyên mác ``đã pass'' cho
+những ca kiểm nghiệm chỉ đơn giản vì nhìn cẩu thấy đoạn mã tồn tại, mà
+nghiêm trung chốt hạ rõ ranh những nhịp kiểm tra khi chạy nào đang bốc
+hờ đợi cẩu rào bằng chứng thọ xuất thực bãi.

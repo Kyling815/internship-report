@@ -27,7 +27,7 @@ Tôi sử dụng thư mục minh chứng AWS tuần 08 làm nguồn dữ liệu 
 | Hoàn thành | Bổ sung minh chứng runtime CloudFront, S3, DynamoDB và SQS. | Các screenshot đã được xử lý thông tin nhạy cảm. |
 | Hoàn thành một phần | Bổ sung minh chứng chi phí AWS ngày 01-28/07/2026. | Cost summary và screenshot; Pricing Calculator còn bị chặn. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The final deployment model separates static frontend hosting from long-running service workloads. Backend, chat, worker, and AI services run on EKS. Static browser assets are intended to be served through S3 and CloudFront, while API, chat, and Socket.IO paths route through the ALB.
 
@@ -51,7 +51,7 @@ graph LR
 
 The CI/CD workflow supports deployment modes including `validate`, `deploy-app`, `deploy-public`, `deploy-frontend`, `rollout`, and `full`. Backend, chat, and AI images are tagged with the GitHub commit SHA. The frontend deployment path builds the Vite app, publishes static files to S3, and invalidates CloudFront when frontend deployment is enabled.
 
-## AWS Runtime Evidence
+## Minh chứng vận hành AWS
 
 The runtime evidence below uses only files that I placed in the Week 08 AWS evidence directory. I reviewed the following files:
 
@@ -74,7 +74,7 @@ The runtime evidence below uses only files that I placed in the Week 08 AWS evid
 
 I did not find `.txt`, `.log`, `.json`, `.yaml`, or `.yml` evidence files in this directory, so I did not include long CLI log excerpts.
 
-### Runtime Evidence Summary
+### Tổng hợp minh chứng vận hành
 
 | AWS service | Evidence status | Runtime status | Evidence |
 |---|---|---|---|
@@ -127,7 +127,7 @@ Because of the unhealthy targets, I do not classify the ALB as fully healthy. Th
 
 ![Application Load Balancer target groups](/logs/worklog/week-08/aws/ALB-target.png)
 
-### Amazon CloudFront and S3
+### Amazon CloudFront và S3
 
 **Evidence status:** Available
 **Runtime status:** Partially verified
@@ -216,7 +216,7 @@ I verified the SageMaker endpoint `internship-qwen3-4b` in status `InService`. T
 
 ![Amazon SageMaker endpoint status](/logs/worklog/week-08/aws/sagemaker-health.png)
 
-## AWS Cost Evidence
+## Minh chứng chi phí AWS
 
 > **Status: Partially available**
 
@@ -228,7 +228,7 @@ The credits screenshot records AWS credits rather than a grouped Cost Explorer s
 
 ![AWS Cost Explorer overview evidence](/logs/worklog/week-08/aws/Cost-evidence.png)
 
-### July 1-28 cost summary
+### Tổng hợp chi phí từ ngày 1 đến 28 tháng 7
 
 | Metric | Reported value |
 |---|---:|
@@ -239,7 +239,7 @@ The credits screenshot records AWS credits rather than a grouped Cost Explorer s
 | AWS credits total amount remaining | $172.10 |
 | AWS credits total estimated amount remaining | $59.35 |
 
-### Daily cost trend
+### Xu hướng chi phí hằng ngày
 
 | Period | Daily spend |
 |---|---:|
@@ -251,7 +251,7 @@ The credits screenshot records AWS credits rather than a grouped Cost Explorer s
 
 The July 28 daily cost was the largest reported daily spend in the July 1-28 period and was much higher than the earlier baseline.
 
-### Top cost drivers
+### Các dịch vụ phát sinh chi phí cao nhất
 
 | Rank | Service | Month-to-date cost | Share of total |
 |---:|---|---:|---:|
@@ -264,7 +264,7 @@ The July 28 daily cost was the largest reported daily spend in the July 1-28 per
 
 These six services account for approximately 98% of the July 1-28 reported spend.
 
-### Cost anomalies
+### Các bất thường về chi phí
 
 Five active anomalies were reported around July 26-28 in `ap-southeast-1`:
 
@@ -286,7 +286,7 @@ Five active anomalies were reported around July 26-28 in `ap-southeast-1`:
 | Actual month-to-date cost | Reported for July 1-28 | $94.92 |
 | Estimated monthly cost | Not calculated | N/A |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -301,9 +301,9 @@ Five active anomalies were reported around July 26-28 in `ap-southeast-1`:
 | DynamoDB and SQS | Verified available | DynamoDB tables are Active; SQS main queue and DLQ are listed with zero messages and SSE-SQS. |
 | Cost evidence | Partially available | July 1-28 cost summary, credits screenshot, and Cost Explorer overview are available; finalized bill and Pricing Calculator remain pending/blocked. |
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
-### ALB target groups were not fully healthy
+### Các nhóm đích ALB chưa hoàn toàn khỏe mạnh
 
 **Problem:**
 I captured the load balancer in `active` state, but target health still included unhealthy backend and chat targets.
@@ -317,7 +317,7 @@ I classify the ALB as partially operational rather than fully healthy.
 **Next action:**
 Collect updated target health evidence after fixing health-check failures or deployment readiness issues.
 
-### AWS cost evidence is available but not complete
+### Minh chứng chi phí AWS đã có nhưng chưa đầy đủ
 
 **Problem:**
 A July 1-28 cost summary and credits screenshot are available, but the evidence set still does not include a finalized monthly bill or AWS Pricing Calculator estimate.
@@ -331,7 +331,7 @@ I classify cost evidence as partially available, report only the July 1-28 figur
 **Next action:**
 Collect the finalized AWS Bills view and build an AWS Pricing Calculator estimate for the production architecture.
 
-### I added runtime evidence for several AWS services
+### Đã bổ sung minh chứng vận hành cho một số dịch vụ AWS
 
 **Problem:**
 The first Week 8 evidence set did not include CloudFront, S3, DynamoDB, or SQS screenshots.
@@ -345,7 +345,7 @@ Sanitized screenshots were added for CloudFront monitoring, the S3 frontend buck
 **Next action:**
 For final production evidence, add CloudFront behavior/origin configuration export and a browser smoke test through the CloudFront URL.
 
-### Lambda screenshot required sanitization
+### Ảnh chụp Lambda cần được xử lý thông tin nhạy cảm
 
 **Problem:**
 The Lambda screenshot contained account-scoped ARNs, an IAM role ARN, a bucket name containing an account identifier, and an email address.
@@ -359,7 +359,7 @@ I sanitized and embedded the screenshot as Lambda deployment evidence. It confir
 **Next action:**
 Collect a separate invocation, trigger, or CloudWatch event-detail screenshot if Lambda runtime execution must be marked fully verified.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Phần đóng góp cá nhân tuần 8 tạo được bộ minh chứng AWS runtime cho compute và data path chính:
 
@@ -373,7 +373,7 @@ Phần đóng góp cá nhân tuần 8 tạo được bộ minh chứng AWS runti
 
 Ứng dụng end-to-end vẫn là kết quả chung của nhóm. Trong phạm vi của tôi, các khoảng trống còn lại được ghi rõ: ALB target chưa hoàn toàn healthy, còn thiếu CloudFront behavior/origin export và browser smoke test, đồng thời số liệu chi phí cần hóa đơn đã chốt và Pricing Calculator.
 
-## Remaining Work
+## Công việc còn lại
 
 - [x] Add the July 1-28 AWS cost summary.
 - [x] Add the AWS Billing credits screenshot.
@@ -388,7 +388,7 @@ Phần đóng góp cá nhân tuần 8 tạo được bộ minh chứng AWS runti
 - [ ] Capture CloudFront behavior/origin configuration or browser smoke proof.
 - [x] Add a sanitized Lambda screenshot.
 
-## Lessons Learned
+## Bài học rút ra
 
 Implementation evidence and runtime evidence answer different questions. A deployment script proves that a path exists in source control, but screenshots, AWS CLI output, and health checks prove what actually ran in AWS.
 

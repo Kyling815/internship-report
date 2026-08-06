@@ -72,14 +72,6 @@ Asynchronous processing uses a separate database-backed queue because document p
 
 ## Evidence
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-03/`, for example:
-
-- `/images/worklog/week-03/outbox-table.png`
-- `/images/worklog/week-03/sqs-queue-dlq.png`
-- `/images/worklog/week-03/dispatcher-logs.png`
-
 ### Commits and Pull Requests
 
 | Commit | Description | Evidence | Pull Request |

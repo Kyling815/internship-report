@@ -1,0 +1,36 @@
+\contentsline {section}{\numberline {1}Nhật ký công việc}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Tuần 1}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Tuần 2}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Tuần 3}{6}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Tuần 4}{8}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Tuần 5}{10}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Tuần 6}{13}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Tuần 7}{15}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Tuần 8}{17}{subsection.1.8}%
+\contentsline {section}{\numberline {2}Đề xuất}{29}{section.2}%
+\contentsline {section}{\numberline {3}Các bài viết đã đăng}{42}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Bài viết 1}{42}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Bài viết 2}{43}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Bài viết 3}{49}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Bài viết 4}{51}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Các sự kiện đã tham gia}{57}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Sự kiện 1: Ngày hội cộng đồng FCAJ – tháng 6 năm 2026}{57}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Sự kiện 2: Kiến trúc Cloud doanh nghiệp và ứng dụng trong thực tế}{59}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Sự kiện 3: FCAJ x Agentic AI Build Week 2026}{60}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Hội thảo thực hành}{62}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Tổng quan}{64}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Kiến trúc}{67}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Điều kiện tiên quyết}{70}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Chuẩn bị mã nguồn}{74}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Hạ tầng AWS}{79}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Triển khai cơ sở dữ liệu}{84}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Triển khai backend}{88}{subsection.5.7}%
+\contentsline {subsection}{\numberline {5.8}Triển khai frontend}{93}{subsection.5.8}%
+\contentsline {subsection}{\numberline {5.9}Giám sát và nhật ký}{96}{subsection.5.9}%
+\contentsline {subsection}{\numberline {5.10}Kiểm thử đầu cuối}{101}{subsection.5.10}%
+\contentsline {subsection}{\numberline {5.11}Bảo mật và Chi phí}{106}{subsection.5.11}%
+\contentsline {subsection}{\numberline {5.12}Xử lý sự cố}{113}{subsection.5.12}%
+\contentsline {subsection}{\numberline {5.13}Dọn dẹp tài nguyên}{118}{subsection.5.13}%
+\contentsline {section}{\numberline {6}Tự đánh giá}{124}{section.6}%
+\contentsline {section}{\numberline {7}Chia sẻ, đóng góp ý kiến}{126}{section.7}%
+\contentsline {section}{\numberline {8}Tổng kết}{128}{section.8}%

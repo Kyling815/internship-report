@@ -14,7 +14,7 @@ cập vào S3 bucket được chỉ định trong chính sách VPC Endpoint.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={endpoint diagram}]{5-Workshop/5.5-Policy/s3-bucket-policy.png}}
+\includegraphics{5-Workshop/5.5-Policy/s3-bucket-policy.png}
 \caption{endpoint diagram}
 \end{figure}
 
@@ -34,44 +34,19 @@ S3.}\par
 aws s3 ls s3://<your-bucket-name>
 \end{verbatim}
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={test}]{5-Workshop/5.5-Policy/test1.png}}
-\caption{test}
-\end{figure}
-
 Nội dung của bucket bao gồm hai tệp có dung lượng 1GB đã được tải lên
 trước đó.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \setcounter{enumi}{1}
-\tightlist
 \item
   Tạo một bucket S3 mới; tuân thủ mẫu đặt tên mà bạn đã sử dụng trong
   Phần 1, nhưng thêm `-2' vào tên. Để các trường khác là mặc định và
   nhấp vào \textbf{Create}.
-\end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={create bucket}]{5-Workshop/5.5-Policy/create-bucket.png}}
-\caption{create bucket}
-\end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
 \item
   Tạo bucket thành công.
 \end{enumerate}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={Success}]{5-Workshop/5.5-Policy/create-bucket-success.png}}
-\caption{Success}
-\end{figure}
 
 Policy mặc định cho phép truy cập vào tất cả các S3 Buckets thông qua
 VPC endpoint.
@@ -88,38 +63,10 @@ VPC endpoint.
   kích hoạt policy.
 \end{enumerate}
 
-\begin{verbatim}
-{
-  "Id": "Policy1631305502445",
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "Stmt1631305501021",
-      "Action": "s3:*",
-      "Effect": "Allow",
-      "Resource": [
-                    "arn:aws:s3:::yourbucketname-2",
-                    "arn:aws:s3:::yourbucketname-2/*"
-       ],
-      "Principal": "*"
-    }
-  ]
-}
-\end{verbatim}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={custom policy}]{5-Workshop/5.5-Policy/policy2.png}}
-\caption{custom policy}
-\end{figure}
+\emph{Cấu hình chi tiết được lược bỏ trong bản PDF rút gọn; xem bản web
+để tham khảo đầy đủ.}
 
 Cấu hình policy thành công.
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/success.png}}
-\caption{success}
-\end{figure}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -136,12 +83,6 @@ aws s3 ls s3://<yourbucketname>
 
 Câu lệnh trả về lỗi bởi vì truy cập vào S3 bucket không có quyền trong
 VPC endpoint policy.
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={error}]{5-Workshop/5.5-Policy/error.png}}
-\caption{error}
-\end{figure}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -161,29 +102,11 @@ VPC endpoint policy.
   \texttt{aws\ s3\ cp\ test-bucket2.xyz\ s3://\textless{}your-2nd-bucket-name\textgreater{}}
 \end{itemize}
 
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/test2.png}}
-\caption{success}
-\end{figure}
-
 Thao tác này được cho phép bởi VPC endpoint policy.
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={success}]{5-Workshop/5.5-Policy/test2-success.png}}
-\caption{success}
-\end{figure}
 
 Sau đó chúng ta kiểm tra truy cập vào S3 bucket đầu tiên
 
 \texttt{aws\ s3\ cp\ test-bucket2.xyz\ s3://\textless{}your-1st-bucket-name\textgreater{}}
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio,alt={fail}]{5-Workshop/5.5-Policy/test2-fail.png}}
-\caption{fail}
-\end{figure}
 
 Câu lệnh xảy ra lỗi bởi vì bucket không có quyền truy cập bởi VPC
 endpoint policy.

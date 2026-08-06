@@ -1,5 +1,5 @@
 ---
-title: "Xử lý sự cố (Troubleshooting)"
+title: "Xử lý sự cố"
 date: 2024-01-01
 weight: 12
 chapter: false

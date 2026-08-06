@@ -20,7 +20,6 @@ Within the five-member team, my first-week objective was to understand the parts
 | Completed | Mapped the frontend, FastAPI backend, chat service, AI service, PostgreSQL, Redis, and DynamoDB dependencies. | `backend/`, `frontend/`, `chat-service/`, `ai_service/`, Compose files, and service configuration. |
 | Completed | Reviewed the initial request flow between browser, API, chat, and storage layers. | Frontend API clients, backend routers, chat Socket.IO server, and backend storage services. |
 | Completed | Checked the local startup model and documented separate service startup commands. | Commits `d3c1168` and `e43cc04`. |
-| Partially completed | Prepared the evidence plan for the local architecture baseline. | Evidence pending: screenshots are not present in the Hugo image directory yet. |
 
 ## Technical Implementation
 
@@ -55,7 +54,6 @@ The baseline also identified the first cloud migration direction: keep long-runn
 | The first source snapshot contained broad application code and generated dependency content. | The initial commit added the complete baseline in one large commit. | Later work separated documentation, scripts, and runtime responsibilities into clearer paths. | Completed |
 | The project originally contained Prisma-related Node database artifacts while the backend used SQLAlchemy/PostgreSQL. | Database strategy changed toward FastAPI, SQLAlchemy, Alembic, and PostgreSQL. | Commit `ab60f7d` removed Prisma artifacts and documented the EC2/RDS direction. | Completed |
 | Local startup needed to support more than one developer workflow. | A single startup command was useful for demos, but separate terminal commands were easier for debugging. | Commits `d3c1168` and `e43cc04` documented both startup approaches. | Completed |
-| I did not have architecture screenshots in the local evidence archive. | I did not have the original screenshot artifacts in the source repo. | I kept screenshot evidence pending instead of creating fake screenshots. | Blocked |
 
 ## Testing, Build and Deployment Results
 
@@ -68,14 +66,6 @@ The baseline also identified the first cloud migration direction: keep long-runn
 | Deployment | Planned | Week 1 only defined the deployment direction; no AWS deployment was expected yet. |
 
 ## Evidence
-
-### Screenshots
-
-Evidence pending: add architecture or local application screenshots under `/images/worklog/week-01/`, for example:
-
-- `/images/worklog/week-01/repository-structure.png`
-- `/images/worklog/week-01/local-backend-health.png`
-- `/images/worklog/week-01/architecture-baseline.png`
 
 ### Commits and Pull Requests
 

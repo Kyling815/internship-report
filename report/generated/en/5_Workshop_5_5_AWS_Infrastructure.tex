@@ -63,10 +63,10 @@ ALB &
 \texttt{k8s-\allowbreak{}internshippublic-\allowbreak{}48101b50ad-\allowbreak{}85486086.\allowbreak{}ap-\allowbreak{}southeast-\allowbreak{}1.\allowbreak{}elb.\allowbreak{}amazonaws.\allowbreak{}com}
 & Verified from Week 8 evidence \\
 Frontend bucket &
-\texttt{internship-prod-frontend-\textless{}AWS\_ACCOUNT\_ID\textgreater{}}
+\texttt{internship-\allowbreak{}prod-\allowbreak{}frontend-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}}
 & Account suffix redacted \\
 Upload/archive bucket &
-\texttt{internship-prod-uploads-\textless{}AWS\_ACCOUNT\_ID\textgreater{}}
+\texttt{internship-\allowbreak{}prod-\allowbreak{}uploads-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}}
 & Account suffix redacted \\
 CloudFront & Distribution \texttt{EQIGYNECXDYL8} & Verified from Week 8
 evidence \\
@@ -159,8 +159,8 @@ GitHub Actions uses AWS OIDC. The workflow configures:
 
 Deployment jobs call \texttt{aws-\allowbreak{}actions/\allowbreak{}configure-\allowbreak{}aws-\allowbreak{}credentials@v6}
 with
-\texttt{role-to-assume:\ \$\{\{\ secrets.AWS\_ROLE\_TO\_ASSUME\ \}\}}
-and \texttt{allowed-account-ids:\ \$\{\{\ env.AWS\_ACCOUNT\_ID\ \}\}}.
+\texttt{role-\allowbreak{}to-\allowbreak{}assume:\ \$\{\{\ secrets.\allowbreak{}AWS\_\allowbreak{}ROLE\_\allowbreak{}TO\_\allowbreak{}ASSUME\ \}\}}
+and \texttt{allowed-\allowbreak{}account-\allowbreak{}ids:\ \$\{\{\ env.\allowbreak{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\ \}\}}.
 
 Runtime workloads use Kubernetes ServiceAccount \texttt{internship-\allowbreak{}app}.
 When \texttt{IRSA\_\allowbreak{}ROLE\_\allowbreak{}ARN} is provided,
@@ -306,7 +306,7 @@ Frontend deployment uses:
 \tightlist
 \item
   private bucket
-  \texttt{internship-prod-frontend-\textless{}AWS\_ACCOUNT\_ID\textgreater{}}
+  \texttt{internship-\allowbreak{}prod-\allowbreak{}frontend-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}}
 \item
   CloudFront distribution \texttt{EQIGYNECXDYL8}
 \item
@@ -360,7 +360,7 @@ SQS DLQ & \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}
 Lambda & \texttt{internship-\allowbreak{}outbox-\allowbreak{}handler}, SQS trigger \\
 Dedupe table & \texttt{InternshipLambdaEventDedupe} \\
 Archive location &
-\texttt{s3://internship-prod-uploads-\textless{}AWS\_ACCOUNT\_ID\textgreater{}/outbox-archive/...} \\
+\texttt{s3:/\allowbreak{}/\allowbreak{}internship-\allowbreak{}prod-\allowbreak{}uploads-\textless{}AWS\_\allowbreak{}ACCOUNT\_\allowbreak{}ID\textgreater{}/\allowbreak{}outbox-\allowbreak{}archive/\allowbreak{}.\allowbreak{}.\allowbreak{}.\allowbreak{}} \\
 Email service & Amazon SES \\
 \end{longtable}
 \endgroup

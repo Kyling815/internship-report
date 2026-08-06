@@ -1,5 +1,3 @@
-\vspace{0.5em}\noindent\textbf{Troubleshooting}\par
-
 \vspace{0.5em}\noindent\textbf{Objective}\par
 
 Record production troubleshooting cases, root causes, diagnostic
@@ -100,7 +98,7 @@ preflight checks before deploy \\
 ECR authorization or \texttt{DescribeImages} denial & Deploy job could
 not verify image tag & GitHub OIDC role lacked required ECR read action
 &
-\texttt{aws\ ecr\ describe-images\ -\/-repository-name\ internship-backend\ -\/-image-ids\ imageTag=\textless{}GITHUB\_SHA\textgreater{}}
+\texttt{aws\ ecr\ describe-\allowbreak{}images\ -\/\allowbreak{}-repository-\allowbreak{}name\ internship-\allowbreak{}backend\ -\/\allowbreak{}-image-\allowbreak{}ids\ imageTag=\textless{}GITHUB\_\allowbreak{}SHA\textgreater{}}
 & Add scoped ECR permissions for repository/image verification & Keep
 deploy role policy aligned with workflow checks \\
 GitHub OIDC AssumeRoleWithWebIdentity failure & AWS credential step

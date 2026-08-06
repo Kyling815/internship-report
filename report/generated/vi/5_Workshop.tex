@@ -1,122 +1,140 @@
-\vspace{0.5em}\noindent\textbf{Workshop}\par
+\vspace{0.5em}\noindent\textbf{Tổng quan}\par
 
-\vspace{0.5em}\noindent\textbf{Overview}\par
+Workshop này trình bày toàn bộ quy trình triển khai ứng dụng Internship
+Application Tracker trên nền tảng AWS.
 
-This workshop presents the complete deployment process of the Internship
-Application Tracker on AWS.
+Nội dung workshop bao gồm chuẩn bị mã nguồn, khởi tạo hạ tầng cloud,
+triển khai cơ sở dữ liệu, triển khai ứng dụng, xử lý AI, gửi thông báo
+theo sự kiện, giám sát, kiểm thử, xử lý sự cố và dọn dẹp tài nguyên.
 
-The workshop covers source code preparation, cloud infrastructure
-provisioning, database deployment, application deployment, AI
-processing, event-driven notification, monitoring, testing,
-troubleshooting, and resource clean-up.
-
-The final architecture uses:
+Kiến trúc chính thức sử dụng:
 
 \begin{itemize}
 \tightlist
 \item
-  Amazon CloudFront and Amazon S3 for frontend delivery.
+  Amazon CloudFront và Amazon S3 để phân phối frontend.
 \item
-  Application Load Balancer for public API and realtime traffic.
+  Application Load Balancer để tiếp nhận lưu lượng public API và thời
+  gian thực (realtime).
 \item
-  Amazon EKS for backend, chat, worker and AI adapter workloads.
+  Amazon EKS cho các workload backend, chat, worker và AI adapter.
 \item
-  Amazon RDS PostgreSQL for transactional business data.
+  Amazon RDS PostgreSQL để lưu trữ dữ liệu giao dịch nghiệp vụ.
 \item
-  Amazon ElastiCache Redis for realtime Socket.IO pub/sub.
+  Amazon ElastiCache Redis phục vụ kênh pub/sub thời gian thực cho
+  Socket.IO.
 \item
-  Amazon DynamoDB for chat persistence and Lambda event deduplication.
+  Amazon DynamoDB để lưu trữ bền vững dữ liệu chat và khử lặp
+  (deduplication) sự kiện cho Lambda.
 \item
-  Amazon SQS for asynchronous event delivery.
+  Amazon SQS để truyền tải sự kiện bất đồng bộ.
 \item
-  AWS Lambda and Amazon SES for notifications.
+  AWS Lambda và Amazon SES để gửi thông báo.
 \item
-  Amazon SageMaker for AI inference.
+  Amazon SageMaker để phục vụ suy đoán AI (AI inference).
 \item
-  GitHub Actions and AWS OIDC for continuous deployment.
+  GitHub Actions và AWS OIDC cho luồng triển khai tự động liên tục.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Learning objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu học tập}\par
 
-After completing this workshop, the reader should be able to:
+Sau khi hoàn thành workshop này, người đọc có thể:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Prepare a multi-service application for AWS deployment.
+  Chuẩn bị một ứng dụng kiến trúc đa dịch vụ (multi-service) sẵn sàng để
+  triển khai lên AWS.
 \item
-  Deploy containerized services to Amazon EKS.
+  Triển khai các dịch vụ container lên Amazon EKS.
 \item
-  Deploy a static React frontend through Amazon S3 and CloudFront.
+  Triển khai frontend tĩnh React thông qua Amazon S3 và CloudFront.
 \item
-  Connect EKS workloads to RDS, Redis, DynamoDB, SQS and SageMaker.
+  Kết nối các workload trên EKS với RDS, Redis, DynamoDB, SQS và
+  SageMaker.
 \item
-  Implement asynchronous processing with workers and transactional
+  Thực hiện xử lý bất đồng bộ bằng các worker và mô hình transactional
   outbox.
 \item
-  Process SQS events with AWS Lambda.
+  Xử lý các sự kiện SQS bằng AWS Lambda.
 \item
-  Implement idempotent Lambda processing using DynamoDB.
+  Triển khai cơ chế xử lý tính bất biến (idempotent) cho Lambda bằng
+  cách sử dụng DynamoDB.
 \item
-  Configure CI/CD using GitHub Actions and AWS OIDC.
+  Cấu hình luồng CI/CD sử dụng GitHub Actions và AWS OIDC.
 \item
-  Validate the complete system through end-to-end testing.
+  Kiểm chứng toàn bộ hệ thống thông qua kiểm thử đầu cuối (end-to-end
+  testing).
 \item
-  Diagnose common networking, IAM and deployment failures.
+  Chẩn đoán các lỗi mạng, IAM và triển khai phổ biến.
 \end{enumerate}
 
-\vspace{0.5em}\noindent\textbf{Target audience}\par
+\vspace{0.5em}\noindent\textbf{Đối tượng hướng
+đến}\par
 
-This workshop is intended for:
-
-\begin{itemize}
-\tightlist
-\item
-  Cloud engineering interns.
-\item
-  Backend and DevOps students.
-\item
-  Developers learning Amazon EKS.
-\item
-  Developers implementing event-driven AWS architectures.
-\item
-  Students preparing an AWS internship or graduation project report.
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Architecture summary}\par
-
-The browser connects to Amazon CloudFront through HTTPS.
-
-CloudFront routes:
+Workshop này phù hợp dành cho:
 
 \begin{itemize}
 \tightlist
 \item
-  static frontend requests to Amazon S3
+  Thực tập sinh kỹ thuật Cloud (Cloud engineering interns).
 \item
-  \texttt{/\allowbreak{}api/\allowbreak{}*} requests to the backend through the Application Load
-  Balancer
+  Sinh viên theo học hướng Backend và DevOps.
 \item
-  \texttt{/\allowbreak{}chat/\allowbreak{}*} requests to the chat service
+  Lập trình viên đang tìm hiểu và thực hành với Amazon EKS.
 \item
-  \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} requests to the realtime Socket.IO service
+  Lập trình viên muốn xây dựng kiến trúc hướng sự kiện (event-driven
+  architectures) trên AWS.
+\item
+  Sinh viên đang thực hiện báo cáo thực tập hoặc đồ án tốt nghiệp về hệ
+  thống AWS.
 \end{itemize}
 
-The backend, chat service, processing worker, AI service and outbox
-dispatcher run inside Amazon EKS.
+\vspace{0.5em}\noindent\textbf{Tóm tắt kiến trúc}\par
 
-PostgreSQL stores transactional business data and processing jobs.
-DynamoDB stores chat data. Redis provides pub/sub between chat pods.
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Kiến trúc hạ tầng Internship Application Tracker trên AWS}]{5-Workshop/infra.png}}
+\caption{Kiến trúc hạ tầng Internship Application Tracker trên AWS}
+\end{figure}
 
-The processing worker calls the AI service, which invokes the SageMaker
-endpoint.
+Trình duyệt người dùng kết nối an toàn tới Amazon CloudFront thông qua
+giao thức HTTPS.
 
-The outbox dispatcher publishes business events to Amazon SQS. AWS
-Lambda consumes these events, performs deduplication in DynamoDB,
-archives events to Amazon S3 and sends notifications through Amazon SES.
+CloudFront định tuyến:
 
-\vspace{0.5em}\noindent\textbf{Chapters}\par
+\begin{itemize}
+\tightlist
+\item
+  các request tải trang tĩnh của frontend đến Amazon S3
+\item
+  các request \texttt{/\allowbreak{}api/\allowbreak{}*} đến dịch vụ backend thông qua Application
+  Load Balancer
+\item
+  các request \texttt{/\allowbreak{}chat/\allowbreak{}*} đến dịch vụ chat
+\item
+  các request \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} đến dịch vụ liên lạc thời gian thực
+  Socket.IO
+\end{itemize}
+
+Backend, dịch vụ chat, processing worker, dịch vụ AI và outbox
+dispatcher vận hành bên trong Amazon EKS.
+
+PostgreSQL lưu trữ dữ liệu giao dịch nghiệp vụ và các tác vụ processing
+jobs. DynamoDB lưu trữ dữ liệu tin nhắn chat. Redis cung cấp cơ chế
+pub/sub điều phối tin nhắn giữa các pod chat.
+
+Processing worker gọi đến dịch vụ AI (AI service), và dịch vụ AI sẽ trực
+tiếp gửi lời gọi đến máy chủ SageMaker endpoint.
+
+Outbox dispatcher tiến hành phát hành các sự kiện nghiệp vụ sang Amazon
+SQS. AWS Lambda tiếp nhận các sự kiện này, thực thi logic khử lặp trong
+DynamoDB, lưu giữ (archive) nội dung sự kiện vào Amazon S3 và phát tán
+email thông báo thông qua Amazon SES.
+
+\vspace{0.5em}\noindent\textbf{Danh sách các
+chương}\par
 
 {
 \begingroup
@@ -130,68 +148,70 @@ archives events to Amazon S3 and sends notifications through Amazon SES.
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Chapter
+Chương
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Title
+Tiêu đề
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
+Mô tả
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-5.1 & Overview & Workshop objectives, scope and final architecture &
-Complete \\
-5.2 & Architecture & Detailed AWS architecture and request flows &
-Complete \\
-5.3 & Prerequisites & Required accounts, tools and local configuration &
-Complete \\
-5.4 & Source Code Preparation & Repository structure, environment
-variables and validation & Complete \\
-5.5 & AWS Infrastructure & Networking, IAM, EKS, ECR, ALB and CloudFront
-& Complete \\
-5.6 & Database Deployment & PostgreSQL, Redis and DynamoDB deployment &
-Complete \\
-5.7 & Backend Deployment & Backend, chat, dispatcher, AI service and
-worker deployment & Complete \\
-5.8 & Frontend Deployment & React build, S3 upload and CloudFront
-distribution & Complete \\
-5.9 & Monitoring and Logging & Logs, health checks, metrics and alarms &
-Complete \\
-5.10 & End-to-End Testing & Application, chat, AI and Lambda
-verification & Complete \\
-5.11 & Security and Cost & IAM, encryption, OIDC and cost assumptions &
-Complete \\
-5.12 & Troubleshooting & Resolved deployment and runtime failures &
-Complete \\
-5.13 & Clean-up & Safe resource deletion procedure & Complete \\
+5.1 & Tổng quan & Mục tiêu, phạm vi và kiến trúc hoàn chỉnh của workshop
+& Hoàn thành \\
+5.2 & Kiến trúc & Chi tiết kiến trúc AWS và luồng di chuyển của các
+request & Hoàn thành \\
+5.3 & Điều kiện tiên quyết & Yêu cầu về tài khoản, công cụ kỹ thuật và
+cấu trúc máy địa phương & Hoàn thành \\
+5.4 & Chuẩn bị mã nguồn & Cấu trúc repository, biến môi trường và quy
+tắc kiểm định & Hoàn thành \\
+5.5 & Hạ tầng AWS & Mạng kết nối, IAM, EKS, ECR, ALB và CloudFront &
+Hoàn thành \\
+5.6 & Triển khai cơ sở dữ liệu & Triển khai PostgreSQL, Redis và
+DynamoDB & Hoàn thành \\
+5.7 & Triển khai backend & Triển khai backend, chat, dispatcher, dịch vụ
+AI và worker & Hoàn thành \\
+5.8 & Triển khai frontend & Build mã React, tải tệp lên S3 và thiết lập
+CDN CloudFront & Hoàn thành \\
+5.9 & Giám sát và nhật ký & Nhật ký, điểm kiểm tra sức khỏe, thông số
+metrics và cảnh báo & Hoàn thành \\
+5.10 & Kiểm thử đầu cuối & Nghiệm thu tổng thể ứng dụng, chat, dịch vụ
+AI và Lambda & Hoàn thành \\
+5.11 & Bảo mật và chi phí & IAM, mã hóa dữ liệu, OIDC và các giả định về
+cước phí & Hoàn thành \\
+5.12 & Xử lý sự cố & Phân tích và tháo gỡ các lỗi triển khai cũng như
+lỗi vận hành thực tế & Hoàn thành \\
+5.13 & Dọn dẹp tài nguyên & Quy trình từng bước hủy bỏ an toàn các tài
+nguyên mồi gánh chi phí & Hoàn thành \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Final outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết quả đầu ra}\par
 
-At the end of the workshop, the Internship Application Tracker is
-available through CloudFront and supports:
+Tại điểm kết thúc workshop, ứng dụng Internship Application Tracker sẵn
+sàng đón nhận kết nối qua mạng CloudFront và đảm bảo trọn vẹn các năng
+lực:
 
 \begin{itemize}
 \tightlist
 \item
-  static frontend delivery
+  phân phối trang tĩnh cho frontend
 \item
-  backend APIs
+  hệ thống API từ backend
 \item
-  realtime chat
+  liên lạc chat thời gian thực
 \item
-  persistent data storage
+  lưu trữ dữ liệu an toàn và lâu dài
 \item
-  asynchronous AI processing
+  tác nghiệp suy đoán AI bất đồng bộ
 \item
-  transactional outbox publishing
+  khâu phát tin nhắn theo mô hình transactional outbox
 \item
-  Lambda-based event notifications
+  gửi thông tin cảnh báo thông qua AWS Lambda
 \item
-  automated deployment through GitHub Actions
+  luồng triển khai tự động hóa mượt mà nhờ GitHub Actions
 \end{itemize}

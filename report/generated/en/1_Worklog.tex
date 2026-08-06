@@ -1,9 +1,22 @@
 \vspace{0.5em}\noindent\textbf{Internship Worklog}\par
 
-The internship worklog records the development process of the AI-Powered
-Internship Application Tracker over 8 weeks, from 08/06/2026 to
-30/07/2026. The schedule follows weekly reporting blocks that start on
-Monday; the final week is shortened to match the internship end date.
+The AI-Powered Internship Application Tracker was developed by a
+five-member team. This internship worklog records the assigned
+contribution of one member over 8 weeks, from 08/06/2026 to 30/07/2026,
+rather than claiming ownership of the whole system. The schedule follows
+weekly reporting blocks that start on Monday; the final week is
+shortened to match the internship end date.
+
+\vspace{0.5em}\noindent\textbf{Individual Role in the
+Team}\par
+
+My primary responsibility was Cloud/DevOps and system integration. I
+prepared container and Kubernetes deployment paths, supported AWS
+architecture and CI/CD, validated the production runtime, collected
+technical evidence, and maintained deployment documentation. Backend,
+frontend, chat, and AI features are described only when I reviewed their
+architecture, integrated them into the deployment pipeline, or validated
+them with the teammates responsible for those components.
 
 {
 \begingroup
@@ -20,32 +33,32 @@ Week
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Time
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Main Content
+Individual Focus
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-1 & 08/06/2026 - 14/06/2026 & Program orientation, problem analysis,
-backend foundation, database, and authentication \\
-2 & 15/06/2026 - 21/06/2026 & Candidate-HR platform, applications,
-documents, and Amazon S3 \\
-3 & 22/06/2026 - 28/06/2026 & React frontend, REST API integration, and
-protected user flows \\
-4 & 29/06/2026 - 05/07/2026 & Realtime chat with Socket.IO, Redis, and
-DynamoDB \\
-5 & 06/07/2026 - 12/07/2026 & AI analysis, asynchronous processing,
-idempotency, and concurrency \\
-6 & 13/07/2026 - 19/07/2026 & Docker containerization, Docker Compose
-integration, and local smoke testing \\
-7 & 20/07/2026 - 26/07/2026 & Local Kubernetes with kind, scaling
-controls, and observability \\
-8 & 27/07/2026 - 30/07/2026 & CI/CD, AWS deployment preparation,
-end-to-end testing, and project reporting \\
+1 & 08/06/2026 - 14/06/2026 & Reviewed the repository and mapped service
+dependencies for later deployment work \\
+2 & 15/06/2026 - 21/06/2026 & Reviewed concurrency and idempotency
+requirements that affect multi-replica deployment \\
+3 & 22/06/2026 - 28/06/2026 & Contributed deployment requirements for
+the outbox, SQS, and asynchronous workers \\
+4 & 29/06/2026 - 05/07/2026 & Standardized containers, Docker Compose,
+CI quality gates, and smoke-test paths \\
+5 & 06/07/2026 - 12/07/2026 & Prepared local Kubernetes deployment,
+scaling controls, and observability resources \\
+6 & 13/07/2026 - 19/07/2026 & Prepared AWS IAM/OIDC, ECR, and CI
+image-publishing foundations \\
+7 & 20/07/2026 - 26/07/2026 & Integrated EKS workloads, managed AWS
+services, ALB routing, and rollout automation \\
+8 & 27/07/2026 - 30/07/2026 & Validated the AWS runtime, analyzed issues
+and costs, collected evidence, and completed documentation \\
 \end{longtable}
 \endgroup
 }
 
-This worklog provides a structured view of the project progress and
-helps connect weekly implementation tasks with the final system
-architecture and report.
+Project-wide architecture and results are retained as context, while
+each weekly page separates my contribution from the work delivered by
+the other four team members.

@@ -21,33 +21,33 @@ Trong nhóm 5 thành viên, mục tiêu tuần 5 của tôi là chuyển ứng d
 | Hoàn thành | Tự động hóa triển khai local cho PowerShell và shell. | Hai script `deploy-local`. |
 | Hoàn thành | Bổ sung HPA và PDB cho application service. | `k8s/app/autoscaling.yaml`. |
 | Hoàn thành | Bổ sung tài nguyên observability cho Prometheus, Grafana, Loki, Tempo, Alloy và OTel. | `k8s/observability/*` và `observability/grafana/*`. |
-| Hoàn thành một phần | Thu thập screenshot và command log `kubectl` hiện có. | Cần bổ sung minh chứng: chưa có đầy đủ bộ screenshot/log trong kho local. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The local Kubernetes path uses kind for the cluster, in-cluster PostgreSQL/Redis/DynamoDB Local for dependencies, and Kubernetes manifests under `k8s/app` for the workload layer.
 
 {{< mermaid >}}
 graph TB
-  subgraph Kind["kind-internship-local"]
-    subgraph Internship["namespace: internship"]
-      Backend["Deployment/backend"]
-      Chat["Deployment/chat-service"]
-      Dispatcher["Deployment/backend-outbox-dispatcher"]
-      Worker["Deployment/backend-processing-worker"]
-      Postgres["Deployment/postgres"]
-      Redis["Deployment/redis"]
-      DDB["Deployment/dynamodb-local"]
-      Migrate["Job/backend-migrate"]
-      Init["Job/chat-init"]
-    end
-    subgraph Monitoring["namespace: monitoring"]
-      Prom["Prometheus"]
-      Grafana["Grafana"]
-      Loki["Loki"]
-      Tempo["Tempo"]
-    end
+  Cluster["kind-internship-local cluster"]
+  subgraph Internship namespace
+    Backend["Deployment/backend"]
+    Chat["Deployment/chat-service"]
+    Dispatcher["Deployment/backend-outbox-dispatcher"]
+    Worker["Deployment/backend-processing-worker"]
+    Postgres["Deployment/postgres"]
+    Redis["Deployment/redis"]
+    DDB["Deployment/dynamodb-local"]
+    Migrate["Job/backend-migrate"]
+    Init["Job/chat-init"]
   end
+  subgraph Monitoring namespace
+    Prom["Prometheus"]
+    Grafana["Grafana"]
+    Loki["Loki"]
+    Tempo["Tempo"]
+  end
+  Cluster --> Backend
+  Cluster --> Prom
   Backend --> Postgres
   Backend --> DDB
   Backend --> Dispatcher
@@ -61,7 +61,7 @@ graph TB
 
 The deployment scripts build local images, load them into kind, apply app manifests, run migration/init jobs, wait for rollouts, and print port-forward commands for backend, chat, and optional AI service checks.
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
 | Problem | Root cause | Resolution | Status |
 |---|---|---|---|
@@ -69,9 +69,8 @@ The deployment scripts build local images, load them into kind, apply app manife
 | Fresh local images might not be used by kind. | Building an image is not enough; kind nodes need the image loaded. | Scripts run `kind load docker-image` and restart deployments. | Completed |
 | Migrations and chat table creation need ordered startup. | API/chat pods should not assume databases are initialized. | Added `backend-migrate` and `chat-init` Jobs. | Completed |
 | Local observability required multiple supporting components. | Metrics, logs, and traces need separate platform services. | Added Helm-backed Prometheus/Grafana/Loki/Tempo/Alloy resources and local runbook guidance. | Completed |
-| Live cluster screenshots are missing. | Runtime screenshots were not attached to the local evidence archive. | I kept Kubernetes evidence pending. | Blocked |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -80,17 +79,9 @@ The deployment scripts build local images, load them into kind, apply app manife
 | Observability resources | Implemented | `k8s/observability` and `observability/grafana` include dashboards, datasources, rules, and collectors. |
 | Runtime validation logs | Partially completed | Commands are scripted, but current report does not include saved `kubectl` output. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-05/`, for example:
-
-- `/images/worklog/week-05/kubectl-get-nodes.png`
-- `/images/worklog/week-05/kubectl-get-pods.png`
-- `/images/worklog/week-05/grafana-dashboard.png`
-
-### Commits and Pull Requests
+### Commit và yêu cầu kéo mã
 
 | Commit | Description | Evidence | Pull Request |
 |---|---|---|---|
@@ -100,7 +91,7 @@ Evidence pending: add screenshots under `/images/worklog/week-05/`, for example:
 | `7407fda` | Added tracing and chat initialization support. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/7407fda080ac210411f67985996772185c311b06) | Evidence pending |
 | `3b6f346` | Added local terminal runbook and environment examples. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/3b6f34675b11b9c2a8c66006e3d4eb7fe9ca2e6f) | Evidence pending |
 
-### Test Logs
+### Nhật ký kiểm thử
 
 Evidence pending: attach actual local Kubernetes output from commands such as:
 
@@ -113,22 +104,22 @@ kubectl rollout status deployment/backend -n internship
 kubectl rollout status deployment/chat-service -n internship
 ```
 
-### Build Logs
+### Nhật ký build
 
 Evidence pending: attach output from local image builds and `kind load docker-image` commands.
 
-### Deployment Logs
+### Nhật ký triển khai
 
 Evidence pending: attach output from `scripts/k8s/deploy-local.ps1` or `scripts/k8s/deploy-local.sh`.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Kết quả cá nhân tuần 5 là quy trình Kubernetes local gồm manifest, automation, scaling control và observability. Kiểm thử chức năng backend, frontend, chat và AI được phối hợp với bốn thành viên phụ trách các component tương ứng.
 
-## Lessons Learned
+## Bài học rút ra
 
 Local Kubernetes validation is more than checking that pods start. Jobs, readiness probes, image freshness, DNS, service ports, ingress, HPA metrics, and observability scraping all need explicit checks.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
 Prepare the AWS foundation: AWS CLI validation, region selection, GitHub OIDC, IAM deployment role, ECR repositories, and image build/push workflow.

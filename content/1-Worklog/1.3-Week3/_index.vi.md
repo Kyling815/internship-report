@@ -24,7 +24,7 @@ Trong nhóm 5 thành viên, mục tiêu tuần 3 của tôi là xác định yê
 | Hoàn thành | Phối hợp xác định yêu cầu tích hợp cho `async_processing_jobs` và worker document/AI. | Migration, processing job service và processing worker. |
 | Hoàn thành một phần | Đánh giá mức sẵn sàng của downstream consumer ngoài contract. | Tài liệu nguồn cho biết notification/search/analytics consumer chưa được triển khai ở giai đoạn này. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
 The outbox design keeps domain mutation and event creation in the same PostgreSQL transaction. If the business write fails, no event is inserted. If the API pod dies after commit, the outbox row remains `PENDING` and can be claimed later by the dispatcher.
 
@@ -51,7 +51,7 @@ sequenceDiagram
 
 Asynchronous processing uses a separate database-backed queue because document parsing and AI matching are user-visible jobs with status, retry behavior, source-version guards, and result payloads. The worker claims jobs, applies lease-based retry logic, and persists results back to PostgreSQL.
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
 | Problem | Root cause | Resolution | Status |
 |---|---|---|---|
@@ -61,7 +61,7 @@ Asynchronous processing uses a separate database-backed queue because document p
 | AI and document work can take too long for API request latency. | Parsing CVs, extracting text, and reranking candidates are long-running operations. | Added `async_processing_jobs` and `backend-processing-worker`. | Completed |
 | Real downstream consumers were not part of this implementation slice. | I focused the week on producer reliability and the consumer contract. | I kept downstream consumers as future work until runtime evidence is added. | Partially completed |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -70,17 +70,9 @@ Asynchronous processing uses a separate database-backed queue because document p
 | Kubernetes deployment readiness | Implemented | `k8s/app/backend-outbox-dispatcher.yaml` and `k8s/app/backend-processing-worker.yaml` exist. |
 | SQS provisioning | Implemented | `scripts/aws/provision-outbox-sqs.ps1` and `.sh` exist. Runtime queue-name evidence still needs a screenshot or CLI log. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
-
-Evidence pending: add screenshots under `/images/worklog/week-03/`, for example:
-
-- `/images/worklog/week-03/outbox-table.png`
-- `/images/worklog/week-03/sqs-queue-dlq.png`
-- `/images/worklog/week-03/dispatcher-logs.png`
-
-### Commits and Pull Requests
+### Commit và yêu cầu kéo mã
 
 | Commit | Description | Evidence | Pull Request |
 |---|---|---|---|
@@ -89,7 +81,7 @@ Evidence pending: add screenshots under `/images/worklog/week-03/`, for example:
 | `4970eba` | Documented phase 2 workflow operations, event transport ADR, and consumer contract. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/4970ebad398a5377004e943dc3486f8e717a952e) | Evidence pending |
 | `14173c6` | Merged workflow, outbox, async processing, and infrastructure changes. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/14173c6d0e950f13a5f7e809d95fc39841c06048) | Evidence pending |
 
-### Test Logs
+### Nhật ký kiểm thử
 
 Evidence pending: attach actual output from commands such as:
 
@@ -99,22 +91,22 @@ python -m pytest tests/test_outbox_events.py tests/test_outbox_publishers.py tes
 python -m pytest -m postgres tests/test_outbox_postgres.py tests/test_processing_jobs_postgres.py
 ```
 
-### Build Logs
+### Nhật ký build
 
 Evidence pending: no dedicated Week 3 image build log was found.
 
-### Deployment Logs
+### Nhật ký triển khai
 
 Evidence pending: add dispatcher or worker rollout logs after deployment, for example `kubectl rollout status deployment/backend-outbox-dispatcher -n internship`.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Kết quả cá nhân tuần 3 là quyết định dùng SQS và bộ yêu cầu triển khai cho outbox dispatcher, processing worker. Schema outbox, backend service và business logic document/AI vẫn là sản phẩm chung của nhóm.
 
-## Lessons Learned
+## Bài học rút ra
 
 Idempotency exists at multiple layers. HTTP idempotency prevents duplicate command execution, the transactional outbox prevents lost domain events, and consumers still need event-level deduplication.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
 Standardize container builds, CI quality gates, smoke tests, security scans, and infrastructure validation so the system can be deployed repeatedly with less manual checking.

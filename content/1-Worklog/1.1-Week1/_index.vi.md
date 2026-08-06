@@ -20,19 +20,18 @@ Trong nhóm 5 thành viên, mục tiêu cá nhân của tôi trong tuần đầu
 | Hoàn thành | Lập bản đồ phụ thuộc giữa frontend, FastAPI backend, chat service, AI service, PostgreSQL, Redis và DynamoDB. | Các thư mục service, Compose và cấu hình hệ thống. |
 | Hoàn thành | Review luồng request ban đầu giữa browser, API, chat và các lớp lưu trữ. | API client, backend router, Socket.IO server và storage service. |
 | Hoàn thành | Kiểm tra mô hình khởi chạy local và tài liệu hóa cách chạy riêng từng service. | Commit `d3c1168` và `e43cc04`. |
-| Hoàn thành một phần | Chuẩn bị kế hoạch minh chứng cho kiến trúc local ban đầu. | Cần bổ sung minh chứng: chưa có screenshot trong thư mục ảnh Hugo. |
 
-## Technical Implementation
+## Triển khai kỹ thuật
 
-The source repository is a monorepo with separate service responsibilities:
+Kho mã nguồn là một monorepo, trong đó mỗi dịch vụ đảm nhiệm một trách nhiệm riêng:
 
-- `frontend/`: React and Vite application for Candidate and HR users.
-- `backend/`: FastAPI API, SQLAlchemy models, Alembic migrations, authentication, jobs, applications, documents, and AI orchestration routes.
-- `chat-service/`: Node.js, Express, Socket.IO, Redis adapter, and DynamoDB-backed chat persistence.
-- `ai_service/`: AI parsing, CV/job normalization, reranking, and later SageMaker adapter code.
-- `docker-compose.yml`: local dependencies and multi-service startup path.
+- `frontend/`: ứng dụng React và Vite dành cho ứng viên và nhân sự.
+- `backend/`: API FastAPI, mô hình SQLAlchemy, migration Alembic, xác thực, công việc, hồ sơ ứng tuyển, tài liệu và các tuyến điều phối AI.
+- `chat-service/`: Node.js, Express, Socket.IO, bộ điều hợp Redis và cơ chế lưu hội thoại trên DynamoDB.
+- `ai_service/`: phân tích AI, chuẩn hóa CV/công việc, xếp hạng lại và mã bộ điều hợp SageMaker được bổ sung sau đó.
+- `docker-compose.yml`: các thành phần phụ thuộc cục bộ và quy trình khởi chạy nhiều dịch vụ.
 
-Initial architecture baseline:
+Kiến trúc cơ sở ban đầu:
 
 {{< mermaid >}}
 graph LR
@@ -46,67 +45,58 @@ graph LR
   Chat --> DynamoDB["DynamoDB chat tables"]
 {{< /mermaid >}}
 
-The baseline also identified the first cloud migration direction: keep long-running backend and chat services containerized, move durable relational data to PostgreSQL/RDS, use DynamoDB for chat records, use Redis for realtime fan-out, and prepare the application for containerization and CI/CD.
+Kiến trúc cơ sở cũng xác định hướng chuyển đổi lên đám mây ban đầu: đóng gói backend và dịch vụ chat chạy dài hạn trong container, chuyển dữ liệu quan hệ bền vững sang PostgreSQL/RDS, dùng DynamoDB cho bản ghi hội thoại, dùng Redis để phân phối sự kiện thời gian thực, đồng thời chuẩn bị ứng dụng cho container và CI/CD.
 
-## Problems and Solutions
+## Vấn đề và giải pháp
 
-| Problem | Root cause | Resolution | Status |
+| Vấn đề | Nguyên nhân gốc | Giải pháp | Trạng thái |
 |---|---|---|---|
-| The first source snapshot contained broad application code and generated dependency content. | The initial commit added the complete baseline in one large commit. | Later work separated documentation, scripts, and runtime responsibilities into clearer paths. | Completed |
-| The project originally contained Prisma-related Node database artifacts while the backend used SQLAlchemy/PostgreSQL. | Database strategy changed toward FastAPI, SQLAlchemy, Alembic, and PostgreSQL. | Commit `ab60f7d` removed Prisma artifacts and documented the EC2/RDS direction. | Completed |
-| Local startup needed to support more than one developer workflow. | A single startup command was useful for demos, but separate terminal commands were easier for debugging. | Commits `d3c1168` and `e43cc04` documented both startup approaches. | Completed |
-| I did not have architecture screenshots in the local evidence archive. | I did not have the original screenshot artifacts in the source repo. | I kept screenshot evidence pending instead of creating fake screenshots. | Blocked |
+| Ảnh chụp mã nguồn đầu tiên chứa phạm vi mã ứng dụng và thành phần phụ thuộc được sinh tự động quá rộng. | Commit ban đầu đưa toàn bộ nền tảng vào một commit lớn. | Các công việc sau đó tách tài liệu, tập lệnh và trách nhiệm thời gian chạy thành các đường dẫn rõ ràng hơn. | Hoàn thành |
+| Dự án ban đầu còn thành phần cơ sở dữ liệu Node liên quan đến Prisma trong khi backend dùng SQLAlchemy/PostgreSQL. | Chiến lược cơ sở dữ liệu chuyển sang FastAPI, SQLAlchemy, Alembic và PostgreSQL. | Commit `ab60f7d` loại bỏ thành phần Prisma và ghi lại hướng triển khai EC2/RDS. | Hoàn thành |
+| Cách khởi chạy cục bộ cần hỗ trợ nhiều quy trình phát triển. | Một lệnh duy nhất thuận tiện khi trình diễn, còn các lệnh terminal riêng dễ gỡ lỗi hơn. | Các commit `d3c1168` và `e43cc04` ghi lại cả hai cách khởi chạy. | Hoàn thành |
 
-## Testing, Build and Deployment Results
+## Kết quả kiểm thử, build và triển khai
 
-| Area | Result | Evidence |
+| Hạng mục | Kết quả | Minh chứng |
 |---|---|---|
-| Source inspection | Completed | `git show --stat 4e939cf` shows backend, frontend, Docker, migrations, tests, and docs added in the first commit. |
-| Local startup | Partially completed | Startup scripts and README instructions exist in history, but no saved terminal log was found. |
-| Tests | Partially completed | Test files exist under `backend/tests`; no Week 1 test output artifact was found. |
-| Build | Partially completed | Dockerfiles and Vite project files exist; no Week 1 build log artifact was found. |
-| Deployment | Planned | Week 1 only defined the deployment direction; no AWS deployment was expected yet. |
+| Rà soát mã nguồn | Hoàn thành | `git show --stat 4e939cf` cho thấy backend, frontend, Docker, migration, kiểm thử và tài liệu được thêm trong commit đầu tiên. |
+| Khởi chạy cục bộ | Hoàn thành một phần | Lịch sử có tập lệnh khởi chạy và hướng dẫn README nhưng không tìm thấy nhật ký terminal đã lưu. |
+| Kiểm thử | Hoàn thành một phần | Có các tệp kiểm thử trong `backend/tests`; chưa tìm thấy kết quả kiểm thử của tuần 1. |
+| Build | Hoàn thành một phần | Có Dockerfile và các tệp dự án Vite; chưa tìm thấy nhật ký build của tuần 1. |
+| Triển khai | Đã lập kế hoạch | Tuần 1 chỉ xác định hướng triển khai, chưa đặt mục tiêu triển khai AWS. |
 
-## Evidence
+## Minh chứng
 
-### Screenshots
+### Commit và yêu cầu kéo mã
 
-Evidence pending: add architecture or local application screenshots under `/images/worklog/week-01/`, for example:
-
-- `/images/worklog/week-01/repository-structure.png`
-- `/images/worklog/week-01/local-backend-health.png`
-- `/images/worklog/week-01/architecture-baseline.png`
-
-### Commits and Pull Requests
-
-| Commit | Description | Evidence | Pull Request |
+| Commit | Mô tả | Minh chứng | Yêu cầu kéo mã |
 |---|---|---|---|
-| `4e939cf` | Initial application baseline with backend, frontend, Docker Compose, migrations, and tests. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/4e939cf0313e73fd915380987cce1a5a7c9728a0) | Evidence pending |
-| `5ab2924` | Added AI CV matching and AWS RDS configuration. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/5ab2924ca69ed90f7ef5fe5a454578bfa888e9dc) | Evidence pending |
-| `ab60f7d` | Removed Prisma artifacts and documented EC2/RDS deployment direction. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/ab60f7d02c6c8fc73384198117625dea5973e24f) | Evidence pending |
-| `d3c1168` | Added one-command full-stack startup. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/d3c1168cea4521823febf32e1fd9714e928d0ddc) | Evidence pending |
-| `e43cc04` | Documented separate service startup commands. | [View commit](https://github.com/Temp-orgo/AWS-Internship/commit/e43cc042d868b1ca5c18524d4735dca178f25043) | Evidence pending |
+| `4e939cf` | Tạo nền tảng ứng dụng ban đầu gồm backend, frontend, Docker Compose, migration và kiểm thử. | [Xem commit](https://github.com/Temp-orgo/AWS-Internship/commit/4e939cf0313e73fd915380987cce1a5a7c9728a0) | Minh chứng đang chờ |
+| `5ab2924` | Bổ sung đối sánh CV bằng AI và cấu hình AWS RDS. | [Xem commit](https://github.com/Temp-orgo/AWS-Internship/commit/5ab2924ca69ed90f7ef5fe5a454578bfa888e9dc) | Minh chứng đang chờ |
+| `ab60f7d` | Loại bỏ thành phần Prisma và ghi lại hướng triển khai EC2/RDS. | [Xem commit](https://github.com/Temp-orgo/AWS-Internship/commit/ab60f7d02c6c8fc73384198117625dea5973e24f) | Minh chứng đang chờ |
+| `d3c1168` | Bổ sung cách khởi chạy toàn bộ hệ thống bằng một lệnh. | [Xem commit](https://github.com/Temp-orgo/AWS-Internship/commit/d3c1168cea4521823febf32e1fd9714e928d0ddc) | Minh chứng đang chờ |
+| `e43cc04` | Ghi lại các lệnh khởi chạy riêng cho từng dịch vụ. | [Xem commit](https://github.com/Temp-orgo/AWS-Internship/commit/e43cc042d868b1ca5c18524d4735dca178f25043) | Minh chứng đang chờ |
 
-### Test Logs
+### Nhật ký kiểm thử
 
-Evidence pending: no saved Week 1 local or CI test log was found in the source repository.
+Minh chứng đang chờ: không tìm thấy nhật ký kiểm thử cục bộ hoặc CI của tuần 1 trong kho mã nguồn.
 
-### Build Logs
+### Nhật ký build
 
-Evidence pending: no saved Week 1 Docker or frontend build log was found in the source repository.
+Minh chứng đang chờ: không tìm thấy nhật ký build Docker hoặc frontend của tuần 1 trong kho mã nguồn.
 
-### Deployment Logs
+### Nhật ký triển khai
 
-Not applicable for Week 1. Deployment planning started in this phase, but cloud deployment was planned for later weeks.
+Không áp dụng cho tuần 1. Giai đoạn này bắt đầu lập kế hoạch triển khai; việc triển khai lên đám mây được dành cho các tuần sau.
 
-## Weekly Results
+## Kết quả trong tuần
 
 Cuối tuần 1, tôi đã hoàn thành bản đồ service/phụ thuộc phục vụ phạm vi triển khai và xác định hướng container hóa, triển khai AWS ban đầu. Mã nguồn ứng dụng và các chức năng nền tảng là kết quả chung của nhóm 5 thành viên.
 
-## Lessons Learned
+## Bài học rút ra
 
-The main lesson was that deployment planning depends on clear runtime boundaries. Separating API, chat, AI, relational data, realtime pub/sub, and document storage early made later Docker, Kubernetes, and AWS work easier to reason about.
+Bài học chính là kế hoạch triển khai phụ thuộc vào ranh giới thời gian chạy rõ ràng. Việc sớm tách API, chat, AI, dữ liệu quan hệ, cơ chế phát/nhận thời gian thực và lưu trữ tài liệu giúp công việc Docker, Kubernetes và AWS ở các tuần sau dễ phân tích hơn.
 
-## Next Week Plan
+## Kế hoạch tuần tiếp theo
 
-The next week should focus on data integrity and concurrency: database constraints, duplicate request handling, idempotency keys, versioned workflow commands, and tests that prove concurrent writes return controlled conflicts instead of inconsistent data.
+Tuần tiếp theo tập trung vào tính toàn vẹn dữ liệu và xử lý đồng thời: ràng buộc cơ sở dữ liệu, xử lý yêu cầu trùng, khóa chống lặp, lệnh quy trình có phiên bản và các kiểm thử chứng minh thao tác ghi đồng thời trả về xung đột có kiểm soát thay vì dữ liệu không nhất quán.

@@ -1,52 +1,50 @@
-\vspace{0.5em}\noindent\textbf{Overview}\par
+\vspace{0.5em}\noindent\textbf{Tổng quan}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-This workshop explains how the Internship Application Tracker is
-prepared, deployed, verified, monitored, troubleshot, and safely cleaned
-up on AWS.
+Workshop này trình bày tường tận cách chuẩn bị mã nguồn, triển khai,
+kiểm thử xác minh, giám sát, xử lý sự cố và thực hiện quy trình dọn dẹp
+tài nguyên an toàn cho ứng dụng Internship Application Tracker trên hạ
+tầng AWS.
 
-The target production environment is:
+Môi trường production đích được xác định như sau:
 
 {
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\begin{longtable}{@{}ll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Item
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Value
-\end{minipage} \\
+Thông số & Giá trị \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Project & Internship Application Tracker \\
-AWS account & Project AWS account, ID redacted \\
-Region & \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
-Environment & \texttt{production} \\
-EKS cluster & \texttt{internship-\allowbreak{}prod} \\
-Kubernetes namespace & \texttt{internship} \\
-Public frontend & \texttt{https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net} \\
-Application repository &
+Dự án & Internship Application Tracker \\
+Tài khoản AWS & Tài khoản AWS thuộc dự án, ID đã được ẩn \\
+Vùng (Region) & \texttt{ap-\allowbreak{}southeast-\allowbreak{}1} \\
+Môi trường & \texttt{production} \\
+Cụm EKS (EKS cluster) & \texttt{internship-\allowbreak{}prod} \\
+Namespace Kubernetes & \texttt{internship} \\
+Địa chỉ frontend công cộng &
+\texttt{https:/\allowbreak{}/\allowbreak{}dhm2rz5nmsibj.\allowbreak{}cloudfront.\allowbreak{}net} \\
+Kho lưu trữ mã nguồn &
 \texttt{https:/\allowbreak{}/\allowbreak{}github.\allowbreak{}com/\allowbreak{}Temp-\allowbreak{}orgo/\allowbreak{}AWS-\allowbreak{}Internship} \\
+& \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Scope}\par
+\vspace{0.5em}\noindent\textbf{Phạm vi}\par
 
-The workshop covers the current production architecture only. The
-frontend is hosted on Amazon S3 and CloudFront. It is not documented as
-an EKS Deployment because the old Kubernetes frontend Deployment,
-Service, HPA, and PDB were removed.
+Workshop này chỉ tập trung phản ánh kiến trúc production chính thức hiện
+tại. Frontend được lưu trữ trên Amazon S3 và phân phối qua CloudFront.
+Frontend không còn được xem là một workload chạy trên EKS do các thiết
+lập cũ (Deployment, Service, HPA và PDB của frontend trên Kubernetes) đã
+được tháo dỡ hoàn toàn.
 
-The EKS cluster hosts these long-running workloads:
+Cụm EKS chịu trách nhiệm vận hành các tiến trình chạy liên tục sau:
 
 \begin{itemize}
 \tightlist
@@ -62,181 +60,213 @@ The EKS cluster hosts these long-running workloads:
   \texttt{ai-\allowbreak{}service}
 \end{itemize}
 
-The managed AWS services connected to the application are RDS
-PostgreSQL, DynamoDB, ElastiCache Redis, S3, SQS, Lambda, SES,
-SageMaker, CloudFront, ALB, ECR, IAM, and CloudWatch.
+Các dịch vụ AWS được quản lý tích hợp trực tiếp vào ứng dụng bao gồm:
+RDS PostgreSQL, DynamoDB, ElastiCache Redis, S3, SQS, Lambda, SES,
+SageMaker, CloudFront, ALB, ECR, IAM và CloudWatch.
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-The browser reaches CloudFront first. CloudFront routes static frontend
-requests to a private S3 bucket and routes dynamic paths to the
-Application Load Balancer:
+Trình duyệt của người dùng sẽ tiếp cận CloudFront đầu tiên. CloudFront
+phân luồng các request tải tài liệu tĩnh cho một S3 bucket riêng tư
+(private bucket), trong khi các request tới đường dẫn động sẽ được định
+tuyến sang Application Load Balancer (ALB):
 
 \begin{itemize}
 \tightlist
 \item
-  Default \texttt{*} -\textgreater{} S3 frontend bucket
+  Đường dẫn mặc định \texttt{*} -\textgreater{} S3 bucket của frontend
 \item
   \texttt{/\allowbreak{}api/\allowbreak{}*} -\textgreater{} ALB -\textgreater{} FastAPI backend
 \item
-  \texttt{/\allowbreak{}chat/\allowbreak{}*} -\textgreater{} ALB -\textgreater{} chat service
+  \texttt{/\allowbreak{}chat/\allowbreak{}*} -\textgreater{} ALB -\textgreater{} dịch vụ chat
 \item
-  \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} -\textgreater{} ALB -\textgreater{} chat service
+  \texttt{/\allowbreak{}socket.\allowbreak{}io/\allowbreak{}*} -\textgreater{} ALB -\textgreater{} dịch vụ chat
 \end{itemize}
 
-PostgreSQL stores transactional business data and worker queues.
-DynamoDB stores chat records and Lambda dedupe records. Redis provides
-Socket.IO pub/sub between chat pods. SQS decouples committed business
-events from Lambda processing. Lambda archives events to S3 and sends
-email through SES. The processing worker calls \texttt{ai-\allowbreak{}service},
-which invokes the SageMaker endpoint \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b}.
+PostgreSQL lưu trữ các bản ghi nghiệp vụ mang tính chất giao dịch
+(transaction) và hàng đợi công việc của worker. DynamoDB lưu giữ trích
+đoạn tin nhắn chat và bản ghi khử lặp cho Lambda (dedupe records). Redis
+mang đến kênh thông tin pub/sub cho Socket.IO kết nối linh hoạt qua lại
+giữa các pod thuộc dịch vụ chat. SQS đóng vai trò dãn buông sự phụ thuộc
+ràng buộc gay gắt (decouples) từ những sự kiện nghiệp vụ ra khỏi tải
+thực thi của Lambda. Lambda đảm nhận việc sao lưu các văn bản sự kiện ra
+kho lưu trữ S3 và phát lệnh ra thư điện tử qua SES. Tiến trình
+processing worker có nhiệm vụ réo gọi sang \texttt{ai-\allowbreak{}service}, từ đây
+bộ chuyển giao này mới trực tiếp gọi tới máy chủ suy luận SageMaker
+endpoint mang tên \texttt{internship-\allowbreak{}qwen3-\allowbreak{}4b}.
 
-\vspace{0.5em}\noindent\textbf{Target users}\par
+\vspace{0.5em}\noindent\textbf{Đối tượng sử
+dụng}\par
 
-This workshop is written for:
+Workshop này được chấp bút hướng tới:
 
 \begin{itemize}
 \tightlist
 \item
-  cloud engineering interns who need to explain a production AWS
-  deployment
+  các thực tập sinh cloud engineering có nhiệm vụ thuyết trình và giải
+  trình về một kiến trúc triển khai thực tiễn trên hạ tầng AWS
 \item
-  backend and DevOps students deploying a multi-service application
+  các sinh viên ngành lập trình backend và DevOps có nhu cầu đưa lên hệ
+  thống một mô hình ứng dụng đa dịch vụ
 \item
-  reviewers who need evidence-based architecture, operations, and
-  cleanup steps
+  các giám sát thẩm tra chuyên nghiệp muốn được kiểm chứng về thiết kế
+  hạ tầng, quy trình vận hành cùng phương châm hủy th d d d th
 \item
-  future maintainers of the Internship Application Tracker
+  những thành viên tham gia kế thừa và bảo trì ứng dụng Internship
+  Application Tracker trong tương lai
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Functional scope}\par
+\vspace{0.5em}\noindent\textbf{Phạm vi chức năng}\par
 
-The application supports:
+Ứng dụng đảm bảo phục vụ các năng lực:
 
 \begin{itemize}
 \tightlist
 \item
-  candidate and HR authentication
+  xác thực tài khoản đăng nhập cho Ứng viên và bộ phận HR
 \item
-  job posting and job search
+  đăng thông tin tuyển dụng và tra cứu việc làm
 \item
-  candidate application submission
+  hỗ trợ Ứng viên nộp đơn ứng tuyển
 \item
-  application workflow management
+  theo dõi luồng trạng thái cho từng hồ sơ
 \item
-  CV and document upload
+  tải lên máy chủ các bản CV cùng tập hồ sơ tài liệu bám kèm
 \item
-  asynchronous CV parsing, job parsing, and matching
+  hệ thống đọc chiết tách CV, tháo bóc JD và khớp chấm điểm tương đương
+  qua tiến trình bất đồng bộ
 \item
-  realtime chat between users
+  tính năng chat thời gian thực qua lại giữa đôi bên
 \item
-  transactional outbox event publication
+  trát ban bố thông báo sự kiện bám quy chuẩn transactional outbox
 \item
-  email notification through Lambda and SES
+  gửi email tự động tiếp tin cảnh báo với AWS Lambda và Amazon SES
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Technical scope}\par
+\vspace{0.5em}\noindent\textbf{Phạm vi kỹ thuật}\par
 
-The technical implementation includes:
+Hạng mục thi công kỹ thuật bao hàm:
 
 \begin{itemize}
 \tightlist
 \item
-  React and Vite frontend
+  Frontend phát triển bởi bộ đôi React và Vite
 \item
-  FastAPI backend
+  Backend lập trình trên FastAPI
 \item
-  Node.js, Express, and Socket.IO chat service
+  Dịch vụ chat chạy trên nền Node.js, Express, và Socket.IO
 \item
-  PostgreSQL with Alembic migrations
+  PostgreSQL phối ghép nhuần nhuyễn bộ theo dõi cơ sở dữ liệu Alembic
+  migrations
 \item
-  DynamoDB chat tables
+  Cụm các bảng DynamoDB chứa dữ liệu chat
 \item
-  Redis Socket.IO adapter
+  Bộ giao tiếp Redis Socket.IO adapter
 \item
-  EKS Deployments, Services, HPA, PDB, ServiceAccount, ConfigMap,
-  Secret, Jobs, and Ingress
+  Hệ sinh thái cụm EKS gồm Deployments, Services, HPA, PDB,
+  ServiceAccount, ConfigMap, Secret, Jobs và Ingress
 \item
-  S3 buckets for frontend assets, uploads, and event archives
+  Các S3 buckets chuyên trách phục vụ tĩnh hóa cho frontend, tệp tin tải
+  ra tải vào và rãnh chứa archive nhật ký sự kiện
 \item
-  CloudFront distribution with S3 and ALB origins
+  CDN CloudFront distribution hòa quyện hai nguồn origin từ S3 và ALB
 \item
-  SQS Standard queue and DLQ
+  Hàng đợi cơ sở SQS Standard queue và hàng đợi giam tin nhắn lỗi DLQ
 \item
-  Lambda event consumer with DynamoDB idempotency
+  Máy chủ tiêu thụ sự kiện Lambda đi kèm cọc bảo vệ tính bất biến bằng
+  DynamoDB
 \item
-  SageMaker inference endpoint behind an internal AI adapter
+  Cỗ máy suy luận SageMaker endpoint ẩn an an giấu sát phía sau vi dịch
+  vụ trung gian ai-adapter
 \item
-  GitHub Actions CI/CD using AWS OIDC
+  Chuỗi phát hành CI/CD trên GitHub Actions vận dụng an toàn cơ chế xác
+  thực AWS OIDC
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Prerequisites}\par
+\vspace{0.5em}\noindent\textbf{Điều kiện tiên
+quyết}\par
 
-The reader should have authorized access to the AWS account, GitHub
-repository, EKS cluster, and production deployment settings. Exact tool
-versions must be verified in the target environment unless documented by
-the repository workflow.
+Người thực thi cần nắm vững trọn quy tắc ủy quyền được chấp thuận cho
+phép truy nhập tài khoản AWS, kho lưu trữ mã nguồn trên GitHub, cụm EKS
+và cụm các thông số cấu hình production của dự án. Tất cả thông số số
+hiệu phiên bản công cụ phải được thẩm ra rành rẽ trước từ môi trường
+thực tế, trừ phi mã nguồn có đóng ghi chú định danh rõ trong các tập
+lệnh quy củ.
 
-\vspace{0.5em}\noindent\textbf{Implementation flow}\par
+\vspace{0.5em}\noindent\textbf{Quy trình triển khai}\par
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Review the source repository and deployment scripts.
+  Kiểm tra kỹ càng kho chứa mã nguồn và các tập tin kịch bản tự động hóa
+  triển khai.
 \item
-  Confirm AWS account, region, IAM, and GitHub OIDC configuration.
+  Xác minh lại tài khoản AWS, mã khu vực Region, IAM policy cùng chuỗi
+  liên thông định dạng OIDC từ GitHub.
 \item
-  Provision or verify AWS infrastructure.
+  Cấp mới hoặc thẩm định chu đáo các bộ phận cấu thành hạ tầng AWS.
 \item
-  Deploy RDS, Redis, DynamoDB, S3, SQS, Lambda, SageMaker, and
-  CloudFront resources.
+  Thiết lập lần lượt dịch vụ cho RDS, Redis, DynamoDB, S3, SQS, Lambda,
+  SageMaker cùng distribution cho CloudFront.
 \item
-  Build and push backend, chat, and AI images to ECR.
+  Biên dịch tiến trình đóng gói image cho backend, chat, AI rồi ném nạp
+  lên kho lưu trữ Amazon ECR.
 \item
-  Deploy backend, chat, dispatcher, worker, and AI adapter to EKS.
+  Triển khai tiếp nối backend, chat, dispatcher, worker và AI adapter
+  vào bên trong vòng tay cụm EKS.
 \item
-  Build the Vite frontend and publish it to S3.
+  Build khoá nguồn giao diện tĩnh Vite cho frontend và đăng bạt tập tin
+  thẳng lên hòm S3.
 \item
-  Invalidate CloudFront.
+  Gọi lệnh vô hiệu hóa bộ nhớ đệm (invalidating cache) trên CDN
+  CloudFront.
 \item
-  Run health checks and end-to-end acceptance tests.
+  Chạy các lệnh rà soát sức khỏe dịch vụ kết hợp tiến trình nghiệm thu
+  trọn gói kiểm thử đầu cuối.
 \item
-  Monitor logs, metrics, and alarms.
+  Ghi nhận và theo dõi các luồng nhật ký log, chỉ số thông lượng metrics
+  và tín hiệu báo tháo động cảnh báo alarms.
 \item
-  Troubleshoot incidents using evidence.
+  Vận dụng dữ liệu bấu víu minh chứng để phân giải từng rắc rối lỗi lọt
+  bế tắc có thể xảy đến ra quyết liệt.
 \item
-  Clean up resources in dependency order when the environment is no
-  longer needed.
+  Xuất chiêu quy dọn tháo rỡ từng chu trình an toàn theo trật tự phụ
+  thuộc ngay khi lớp học không còn nhu cầu níu bấu duy trì tiếp.
 \end{enumerate}
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
-After a successful deployment:
+Sau chuỗi thực thi triển khai mĩ mãn:
 
 \begin{itemize}
 \tightlist
 \item
-  CloudFront serves the frontend.
+  CloudFront đón nhận và phân phát trôi chảy frontend.
 \item
-  \texttt{/\allowbreak{}api/\allowbreak{}health/\allowbreak{}ready} reaches the FastAPI backend.
+  \texttt{/\allowbreak{}api/\allowbreak{}health/\allowbreak{}ready} đáp trả tín hiệu mượt mà từ sau hàng vây
+  FastAPI backend.
 \item
-  \texttt{/\allowbreak{}chat/\allowbreak{}health/\allowbreak{}ready} reaches the chat service.
+  \texttt{/\allowbreak{}chat/\allowbreak{}health/\allowbreak{}ready} báo tin xanh mướt ra từ cụm dịch vụ chat.
 \item
-  Socket.IO connects through \texttt{/\allowbreak{}socket.\allowbreak{}io}.
+  Mạch giao thông Socket.IO thông chao qua nấc \texttt{/\allowbreak{}socket.\allowbreak{}io}.
 \item
-  PostgreSQL, DynamoDB, Redis, SQS, Lambda, SES, S3, and SageMaker are
-  integrated.
+  Khung sọ PostgreSQL, DynamoDB, Redis, SQS, Lambda, SES, S3, cùng cỗ
+  máy SageMaker đồng bộ móc xâu kết cấu bám bó bền chặt.
 \item
-  GitHub Actions can run validation and deployment workflows through
-  OIDC.
+  Chuỗi thợ thủ công trên GitHub Actions đắc lực băng băng kiểm chứng
+  ráo rã và bung phát bản phát hành êm trôi qua ranh giới bảo an OIDC.
 \item
-  The system can process business events and archive Lambda output.
+  Hệ thống trỗi dậy sinh nhai thọ nhịp, chiết rót tinh gọn sự kiện
+  nghiệp vụ và xuất nạp trôi trót lọt tệp tin quy gọn sang mạn Lambda
+  cùng bãi neo lưu giữ.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Verification}\par
+\vspace{0.5em}\noindent\textbf{Kiểm chứng}\par
 
-Use these high-level checks after deployment:
+Sự dụng cụm lệnh căn bản này để tiến hành khám xét nhanh tình trạng sau
+giai đoạn thâu thao triển khai:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -249,7 +279,8 @@ Use these high-level checks after deployment:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -262,34 +293,42 @@ Use these high-level checks after deployment:
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Likely cause
+Nguyên nhân có thể
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-First diagnostic command
+Lệnh chẩn đoán đầu tiên
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-CloudFront returns frontend but API fails & ALB origin or behavior issue
-& \texttt{aws\ cloudfront\ get-\allowbreak{}distribution\ -\/\allowbreak{}-id\ EQIGYNECXDYL8} \\
-Backend pod not ready & PostgreSQL or secret configuration failure &
+CloudFront trả về đúng frontend tuy nhiên các request API lại báo lỗi
+rách & Lỗi phát sinh ở ALB origin hoặc thiết lập behavior phi logic &
+\texttt{aws\ cloudfront\ get-\allowbreak{}distribution\ -\/\allowbreak{}-id\ EQIGYNECXDYL8} \\
+Pod backend chưa đạt trạng thái ready & Sai sót cấu hình liên kết cơ sở
+dữ liệu PostgreSQL hoặc mất thông tin mật mã secret &
 \texttt{kubectl\ logs\ deployment/\allowbreak{}backend\ -n\ internship\ -\/\allowbreak{}-tail=100} \\
-Chat readiness returns \texttt{503} & Redis or DynamoDB unavailable &
+Route kiểm định sức khỏe của dịch vụ chat trả về \texttt{503} & Không
+thể bắt tuyến đến dịch vụ Redis hoặc bảng bên trong DynamoDB &
 \texttt{kubectl\ logs\ deployment/\allowbreak{}chat-\allowbreak{}service\ -n\ internship\ -\/\allowbreak{}-tail=100} \\
-Worker stays disabled & AI deployment or SageMaker endpoint not ready &
+Tiến trình worker bị bất động (disabled) dai dẳng & Pod ai-service hoặc
+cụm máy chủ cống suy luận SageMaker endpoint chưa trọn trạng thái sẵn
+sàng &
 \texttt{aws\ sagemaker\ describe-\allowbreak{}endpoint\ -\/\allowbreak{}-endpoint-\allowbreak{}name\ internship-\allowbreak{}qwen3-\allowbreak{}4b\ -\/\allowbreak{}-region\ ap-\allowbreak{}southeast-\allowbreak{}1} \\
-Lambda receives duplicates & Expected SQS at-least-once delivery & Check
-\texttt{InternshipLambdaEventDedupe} \\
+Lambda tiếp đón các chuỗi sự kiện bị trùng lặp & Đặc trưng hoàn toàn bản
+năng của quy luật giao tin ít-nhất-một-lần bên phía SQS & Kiểm tra tình
+hình bảng tháo rách khử lặp \texttt{InternshipLambdaEventDedupe} \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-This overview establishes the boundary for the rest of the workshop:
-frontend on S3 and CloudFront, long-running services on EKS,
-transactional data in PostgreSQL, chat data in DynamoDB, Redis for
-realtime pub/sub, SQS and Lambda for event processing, and SageMaker for
-AI inference.
+Chương Tổng quan này đóng mốc lập móng vững vàng làm điểm tham lam bồi
+tự vững cho các bài thực thi tiếp giáp phía sau trong workshop: từ chiến
+tuyến frontend cõng trên vai bộ đôi S3 kết hợp CloudFront, các chuỗi vi
+dịch vụ bền bỉ nội tại EKS, dữ liệu giao dịch quy vãng PostgreSQL, dữ
+liệu tin nhắn an cư bên trong DynamoDB, mạch tin Redis chuyên bồi đắp
+pub/sub cho realtime, nhịp tim SQS và Lambda vọt phóng xử lý sự kiện cho
+đến bãi rèn suy luận SageMaker cống hiến cho sức mạnh của AI.

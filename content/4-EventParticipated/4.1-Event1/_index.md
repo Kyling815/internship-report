@@ -79,18 +79,9 @@ This approach allows data exchanged between an AI Assistant and enterprise tools
 
 ## Participation Evidence
 
-[Watch the event recording on YouTube](https://www.youtube.com/live/G8-WlI7f6dE?si=4tnIqB3yrCUW6yjv)
+Personal participation evidence:
 
-Personal evidence to be added:
-
-- A screenshot taken while watching the livestream.
-- A screenshot of the viewing history.
-- Personal technical notes recorded during the event.
-
-<!--
-Evidence required: Add participation evidence image:
-static/images/events/event-1/participation-evidence.png
--->
+![Event 1 participation evidence](/images/3-Events/Evidence_Events%201.jpg)
 
 ## Lessons Learned
 

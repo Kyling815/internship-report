@@ -20,7 +20,6 @@ However, when a system expands to include Development, Staging, and Production e
 
 This article presents three techniques for upgrading a VPC architecture for enterprise environments: VPC Endpoints, Multi-AZ networking, and AWS Transit Gateway.
 
-![Enterprise VPC Architecture](/images/blogs/blog-4/enterprise-vpc-architecture.png)
 
 ## 1. Reducing Costs and Improving Security with VPC Endpoints
 

@@ -16,7 +16,6 @@ The more difficult challenge is ensuring that the code operates reliably within 
 
 While developing the AI-Powered Internship Application Tracker, I worked with FastAPI, React, PostgreSQL, Redis, DynamoDB, Amazon SQS, Docker, Kubernetes, GitHub Actions, and several AWS services. This experience did not simply introduce me to more technologies. It also changed how I understand software development, deployment, failure, and recovery.
 
-![Software Engineering Journey](/images/blogs/blog-3/software-engineering-journey.png)
 
 ## Running Locally Does Not Mean Running Successfully in Production
 

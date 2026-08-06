@@ -1,15 +1,14 @@
-\vspace{0.5em}\noindent\textbf{Week 2 - Concurrency Control and Data
-Integrity}\par
+\vspace{0.5em}\noindent\textbf{Tuần 2 - Kiểm soát concurrency và data
+integrity}\par
 
-\vspace{0.5em}\noindent\textbf{Objectives}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-Week 2 focused on making write operations safe when several backend or
-chat pods handle requests at the same time. The target was to prevent
-duplicate registrations, duplicate applications, stale workflow updates,
-and duplicate chat messages without using global application-level
-locks.
+Trong nhóm 5 thành viên, mục tiêu tuần 2 của tôi là review các yêu cầu
+concurrency và data integrity ảnh hưởng đến môi trường nhiều replica.
+Tôi hỗ trợ thành viên backend và chat kiểm tra idempotency, version
+check và database constraint trước khi đưa hệ thống lên Kubernetes.
 
-\vspace{0.5em}\noindent\textbf{Tasks Completed}\par
+\vspace{0.5em}\noindent\textbf{Phần việc cá nhân}\par
 
 {
 \begingroup
@@ -22,86 +21,75 @@ locks.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Task
+Phần việc được phân công
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence basis
+Cơ sở minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Completed & Analyzed concurrent writes across multiple backend pods. &
-\texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md}. \\
-Completed & Documented optimistic and pessimistic UI policies. &
-\texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md} and
+Hoàn thành & Phân tích concurrent write khi nhiều backend pod xử lý đồng
+thời. & \texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md}. \\
+Hoàn thành & Đóng góp góc nhìn triển khai vào chính sách
+optimistic/pessimistic UI. &
+\texttt{docs/\allowbreak{}architecture/\allowbreak{}concurrency-\allowbreak{}policy.\allowbreak{}md} và
 \texttt{docs/\allowbreak{}frontend/\allowbreak{}COMMAND\_\allowbreak{}MUTATION\_\allowbreak{}POLICY.\allowbreak{}md}. \\
-Completed & Added database-backed idempotency for candidate apply
-requests. & \texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}idempotency\_\allowbreak{}service.\allowbreak{}py},
-\texttt{backend/\allowbreak{}app/\allowbreak{}routers/\allowbreak{}jobs.\allowbreak{}py}, and migration
+Hoàn thành & Review cơ chế idempotency do thành viên backend triển khai
+cho thao tác ứng tuyển. & Service, router và migration
 \texttt{0004\_\allowbreak{}idempotency\_\allowbreak{}records.\allowbreak{}py}. \\
-Completed & Added version-gated workflow commands using
-\texttt{expectedVersion}. &
-\texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}optimistic\_\allowbreak{}concurrency.\allowbreak{}py},
-\texttt{backend/\allowbreak{}app/\allowbreak{}services/\allowbreak{}workflow\_\allowbreak{}commands.\allowbreak{}py}, and HR/Candidate
-routers. \\
-Completed & Hardened chat writes against duplicate retry behavior. &
-\texttt{chat-\allowbreak{}service/\allowbreak{}repositories/\allowbreak{}chatRepository.\allowbreak{}js} and
-\texttt{chat-\allowbreak{}service/\allowbreak{}tests/\allowbreak{}chatRepository.\allowbreak{}concurrency.\allowbreak{}test.\allowbreak{}js}. \\
-Partially completed & Attached visible API screenshots and CI logs where
-available. & Evidence pending: I did not have a screenshot or GitHub
-Actions log artifact in the local evidence archive. \\
+Hoàn thành & Review workflow command dùng \texttt{expectedVersion} trong
+môi trường nhiều pod. & Optimistic concurrency service, workflow command
+và các router liên quan. \\
+Hoàn thành & Phối hợp với thành viên chat kiểm tra hành vi retry và
+chống ghi trùng. & Chat repository và concurrency test. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Technical Implementation}\par
+\vspace{0.5em}\noindent\textbf{Triển khai kỹ
+thuật}\par
 
-Concurrency control was implemented at the database and API-contract
-level:
+Kiểm soát đồng thời được triển khai ở tầng cơ sở dữ liệu và hợp đồng
+API:
 
 \begin{itemize}
 \tightlist
 \item
-  PostgreSQL unique constraints protect duplicate user, company,
-  application, and idempotency records.
+  Các ràng buộc duy nhất của PostgreSQL ngăn bản ghi người dùng, công
+  ty, hồ sơ ứng tuyển và chống lặp bị trùng.
 \item
-  \texttt{Idempotency-\allowbreak{}Key} is accepted for candidate application
-  submission and selected workflow commands.
+  \texttt{Idempotency-\allowbreak{}Key} được chấp nhận khi ứng viên nộp hồ sơ và khi
+  gọi một số lệnh quy trình.
 \item
-  Reusing the same idempotency key with the same payload replays the
-  stored response.
+  Dùng lại cùng khóa chống lặp với cùng dữ liệu đầu vào sẽ phát lại phản
+  hồi đã lưu.
 \item
-  Reusing the same idempotency key with a different payload returns
-  \texttt{409} with \texttt{idempotency\_\allowbreak{}key\_\allowbreak{}reused}.
+  Dùng lại cùng khóa với dữ liệu đầu vào khác sẽ trả về mã \texttt{409}
+  và lỗi \texttt{idempotency\_\allowbreak{}key\_\allowbreak{}reused}.
 \item
-  Mutable HR job and application commands require
+  Các lệnh sửa công việc và hồ sơ ứng tuyển của nhân sự yêu cầu
   \texttt{expectedVersion}.
 \item
-  Stale version updates return controlled \texttt{409\ Conflict}
-  responses.
+  Cập nhật dựa trên phiên bản cũ trả về phản hồi \texttt{409\ Conflict}
+  có kiểm soát.
 \item
-  Chat retries use deterministic client message IDs and DynamoDB
-  conditional write behavior to avoid duplicate logical messages.
+  Khi thử gửi lại tin nhắn, dịch vụ chat dùng mã tin nhắn phía máy khách
+  có tính xác định và phép ghi có điều kiện của DynamoDB để tránh trùng
+  tin nhắn logic.
 \end{itemize}
 
-Conflict flow:
+Luồng xử lý xung đột:
 
-\{\{\textless{} mermaid \textgreater\}\} sequenceDiagram participant C
-as Client participant API as FastAPI backend pod participant DB as
-PostgreSQL C-\textgreater\textgreater API: POST /jobs/\{id\}/apply +
-Idempotency-Key API-\textgreater\textgreater DB: reserve scoped
-idempotency record alt new request API-\textgreater\textgreater DB:
-insert application, documents, history API-\textgreater\textgreater DB:
-complete idempotency record API--\textgreater\textgreater C: 200/201
-application response else exact replay DB--\textgreater\textgreater API:
-completed stored response API--\textgreater\textgreater C: stored
-response + Idempotency-Replayed else payload mismatch or duplicate
-business conflict API--\textgreater\textgreater C: 409 Conflict end
-\{\{\textless{} /mermaid \textgreater\}\}
+\textbf{Mô tả sơ bộ.} Client gửi yêu cầu ứng tuyển kèm khóa idempotency.
+Backend giữ chỗ khóa trong PostgreSQL, tạo hồ sơ đối với yêu cầu mới,
+trả lại kết quả đã lưu khi yêu cầu được gửi lại y hệt, và trả HTTP 409
+khi payload hoặc trạng thái nghiệp vụ xung đột.
 
-\vspace{0.5em}\noindent\textbf{Problems and Solutions}\par
+\vspace{0.5em}\noindent\textbf{Vấn đề và giải
+pháp}\par
 
 {
 \begingroup
@@ -115,43 +103,40 @@ business conflict API--\textgreater\textgreater C: 409 Conflict end
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Problem
+Vấn đề
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Root cause
+Nguyên nhân gốc
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Giải pháp
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Status
+Trạng thái
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Duplicate registration or company creation could surface as uncontrolled
-database errors. & Unique constraints existed or were needed, but error
-translation had to be explicit. & Integrity errors are rolled back and
-translated into \texttt{409\ Conflict}. & Completed \\
-Candidate apply can be retried by browser/network clients. & A second
-request may reach another backend pod before the first response is
-received. & Scoped idempotency records persist request hash and response
-data. & Completed \\
-HR workflow updates can become stale when two users act on the same
-job/application. & Plain updates do not know whether the client saw the
-latest row version. & Commands require \texttt{expectedVersion} and use
-conditional updates. & Completed \\
-Chat retries can duplicate realtime messages. & Socket retries and REST
-retries can re-send the same logical message. & Chat repository uses
-deterministic message identity and skips duplicate broadcast on replay.
-& Completed \\
-Public evidence for a \texttt{409} screenshot is missing. & The source
-repo contains tests and docs, but no screenshot artifact. & I kept
-screenshot evidence pending. & Blocked \\
+Đăng ký hoặc tạo công ty trùng có thể làm lộ lỗi cơ sở dữ liệu chưa kiểm
+soát. & Đã có hoặc cần bổ sung ràng buộc duy nhất, đồng thời phải ánh xạ
+lỗi tường minh. & Lỗi toàn vẹn được hoàn tác và chuyển thành
+\texttt{409\ Conflict}. & Hoàn thành \\
+Trình duyệt hoặc mạng có thể khiến yêu cầu ứng tuyển được gửi lại. & Yêu
+cầu thứ hai có thể đến pod backend khác trước khi phản hồi đầu tiên quay
+về. & Bản ghi chống lặp theo phạm vi lưu hàm băm yêu cầu và dữ liệu phản
+hồi. & Hoàn thành \\
+Cập nhật quy trình nhân sự có thể dùng dữ liệu cũ khi hai người cùng
+thao tác. & Cập nhật thông thường không biết máy khách đã nhìn thấy
+phiên bản mới nhất hay chưa. & Lệnh yêu cầu \texttt{expectedVersion} và
+dùng cập nhật có điều kiện. & Hoàn thành \\
+Thử gửi lại có thể làm trùng tin nhắn thời gian thực. & Cơ chế thử lại
+qua Socket và REST có thể gửi lại cùng một tin nhắn logic. & Kho chat
+dùng định danh tin nhắn có tính xác định và bỏ qua phát lại khi nhận bản
+trùng. & Hoàn thành \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Testing, Build and Deployment
-Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả kiểm thử, build và triển
+khai}\par
 
 {
 \begingroup
@@ -164,53 +149,38 @@ Results}\par
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Area
+Hạng mục
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Result
+Kết quả
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence
+Minh chứng
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Backend concurrency tests & Partially completed & Test sources exist:
-\texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}apply\_\allowbreak{}idempotency.\allowbreak{}py},
+Kiểm thử đồng thời của backend & Hoàn thành một phần & Có các tệp kiểm
+thử: \texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}apply\_\allowbreak{}idempotency.\allowbreak{}py},
 \texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}apply\_\allowbreak{}idempotency\_\allowbreak{}postgres.\allowbreak{}py},
-\texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}optimistic\_\allowbreak{}concurrency.\allowbreak{}py}, and
-\texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}optimistic\_\allowbreak{}concurrency\_\allowbreak{}postgres.\allowbreak{}py}.
-Current-run output is pending. \\
-Chat concurrency tests & Partially completed & Test source exists:
-\texttt{chat-\allowbreak{}service/\allowbreak{}tests/\allowbreak{}chatRepository.\allowbreak{}concurrency.\allowbreak{}test.\allowbreak{}js}.
-Current-run output is pending. \\
-API conflict behavior & Implemented & Source contains explicit
-\texttt{409} handling for stale versions, duplicate apply, and
-idempotency-key reuse. \\
-Deployment & Planned & This week focused on correctness before
-deployment. \\
+\texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}optimistic\_\allowbreak{}concurrency.\allowbreak{}py} và
+\texttt{backend/\allowbreak{}tests/\allowbreak{}test\_\allowbreak{}optimistic\_\allowbreak{}concurrency\_\allowbreak{}postgres.\allowbreak{}py}. Kết
+quả chạy hiện tại đang chờ. \\
+Kiểm thử đồng thời của chat & Hoàn thành một phần & Có tệp
+\texttt{chat-\allowbreak{}service/\allowbreak{}tests/\allowbreak{}chatRepository.\allowbreak{}concurrency.\allowbreak{}test.\allowbreak{}js}. Kết quả
+chạy hiện tại đang chờ. \\
+Hành vi xung đột của API & Đã triển khai & Mã nguồn xử lý tường minh mã
+\texttt{409} cho phiên bản cũ, ứng tuyển trùng và dùng lại khóa chống
+lặp. \\
+Triển khai & Đã lập kế hoạch & Tuần này tập trung bảo đảm tính đúng đắn
+trước khi triển khai. \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Evidence}\par
+\vspace{0.5em}\noindent\textbf{Minh chứng}\par
 
-\vspace{0.5em}\noindent\textbf{Screenshots}\par
-
-Evidence pending: add screenshots under
-\texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}}, for example:
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}duplicate-\allowbreak{}apply-\allowbreak{}409.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}idempotency-\allowbreak{}replay.\allowbreak{}png}
-\item
-  \texttt{/\allowbreak{}images/\allowbreak{}worklog/\allowbreak{}week-\allowbreak{}02/\allowbreak{}postgres-\allowbreak{}concurrency-\allowbreak{}tests.\allowbreak{}png}
-\end{itemize}
-
-\vspace{0.5em}\noindent\textbf{Commits and Pull
-Requests}\par
+\vspace{0.5em}\noindent\textbf{Commit và yêu cầu kéo
+mã}\par
 
 {
 \begingroup
@@ -226,40 +196,40 @@ Requests}\par
 \begin{minipage}[b]{\linewidth}\raggedright
 Commit
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
+Mô tả
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Evidence
+Minh chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Pull Request
+Yêu cầu kéo mã
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{0f9e7f2} & Added backend workflow outbox, idempotency records,
-optimistic concurrency helpers, async processing foundation, and tests.
-&
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/0f9e7f2aed730153e905df0700fc3401f8957b21}{View
-commit} & Evidence pending \\
-\texttt{5326cb0} & Hardened chat repository concurrency and added chat
-concurrency tests. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/5326cb0ad12bf5e311236469e5c2b90c7fe20b6e}{View
-commit} & Evidence pending \\
-\texttt{77faab4} & Integrated workflow and processing contracts into
-frontend API helpers and UI flows. &
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/77faab4a919405beef1865fc06a106b0289a3310}{View
-commit} & Evidence pending \\
-\texttt{5041f84} & Fixed failing optimistic concurrency test assertions.
-&
-\href{https://github.com/Temp-orgo/AWS-Internship/commit/5041f84600390724c4760c51da499592b1cf6104}{View
-commit} & Evidence pending \\
+\texttt{0f9e7f2} & Bổ sung outbox quy trình backend, bản ghi chống lặp,
+công cụ đồng thời lạc quan, nền tảng xử lý bất đồng bộ và kiểm thử. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/0f9e7f2aed730153e905df0700fc3401f8957b21}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{5326cb0} & Củng cố xử lý đồng thời của kho chat và bổ sung kiểm
+thử. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/5326cb0ad12bf5e311236469e5c2b90c7fe20b6e}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{77faab4} & Tích hợp hợp đồng quy trình và xử lý vào công cụ API
+cùng luồng giao diện frontend. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/77faab4a919405beef1865fc06a106b0289a3310}{Xem
+commit} & Minh chứng đang chờ \\
+\texttt{5041f84} & Sửa các khẳng định bị lỗi trong kiểm thử đồng thời
+lạc quan. &
+\href{https://github.com/Temp-orgo/AWS-Internship/commit/5041f84600390724c4760c51da499592b1cf6104}{Xem
+commit} & Minh chứng đang chờ \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Test Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký kiểm
+thử}\par
 
-Evidence pending: attach actual output from commands such as:
+Minh chứng đang chờ: đính kèm kết quả thực tế từ các lệnh như:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -269,32 +239,33 @@ Evidence pending: attach actual output from commands such as:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Build Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký build}\par
 
-Not applicable for the core Week 2 task. No dedicated build artifact was
-found for this phase.
+Không áp dụng cho nhiệm vụ chính của tuần 2. Không tìm thấy sản phẩm
+build riêng cho giai đoạn này.
 
-\vspace{0.5em}\noindent\textbf{Deployment Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký triển
+khai}\par
 
-Not applicable for Week 2. The feature was designed to be safe before
-scaling the backend in Kubernetes.
+Không áp dụng cho tuần 2. Tính năng được thiết kế an toàn trước khi mở
+rộng backend trên Kubernetes.
 
-\vspace{0.5em}\noindent\textbf{Weekly Results}\par
+\vspace{0.5em}\noindent\textbf{Kết quả trong tuần}\par
 
-The application gained stronger data-integrity guarantees: duplicate
-writes are constrained by PostgreSQL or DynamoDB, client retries are
-handled through idempotency records, stale updates produce
-\texttt{409\ Conflict}, and chat replay behavior avoids duplicate
-broadcasts.
+Kết quả cá nhân tuần 2 là bản review theo góc nhìn triển khai đối với
+chính sách concurrency của nhóm và hành vi khi chạy nhiều replica. Phần
+triển khai backend và chat thuộc trách nhiệm của các thành viên phụ
+trách hai component này.
 
-\vspace{0.5em}\noindent\textbf{Lessons Learned}\par
+\vspace{0.5em}\noindent\textbf{Bài học rút ra}\par
 
-Service load balancing does not serialize writes. Correctness must be
-enforced at the storage and transaction boundary, then reflected clearly
-through API response codes and UI behavior.
+Cân bằng tải dịch vụ không tuần tự hóa thao tác ghi. Tính đúng đắn phải
+được bảo đảm tại ranh giới lưu trữ và giao dịch, sau đó thể hiện rõ qua
+mã phản hồi API và hành vi giao diện.
 
-\vspace{0.5em}\noindent\textbf{Next Week Plan}\par
+\vspace{0.5em}\noindent\textbf{Kế hoạch tuần tiếp
+theo}\par
 
-Build the transactional outbox and asynchronous processing layers so
-committed domain changes can trigger reliable downstream work without
-keeping the main API request open.
+Xây dựng outbox giao dịch và các tầng xử lý bất đồng bộ để thay đổi
+nghiệp vụ đã commit có thể kích hoạt công việc phía sau một cách tin cậy
+mà không giữ yêu cầu API chính chờ lâu.

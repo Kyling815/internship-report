@@ -1,5 +1,5 @@
 ﻿---
-title: "Tạo một Gateway Endpoint"
+title: "Tạo điểm cuối cổng"
 date: 2024-01-01 
 weight: 1
 chapter: false

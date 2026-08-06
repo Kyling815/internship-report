@@ -6,6 +6,7 @@ chapter: false
 pre: " <b> 4.2. </b> "
 ---
 
+
 ## Event Name
 
 AWS Study Tour: Enterprise Cloud Architectures and Industry Applications featuring Cloud Kinetics and Renova Cloud
@@ -49,19 +50,9 @@ The presentations from Cloud Kinetics and Renova Cloud helped me better understa
 
 ## Participation Evidence
 
-[Watch the event recording on YouTube](https://www.youtube.com/live/FKtMkUqyny4?si=SdhD3d67wFy7qNr6)
+Personal participation evidence:
 
-Personal evidence to be added:
-
-- A screenshot taken while the event video was playing.
-- A screenshot of the YouTube viewing history.
-- A screenshot showing the participant's account information.
-- Personal notes created while watching the event.
-
-<!--
-Evidence required: Add participation evidence image:
-static/images/events/event-2/participation-evidence.png
--->
+![Event 2 participation evidence](/images/3-Events/Evidence_Events%202.jpg)
 
 ## Lessons Learned
 

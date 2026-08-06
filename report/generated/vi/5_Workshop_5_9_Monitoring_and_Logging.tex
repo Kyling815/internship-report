@@ -1,21 +1,25 @@
-\vspace{0.5em}\noindent\textbf{Monitoring and Logging}\par
+\vspace{0.5em}\noindent\textbf{Mục tiêu}\par
 
-\vspace{0.5em}\noindent\textbf{Objective}\par
+Giám sát an nộ sức khỏe của ứng dụng, trạng thái của các tiến trình
+triển khai, chuỗi tập tin nhật ký (logs), hệ thông lượng đo lường
+metrics, danh sách các hàng đợi, luồng xử lý trên hàm Lambda, và toàn
+diện cụm tài nguyên dịch vụ AWS được quản lý.
 
-Monitor application health, deployment state, logs, metrics, queues,
-Lambda processing, and AWS managed services.
+\vspace{0.5em}\noindent\textbf{Bối cảnh kiến
+trúc}\par
 
-\vspace{0.5em}\noindent\textbf{Architecture context}\par
+Kho chứa repository tích hợp sẵn các hồ sơ bản vẽ kịch bản Kubernetes
+mang thói quen ServiceMonitor cùng PrometheusRule dùng thi cẩu gặt hái
+thông tham số ứng dụng metrics. Các chỉ số metrics và báo nguy cảnh báo
+nằm tại cõi AWS CloudWatch buộc lòng yêu cầu thanh kiểm cẩn khôn trên
+tài khoản AWS của dự án trước thềm ra phán cờ ghi mác là đã thực thi
+trong production.
 
-The repository contains Kubernetes ServiceMonitor and PrometheusRule
-manifests for application metrics. AWS-side CloudWatch metrics and
-alarms must be verified from the target account before being marked as
-deployed.
+\vspace{0.5em}\noindent\textbf{Tra soát tài nguyên
+Kubernetes}\par
 
-\vspace{0.5em}\noindent\textbf{Kubernetes resource
-inspection}\par
-
-Use \texttt{kubectl\ get} for fast status checks:
+Ứng dụng thọ gõ cụm lệnh cất nhanh \texttt{kubectl\ get} để thanh kiểm
+tức thời mọi nhịp sinh trồi trạng thái:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -25,24 +29,30 @@ Use \texttt{kubectl\ get} for fast status checks:
 \end{Highlighting}
 \end{Shaded}
 
-Expected result:
+Kết quả mong đợi:
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{backend} and \texttt{chat-\allowbreak{}service} have Ready replicas.
+  Hai chiến tuyến \texttt{backend} và \texttt{chat-\allowbreak{}service} nghênh ngang
+  hãy múa con số các replica mang trạng thái Ready.
 \item
-  \texttt{backend-\allowbreak{}outbox-\allowbreak{}dispatcher} is Ready.
+  Tiến trình \texttt{backend-\allowbreak{}outbox-\allowbreak{}dispatcher} vững kiên an tọa cọc
+  trạng thái Ready.
 \item
-  \texttt{backend-\allowbreak{}processing-\allowbreak{}worker} is either Ready or intentionally
-  scaled to zero.
+  Trình \texttt{backend-\allowbreak{}processing-\allowbreak{}worker} ung dung chễm trệ trạng thái
+  Ready, hoặc kiên khôn ngả bãi xuống quy mô 0 replica đúng nhĩ kịch
+  bản.
 \item
-  \texttt{ai-\allowbreak{}service} is Ready when AI deployment is enabled.
+  Dịch vụ \texttt{ai-\allowbreak{}service} báo danh cọc Ready mỗi dịp chu trình ban
+  bố mở cống AI vỗ còi thêu bật.
 \item
-  \texttt{backend-\allowbreak{}migrate} and \texttt{chat-\allowbreak{}init} have completed.
+  Cụm tác vụ job thợ múa \texttt{backend-\allowbreak{}migrate} và \texttt{chat-\allowbreak{}init}
+  hoan khải khép kín một mạch thi hành thành tài hoàn trọn.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Rollout status}\par
+\vspace{0.5em}\noindent\textbf{Trạng thái cuộn bản phát hành (Rollout
+status)}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -54,9 +64,12 @@ Expected result:
 \end{Highlighting}
 \end{Shaded}
 
-Only check \texttt{ai-\allowbreak{}service} when AI deployment is enabled.
+Chú tâm khẩn kiệt nhấp rà lệnh trát của \texttt{ai-\allowbreak{}service} duy chỉ lúc
+rào cấu hình cho phép triển khai pod trung gian AI service mở rộng đón
+cẩu.
 
-\vspace{0.5em}\noindent\textbf{Application logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký ứng dụng (Application
+logs)}\par
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -68,7 +81,8 @@ Only check \texttt{ai-\allowbreak{}service} when AI deployment is enabled.
 \end{Highlighting}
 \end{Shaded}
 
-Use \texttt{-\/\allowbreak{}-previous} when a container has restarted:
+Kiên kỵ huy động thêm tham cờ \texttt{-\/\allowbreak{}-previous} trong hoàn cảnh con
+pod tuôn cọc tái khởi sinh lật cõi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -76,10 +90,11 @@ Use \texttt{-\/\allowbreak{}-previous} when a container has restarted:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Describe commands}\par
+\vspace{0.5em}\noindent\textbf{Các lệnh describe}\par
 
-Use \texttt{kubectl\ describe} when readiness, scheduling, probes, or
-Ingress reconciliation fail:
+Ưu vãng thọ gọi câu lệnh \texttt{kubectl\ describe} mỗi lúc tiến trình
+khảo sát sức khỏe readiness, phân rã vãng lịch chạy pod, bộ đo lường sức
+khỏe, hoặc cỗ máy canh rà đồng bộ Ingress bốc hỏng dội sập:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -90,9 +105,11 @@ Ingress reconciliation fail:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Health endpoints}\par
+\vspace{0.5em}\noindent\textbf{Các đường dẫn kiểm thử sức
+khỏe}\par
 
-Backend readiness checks PostgreSQL:
+Hệ rà soát sức khỏe sẵn lòng thuộc mạn backend thi ra chiêu tra khảo kết
+nối cọc tới PostgreSQL:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -100,7 +117,7 @@ Backend readiness checks PostgreSQL:
 \end{Highlighting}
 \end{Shaded}
 
-Expected response:
+Chuỗi tin đáp trả theo kỳ vọng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -108,7 +125,8 @@ Expected response:
 \end{Highlighting}
 \end{Shaded}
 
-Chat readiness checks Redis and DynamoDB:
+Nhịp tim đo đạc rà sức khỏe từ dịch vụ chat tiến tới thấu trát soát 2 cơ
+quan Redis kết bấu cùng DynamoDB:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -116,7 +134,7 @@ Chat readiness checks Redis and DynamoDB:
 \end{Highlighting}
 \end{Shaded}
 
-Expected response:
+Kết quả trả về mong đợi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -124,8 +142,8 @@ Expected response:
 \end{Highlighting}
 \end{Shaded}
 
-AI readiness checks that \texttt{SAGEMAKER\_\allowbreak{}ENDPOINT\_\allowbreak{}NAME} is
-configured:
+Luồng soát sức khỏe bên mạn dịch vụ AI bấu giữ xác minh tinh trát xem
+khóa biến \texttt{SAGEMAKER\_\allowbreak{}ENDPOINT\_\allowbreak{}NAME} đã sắm vãng vào đủ chăng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -134,9 +152,10 @@ configured:
 \end{Highlighting}
 \end{Shaded}
 
-\vspace{0.5em}\noindent\textbf{Prometheus and Grafana}\par
+\vspace{0.5em}\noindent\textbf{Prometheus và Grafana}\par
 
-The repository defines ServiceMonitor resources for:
+Kho repository cất tạc trọn cõi định nghĩa cho các tài nguyên mang mác
+ServiceMonitor tương ứng cho:
 
 \begin{itemize}
 \tightlist
@@ -148,9 +167,11 @@ The repository defines ServiceMonitor resources for:
   \texttt{backend-\allowbreak{}outbox-\allowbreak{}dispatcher}
 \item
   \texttt{backend-\allowbreak{}processing-\allowbreak{}worker}
+\item
 \end{itemize}
 
-Apply when the Prometheus Operator CRDs are installed:
+Ban bố gõ lệnh ứng cài các manifest mỗi khi rèm cấu trúc bộ khung CRD
+thuộc về Prometheus Operator thi thố an tọa bãi:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -159,7 +180,7 @@ Apply when the Prometheus Operator CRDs are installed:
 \end{Highlighting}
 \end{Shaded}
 
-Verify:
+Kiểm chứng:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -169,7 +190,7 @@ Verify:
 \end{Highlighting}
 \end{Shaded}
 
-Expected application targets:
+Các đích đến (targets) giám sát mong đợi xuất ngụ ra cho ứng dụng:
 
 \begin{itemize}
 \tightlist
@@ -183,9 +204,11 @@ Expected application targets:
   \texttt{backend-\allowbreak{}processing-\allowbreak{}worker}
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Repository-defined alerts}\par
+\vspace{0.5em}\noindent\textbf{Cảnh báo được định nghĩa trong
+repository}\par
 
-The repository includes Prometheus alerts for:
+Thư viện kịch bản tại gốc repository sở hữu trọn tập quy nạp cho dải báo
+nguy Prometheus alerts chuyên phục vụ:
 
 {
 \begingroup
@@ -197,45 +220,55 @@ The repository includes Prometheus alerts for:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Alert
+Cảnh báo
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Purpose
+Mục đích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{InternshipBackendDown} & Backend metrics target unavailable \\
-\texttt{InternshipChatDown} & Chat metrics target unavailable \\
-\texttt{InternshipChatDependencyDown} & Chat Redis or DynamoDB
-dependency unavailable \\
-\texttt{InternshipOutboxDispatcherDown} & Dispatcher metrics target
-unavailable \\
-\texttt{InternshipProcessingWorkerDown} & Processing worker metrics
-target unavailable \\
-\texttt{InternshipBackend5xxHigh} & Elevated backend 5xx rate \\
-\texttt{InternshipBackendP95LatencyHigh} & High backend p95 latency \\
-\texttt{InternshipChatMessageFailureRatioHigh} & High chat message
-failure rate \\
-\texttt{InternshipPodCrashLooping} & Pod CrashLoopBackOff \\
-\texttt{InternshipOutboxDeadEventsPresent} & Dead outbox events need
-operator action \\
-\texttt{InternshipOutboxPendingTooOld} & Pending outbox event age too
-high \\
-\texttt{InternshipOutboxTransportErrors} & SQS transport errors \\
-\texttt{InternshipProcessingQueueOld} & Processing queue age too high \\
-\texttt{InternshipProcessingJobsFailing} & Processing jobs failing \\
-\texttt{InternshipAIProviderFailures} & AI provider failures \\
+\texttt{InternshipBackendDown} & Mục tiêu (target) giám sát metrics cho
+backend bặt tàn vắng dạng \\
+\texttt{InternshipChatDown} & Mục tiêu giám sát metrics thuộc về chat cự
+cõi tuột giốc \\
+\texttt{InternshipChatDependencyDown} & Trụ cọc tài nguyên phụ thuộc
+(Redis hay DynamoDB) của chat sa cọc nghẹt \\
+\texttt{InternshipOutboxDispatcherDown} & Mục tiêu giám sát metrics của
+dispatcher rơi tõm kiệt dạng \\
+\texttt{InternshipProcessingWorkerDown} & Mục tiêu giám sát metrics cho
+processing worker gào ngã kiếp im lì \\
+\texttt{InternshipBackend5xxHigh} & Tỷ lệ lỗi 5xx vọt bổng leo dốc cao
+chót vót cõi backend \\
+\texttt{InternshipBackendP95LatencyHigh} & Chỉ số trễ mác p95 tại
+backend trỗi nhịp phình bạo rực rỡ \\
+\texttt{InternshipChatMessageFailureRatioHigh} & Tỷ lệ thư tín đàm thoại
+dính thảm bại thuyên trượt qua ngưỡng an toàn \\
+\texttt{InternshipPodCrashLooping} & Các pod bấu tuội mắc kẹt trong bẫy
+vòng lặp tử thần CrashLoopBackOff \\
+\texttt{InternshipOutboxDeadEventsPresent} & Tác nghiệp sự kiện cõi
+outbox trườn ốm chết đe lị, giục gọi tay con người thiền can thiệp \\
+\texttt{InternshipOutboxPendingTooOld} & Nhĩ sự kiện chây gan ngọ ngập
+ngạc mác pending trượt tuổi hạn xa hoa \\
+\texttt{InternshipOutboxTransportErrors} & Lỗi vãng đò vận trút trên cõi
+vận tải SQS \\
+\texttt{InternshipProcessingQueueOld} & Tuổi hàng đợi xử lý processing
+queue sa chao quá nấc giới hạn thọ \\
+\texttt{InternshipProcessingJobsFailing} & Các processing jobs trồi sa
+đâm sấp thảm bại liên hoàn \\
+\texttt{InternshipAIProviderFailures} & Trùng trùng lỗi chát dội sang từ
+nguồn cất trát dịch vụ AI \\
 \end{longtable}
 \endgroup
 }
 
-Status: implemented in repository manifests. Evidence required to prove
-these were applied in production.
+Trang thái: đã triển khai trong các manifest của repository. Cần bằng
+chứng để minh chứng các cảnh báo này đã được áp dụng trong production.
 
-\vspace{0.5em}\noindent\textbf{CloudWatch Logs}\par
+\vspace{0.5em}\noindent\textbf{Nhật ký CloudWatch (CloudWatch
+Logs)}\par
 
-Check Lambda logs:
+Kiểm tra nhật ký log của Lambda:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -249,12 +282,13 @@ Check Lambda logs:
 \end{Highlighting}
 \end{Shaded}
 
-Check EKS-related logs only if container log shipping is configured.
-Evidence required: CloudWatch log group names for backend, chat, worker,
-dispatcher, and AI service.
+Kiêm tra soát các tệp log phát nạp từ mạn EKS duy nhất chỉ những chuỗi
+thời khắc cọc điều hướng thu tệp container log shipping gieo rắc kích
+múa thành công. Cần bằng chứng: tên các log group trên CloudWatch dành
+cho backend, chat, worker, dispatcher, và AI service.
 
-\vspace{0.5em}\noindent\textbf{AWS managed-service
-metrics}\par
+\vspace{0.5em}\noindent\textbf{Chỉ số giám sát của các dịch vụ AWS được quản
+lý}\par
 
 {
 \begingroup
@@ -266,37 +300,48 @@ metrics}\par
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Service
+Dịch vụ
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Useful metrics
+Các chỉ số hữu ích
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
 ALB & \texttt{HTTPCode\_\allowbreak{}Target\_\allowbreak{}5XX\_\allowbreak{}Count},
-\texttt{TargetResponseTime}, healthy hosts, LCUs \\
-CloudFront & requests, 4xx/5xx rate, origin latency, bytes downloaded \\
-RDS & CPU, free storage, connections, read/write IOPS, replica lag if
-any \\
-ElastiCache Redis & CPU, memory, evictions, current connections \\
-DynamoDB & throttled requests, consumed read/write capacity, system
-errors \\
-SQS & approximate visible messages, age of oldest message, DLQ visible
-messages \\
-Lambda & errors, duration, throttles, iterator age, concurrent
-executions \\
-SageMaker & endpoint invocation errors, model latency, overhead latency,
-instance utilization \\
+\texttt{TargetResponseTime}, tổng lượng target khỏe múa (healthy hosts),
+và mức hao tổn đơn vị LCU \\
+CloudFront & tổng số lượt request, tỉ lệ cõng lỗi 4xx/5xx, chỉ số
+trễorigin latency, cùng trữ lượng byte tài liệu tải ra (bytes
+downloaded) \\
+RDS & dung tổn CPU, quy mô bộ nhớ trống (free storage), trữ lượng kết
+nối (connections), thông lượng IOPS thao tác đọc/ghi, và nhịp trễ nhân
+bản cọc replica lag (nếu dùng) \\
+ElastiCache Redis & tiêu chi CPU, lượng tài nguyên RAM memory, lượt dồn
+bạt evictions, đi kèm tổng con số kết nối trực tiệp hiện hữu (current
+connections) \\
+DynamoDB & quy bạo request dính án chặn throttled requests, lượng đơn vị
+đọc/ghi tiếp thoạt consumed read/write capacity, và hệ thông lỗi cọc
+system errors \\
+SQS & số tin nhắn nhìn rãnh approximate visible messages, mác chu kỳ
+tuổi của con tin lâu đời nhất (age of oldest message), cùng số lượng tin
+ứ tắc thọ ngụ cõi DLQ visible messages \\
+Lambda & lượng mã lỗi errors, độ dài thời cẩu duration, thông ký bạt hãm
+throttles, mác chu kỳ iterator age, đi kèm cọc lượt khởi thi hành song
+song concurrent executions \\
+SageMaker & thông lượng lỗi gõ lời gọi endpoint invocation errors, chu
+kỳ trễ cống model latency, chỉ số trễ mạn overhead latency, cùng mức gặm
+kiệt tải con máy instance utilization \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Proposed CloudWatch
-alarms}\par
+\vspace{0.5em}\noindent\textbf{Đề xuất các cảnh báo CloudWatch (Proposed CloudWatch
+alarms)}\par
 
-These alarms are recommended. Evidence required before marking them
-deployed:
+Các mô hình cảnh báo dưới đây mang dáng hình lời khuyến nghị. Cần bằng
+chứng trước khi chốt quyền xướng danh cúng trát là đã vinh quy múa việc
+tại cõi triển khai production:
 
 {
 \begingroup
@@ -308,54 +353,68 @@ deployed:
   >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Alarm
+Cảnh báo
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Recommended condition
+Điều kiện đề xuất
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-DLQ messages visible &
-\texttt{ApproximateNumberOfMessagesVisible\ \textgreater{}\ 0} on
-\texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} \\
-Main queue age high & Oldest SQS message age exceeds operational
-threshold \\
-Lambda errors & \texttt{Errors\ \textgreater{}\ 0} for
+Tin nhắn lộ vãng cõi DLQ & Ghi nhận cọc tham số
+\texttt{ApproximateNumberOfMessagesVisible\ \textgreater{}\ 0} cọ rẽ
+trên hàng đợi \texttt{internship-\allowbreak{}prod-\allowbreak{}outbox-\allowbreak{}dlq} \\
+Tuổi của hàng đợi chủ lực vọt mác & Chu kỳ thời chao tàn già của con tin
+nhắn SQS vọt thêu trèo bạt sang qua rào cản vận hành quy đúc \\
+Hàm Lambda lâm bãi rách hỏng & Ghi nhận chỉ số
+\texttt{Errors\ \textgreater{}\ 0} ngã trúng đầu hàm
 \texttt{internship-\allowbreak{}outbox-\allowbreak{}handler} \\
-Lambda throttles & \texttt{Throttles\ \textgreater{}\ 0} \\
-ALB target 5xx high & Target 5xx count/rate above threshold \\
-RDS CPU high & CPU above sustained threshold \\
-RDS free storage low & Free storage below threshold \\
-Redis memory high & Memory or evictions above threshold \\
-SageMaker errors & Invocation/model errors above threshold \\
-CloudFront 5xx high & 5xx error rate above threshold \\
+Lambda sa án nghẹt trần phanh (throttles) & Thông ký cọc
+\texttt{Throttles\ \textgreater{}\ 0} xuất cõi \\
+Tỷ lệ lỗi 5xx trên target ALB phình bạo & Con số lỗi hoặc tỷ lệ 5xx do
+đích đến target group dội trả ngớp ngoái vượt trần cho phép \\
+Tổn hao cọc CPU trên RDS réo kỉnh & Nhịp chiêu tiêu CPU bám cọc duy trì
+đỉnh cao miên man rả rích xô nấc giới hạn \\
+Trữ lượng trống trên RDS sụt giảm (free storage low) & Phần dung lượng
+đĩa trống an toàn sụt lún chao tụt rớt xa rào bảo vệ \\
+Memory của Redis cao vãng trần & Mức tiêu dùng bộ nhớ hoặc lượng bạt tàn
+evictions phi dốc vọt qua rào nấc định quy \\
+SageMaker thông cáo thảm lỗi & Số lần gõ bạt cất rách suy luận hoặc lỗi
+cỗ model tựa cọc thuyên quá trần cản rào \\
+Lỗi 5xx cõi CDN CloudFront phi mã & Tỉ lệ request sa nhầm trúng cọc 5xx
+băng bổng kiếp vọt nấc rào cản cảnh giác \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Expected result}\par
+\vspace{0.5em}\noindent\textbf{Kết quả mong đợi}\par
 
 \begin{itemize}
 \tightlist
 \item
-  Kubernetes deployments are Ready.
+  Các cụm Deployment trong lòng Kubernetes reo ca tinh thần Ready trơn
+  chu.
 \item
-  Health endpoints pass through CloudFront.
+  Bộ trạm tra cứu sức khỏe ung dung thông vãn êm ái khi buông lọt
+  vạchCDN CloudFront.
 \item
-  Logs are available for each EKS workload and Lambda.
+  Kho tàng nhật ký log trốn đầy tụ sắm đủ trọn cõi cho toàn thể cụm
+  workload trên EKS cũng như cơ quan Lambda.
 \item
-  Prometheus can scrape application metrics when observability is
-  installed.
+  Cỗ cống Prometheus tự do vục thâu, cẩu chiết mĩ mãn thông quan dải
+  metrics nghiệp vụ ngay khi hạ tầng giám sát được dệt may hoàn tất.
 \item
-  SQS, Lambda, RDS, Redis, DynamoDB, ALB, CloudFront, and SageMaker
-  metrics are visible in CloudWatch.
+  Thông số giám sát metrics của muôn kho cọc SQS, Lambda, RDS, Redis,
+  DynamoDB, ALB, CloudFront cùng cõ cống SageMaker ngạo mạn giêu hình
+  vãng ngự trên màn trần CloudWatch.
 \item
-  Proposed alarms are either deployed and evidenced or clearly listed as
-  proposed.
+  Các mô hình cảnh báo đề xuất thảy đều khoắc nhãn đắc thắng với thư
+  viện minh chứng, hoặc cam kính an phận liệt mác cọc đề xuất trù dự nhã
+  nhặn.
 \end{itemize}
 
-\vspace{0.5em}\noindent\textbf{Common errors}\par
+\vspace{0.5em}\noindent\textbf{Các lỗi thường
+gặp}\par
 
 {
 \begingroup
@@ -368,32 +427,46 @@ CloudFront 5xx high & 5xx error rate above threshold \\
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Symptom
+Triệu chứng
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cause
+Nguyên nhân
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Resolution
+Hướng khắc phục
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{kubectl\ top} has no data & Metrics server unavailable or not
-scraped yet & Check metrics-server rollout \\
-Prometheus target down & ServiceMonitor selector or namespace mismatch &
-Inspect Service labels and ServiceMonitor selectors \\
-Chat health not ready & Redis or DynamoDB dependency down & Check chat
-logs and AWS service status \\
-Lambda logs absent & Function not invoked or wrong region & Confirm
-event-source mapping and region \\
-DLQ growing & Lambda or downstream processing failure & Inspect DLQ
-messages and Lambda logs \\
+Lệnh thăm cẩu \texttt{kubectl\ top} báo vắng ngát dữ liệu & Cụm máy chủ
+chuyên thu thập metrics (metrics-server) bốc ngắc chết nghẹt hoặc chưa
+thâu trát kip chu kỳ cất gặt & tra rà ngay tăm cọc cuộn bản phát hành
+(rollout) cho mạn cụm metrics-server \\
+Mục tiêu đích gặt của Prometheus sa cọc trượt ngã & Vướng án rách chọn
+lọc nhãn (selector) của ServiceMonitor hay đứt mạch vì lệch không gian
+tên namespace & Soạn kỹ lại danh sách nhãn label của Service và chuỗi
+quy nạp bắt sóng từ ServiceMonitor selector \\
+Điểm sức khỏe của chat khinh từ khước từ mác ready & Cơ quan liên đới
+phụ thuộc trúng Redis hay DynamoDB đâm gục té xỉu & Mở toang soát tệp
+log thuộc dịch vụ chat cùng thông ký trạng thái vận hanh trên cõi hạ
+tầng tài nguyên AWS \\
+Nhật ký log Lambda lả bốc mịt m mù & Hàm chưa hề thọ tiếp còi giục cho
+thực thi hoặc sa bẫy gõ rà thầm khu vực region khác & Đối soát lại cấu
+trúc liên thông sự kiện (event-source mapping) và chỉ số mác khu vực
+region trói sát cự ly \\
+Hàng đợi thảm khuyết DLQ leo phình vọt tải & Tiến trình Lambda hay luân
+mạch phía sau (downstream processing) lâm rào thất bại vỡ mác & Tiến lọt
+rà xét các tin nhắn hãm ngục cõi DLQ kết bấu thẩm ngự nhật ký log của
+Lambda \\
 \end{longtable}
 \endgroup
 }
 
-\vspace{0.5em}\noindent\textbf{Outcome}\par
+\vspace{0.5em}\noindent\textbf{Kết luận}\par
 
-Monitoring is complete when operational staff can inspect Kubernetes
-state, logs, health endpoints, Prometheus metrics, CloudWatch metrics,
-Lambda logs, SQS/DLQ state, and alarms without exposing secrets.
+Kiến trúc giám sát tựu trung giỗ kíp đạt tiêu chuẩn chín muồi ngay chặng
+bộ phận kỹ thuật điều hành hoàn toàn khả dĩ vục thau thanh kiểm tình thế
+hiện sinh của Kubernetes, tệp nhật ký logs, cung đường thử kiểm sức
+khỏe, chuỗi metrics cất gặt cõi Prometheus lẫn CloudWatch, log của
+Lambda, thế trận hàng đợi SQS/DLQ cùng các rào cảnh báo báo nguy mĩ mãn
+mà chối từ triệt để, cấm cho phép bốc tung tuột trượt lộ ra bên ngoài
+thế giới công cộng bất kỳ thông số mật mã bí mật (secret) nào.
